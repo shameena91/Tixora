@@ -45,23 +45,6 @@ export const createCompanyRequestSchema = z.object({
   description: z
     .string()
     .nullable(),
-
-  location: z.object({
-    address: z.string().trim().min(1),
-    city: z.string().trim().min(1),
-    state: z.string().trim().min(1),
-    country: z.string().trim().min(1),
-    postalCode: z.string().trim().min(1),
-  }),
-
-    documents: z.array(
-    z.object({
-      documentType: z.enum(CompanyDocumentType),
-      fileName: z.string().trim().min(1),
-      fileUrl: z.string().trim().min(1),
-    })
-)
- 
 });
 
 export type CreateCompanyRequestDto =

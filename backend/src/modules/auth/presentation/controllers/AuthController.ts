@@ -25,7 +25,7 @@ export class AuthController {
   async createPasswordRequest(dto:CreatePasswordRequestDto):Promise<void> {
 return await this.createPassword.execute(dto)
   }
-  async adminRegistrationRequest(dto:AdminRegistrationRequestDto):Promise<void>{
+  async adminRegistrationRequest(dto:AdminRegistrationRequestDto){
     return await this.adminRegistration.execute(dto)
   }
 }

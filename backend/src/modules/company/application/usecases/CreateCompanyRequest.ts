@@ -4,12 +4,15 @@ import { CreateCompanyRequestDto } from "../Validators/CreateCompanyRequestSchem
 import { randomUUID } from "crypto";
 import { CompanyLocation } from "../../domain/Value-objects/CompanyLocation";
 import { CompanyDocument } from "../../domain/Value-objects/CompanyDocuments";
+import { IAccountRepository } from "../../../auth/domain/repositories/IAccountRepository";
+import { RegistrationStep } from "../../../auth/domain/entities/Account";
 
 
 
 export class CreateCompanyRequest {
   constructor(
-    private readonly companyRequestRepository: ICompanyRequestRepository
+    private readonly companyRequestRepository: ICompanyRequestRepository,
+    private readonly accountRepository:IAccountRepository
   ) {}
 
 
@@ -20,44 +23,54 @@ export class CreateCompanyRequest {
     data: CreateCompanyRequestDto
   ): Promise<CompanyRequest> {
 
-const documents = data.documents.map(
-  (document) =>
-    new CompanyDocument(
-      document.documentType,
-      document.fileName,
-      document.fileUrl
-    )
-);
 
 
     const companyRequest = new CompanyRequest(
       randomUUID(),
-      data.accountId,
+     data.accountId,
+
       data.companyName,
+
       data.registrationNumber,
+
       data.companyEmail,
+
       data.phone,
+
       data.yearEstablished,
+
       data.companyType,
+
       data.numberOfEmployees,
+
       CompanyRequestStatus.PENDING,
+
       data.website,
+
       data.logo,
+
       data.description,
-      new CompanyLocation(
-        data.location.address,
-        data.location.city,
-        data.location.state,
-        data.location.country,
-        data.location.postalCode
-      ),
-      documents,
+
+      null, // location
+
+      [],   // documents
+
       new Date(),
+
       new Date()
     );
 
-    return this.companyRequestRepository.create(
-      companyRequest
+     const createdCompanyRequest =
+      await this.companyRequestRepository.create(
+        companyRequest
+      );
+
+    // Company Information completed
+    await this.accountRepository.updateRegistrationStep(
+      data.accountId,
+      RegistrationStep.COMPANY_DETAILS
     );
+
+    return createdCompanyRequest;
   }
 }

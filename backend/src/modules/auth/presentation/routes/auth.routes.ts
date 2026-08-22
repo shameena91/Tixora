@@ -72,10 +72,19 @@ router.post("/create-password", async (req, res) => {
 
 router.post("/admin-register",async(req,res)=>{
   try {
+    
+    
     const validatedData=adminRegistrationSchema.parse(req.body)
-    await authController.adminRegistrationRequest(validatedData)
-      return res.status(201).json({
+
+    console.log("VALIDATED DATA:", validatedData);
+
+    const result=await authController.adminRegistrationRequest(validatedData)
+      
+      console.log("CONTROLLER RESULT:", result);
+    return res.status(201).json({
+        success:true,
       message: "Admin registered successfully",
+       data: result,
     });
   } catch (error) {
      console.error("Registration Error:", error);

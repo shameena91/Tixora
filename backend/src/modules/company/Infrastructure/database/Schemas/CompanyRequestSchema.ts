@@ -77,7 +77,7 @@ export const companyRequestSchema = new Schema(
 
     location: {
       type: companyLocationSchema,
-      required: true,
+        default: null,
     },
 
     documents: {

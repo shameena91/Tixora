@@ -1,7 +1,9 @@
 import { CompanyRequest, CompanyRequestStatus } from "../../../domain/entities/CompanyRequest";
 import { ICompanyRequestRepository } from "../../../domain/repositories/ICompanyRequestRepository";
 import { UpdateCompanyRequestData } from "../../../domain/types/UpdateCompanyRequesstData";
-import { CompanyRequestDocument, CompanyRequestMapper } from "../mappers/CompanyRequestMappers";
+import { CompanyDocument } from "../../../domain/Value-objects/CompanyDocuments";
+import { CompanyLocation } from "../../../domain/Value-objects/CompanyLocation";
+import { CompanyRequestDocument, CompanyRequestMapper } from "../../mappers/CompanyRequestMappers";
 import { CompanyRequestModel } from "../models/CompanyRequestModel";
 // import { UpdateCompanyRequestDto } from "../../../application/Validators/updatecompanyrequestSchema";
 
@@ -76,5 +78,57 @@ return CompanyRequestMapper.toDomain(companyRequestDocument)
         return CompanyRequestMapper.toDomain(companyRequestDocument)
     }
     
+async updateLocation(
+  id: string,
+  location: CompanyLocation
+): Promise<CompanyRequest> {
 
+  const companyRequestDocument =
+    await CompanyRequestModel.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          location,
+          updatedAt: new Date(),
+        },
+      },
+      {
+        new: true,
+      }
+    ).lean<CompanyRequestDocument>();
+
+  if (!companyRequestDocument) {
+    throw new Error("Company request not found");
+  }
+
+  return CompanyRequestMapper.toDomain(companyRequestDocument);
+}
+
+async updateDocuments(
+  id: string,
+  documents: CompanyDocument[]
+): Promise<CompanyRequest> {
+
+  const companyRequestDocument =
+    await CompanyRequestModel.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          documents,
+          updatedAt: new Date(),
+        },
+      },
+      {
+        new: true,
+      }
+    ).lean<CompanyRequestDocument>();
+
+  if (!companyRequestDocument) {
+    throw new Error("Company request not found");
+  }
+
+  return CompanyRequestMapper.toDomain(
+    companyRequestDocument
+  );
+}
 }

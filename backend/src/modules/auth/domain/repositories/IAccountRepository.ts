@@ -1,4 +1,6 @@
-import { Account } from "../entities/Account";
+import { CompanyRequest } from "../../../company/domain/entities/CompanyRequest";
+import { CompanyLocation } from "../../../company/domain/Value-objects/CompanyLocation";
+import { Account, RegistrationStep } from "../entities/Account";
 
 export interface IAccountRepository {
   create(account: Account): Promise<Account>;
@@ -10,5 +12,10 @@ export interface IAccountRepository {
   lastName: string,
   phone: string,
   designation: string):Promise<Account | null>
+ updateRegistrationStep(
+    accountId: string,
+    step: RegistrationStep
+  ): Promise<void>;
+
 
 }

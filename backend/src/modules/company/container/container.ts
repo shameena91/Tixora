@@ -1,12 +1,17 @@
 import { CompanyRequestRepository } from "../Infrastructure/database/repositories/CompanyRequestRepository";
 
-import { CreateCompanyRequest } from "../application/usecases/CreateCompanyRequest";
 import { ApproveCompanyRequest } from "../application/usecases/ApproveCompanyRequest";
-import { RejectCompanyRequest } from "../application/usecases/RejectCompanyRequest";
+import { CreateCompanyRequest } from "../application/usecases/CreateCompanyRequest";
 import { MoreInfoCompanyrequest } from "../application/usecases/MoreInfoCompanyRequest";
+import { RejectCompanyRequest } from "../application/usecases/RejectCompanyRequest";
 import { ResubmitCompanyRequest } from "../application/usecases/ResubmitCompanyRequest";
 import { UpdateCompanyRequest } from "../application/usecases/UpdateCompanyRequest";
 
+import { AccountRepository } from "../../auth/infrastructure/database/repositories/AccountRepository";
+import { CompleteCompanyRegistration } from "../application/usecases/CompleteCompanyRegistration";
+import { GetCompanyRequest } from "../application/usecases/GetCompanyRequest";
+import { UpdateCompanyDocuments } from "../application/usecases/UpdateCompanyDocuments";
+import { UpdateCompanyLocation } from "../application/usecases/UpdateCompanyLocation";
 import { CompanyRequestController } from "../presentation/controller/CompanyRequestController";
 
 
@@ -14,9 +19,13 @@ const companyRequestRepository =
   new CompanyRequestRepository();
 
 
+const accountRepository =
+  new AccountRepository();
+  
 const createCompanyRequest =
   new CreateCompanyRequest(
-    companyRequestRepository
+    companyRequestRepository,
+    accountRepository
   );
 
 
@@ -49,7 +58,24 @@ const updateCompanyRequest =
     companyRequestRepository
   );
 
-
+const updateCompanyLocation =
+  new UpdateCompanyLocation(
+    companyRequestRepository,
+    accountRepository
+  );
+  const updateCompanyDocuments =
+  new UpdateCompanyDocuments(
+    companyRequestRepository,
+    accountRepository
+  );
+  const getCompanyRequest =
+  new GetCompanyRequest(
+    companyRequestRepository
+  );
+  const completeCompanyRegistration =
+  new CompleteCompanyRegistration(
+    accountRepository
+  );
 export const companyRequestController =
   new CompanyRequestController(
     createCompanyRequest,
@@ -57,5 +83,9 @@ export const companyRequestController =
     rejectCompanyRequest,
     requestMoreInfo,
     resubmitCompanyRequest,
-    updateCompanyRequest
+    updateCompanyRequest,
+     updateCompanyLocation,
+     updateCompanyDocuments,
+     getCompanyRequest,
+     completeCompanyRegistration
   );

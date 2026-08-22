@@ -24,4 +24,7 @@ export interface CreatePasswordResponse {
 export interface AdminRegistrationResponse {
   success: boolean;
   message: string;
+   data: {
+    accountId: string;
+  };
 }

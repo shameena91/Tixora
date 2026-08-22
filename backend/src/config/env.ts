@@ -6,5 +6,7 @@ export const env = {
   mongodbUri: process.env.MONGODB_URI ?? "",
    redisUrl: process.env.REDIS_URL,
    emailUser:process.env.EMAIL_USER,
-   emailPswd:process.env.EMAIL_PASSWORD
+   emailPswd:process.env.EMAIL_PASSWORD,
+   awsregion:process.env.AWS_REGION,
+   awsBucketName:process.env.AWS_S3_BUCKET_NAME
 };

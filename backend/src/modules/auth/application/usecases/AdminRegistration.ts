@@ -9,9 +9,10 @@ export class AdminRegistration{
 
     async execute(
         dto:AdminRegistrationRequestDto
-    ):Promise<void>{
+    ){
 const account=await this.accountRepository.findByEmail(dto.email)
-    
+   console.log("ACCOUNT:", account);
+console.log("ACCOUNT ID:", account?.id); 
     if (!account){
         throw new Error("Account not found");
     }
@@ -23,5 +24,8 @@ const account=await this.accountRepository.findByEmail(dto.email)
       dto.phoneNumber,
       dto.designation
     );
+    return{
+        accountId:account.id
+    }
 }
 }

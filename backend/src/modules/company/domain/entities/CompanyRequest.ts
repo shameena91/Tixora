@@ -39,7 +39,7 @@ public website: string | null,
 public logo: string | null,
 public description: string | null,
 
-public location: CompanyLocation,
+public location: CompanyLocation | null,
 public readonly documents:CompanyDocument[],
 public readonly createdAt: Date,
 public updatedAt: Date

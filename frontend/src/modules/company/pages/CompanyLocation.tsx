@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import type { CompanyLocation } from "../types/companyTypes";
 import Navbar from "../../../components/home/navbar";
 import RegistrationAuthSidebar from "../../auth/components/RegistrationAuthSidebar";
+import toast from "react-hot-toast";
+import { updateCompanyLocation } from "../Services/CompanyRequestService";
+import { companyLocationSchema } from "../schema/CompanyLocationSchema";
 
 interface LocationData {
   address: string;
@@ -12,9 +15,12 @@ interface LocationData {
   postalCode: string;
 }
 
+
 const CompanyLocation = () => {
   const navigate = useNavigate();
-
+const [errors, setErrors] = useState<
+  Partial<Record<keyof CompanyLocation, string>>
+>({});
   const [formData, setFormData] = useState<LocationData>({
     address: "",
     city: "",
@@ -34,12 +40,54 @@ const CompanyLocation = () => {
     }));
   };
 
-  const handleNext = (e: React.FormEvent) => {
+  const handleNext = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("Company Location:", formData);
+const result=companyLocationSchema.safeParse(formData)
 
-    navigate("/register/company-register/documents");
+if(!result.success){
+  const fieldErrors:Partial<Record<keyof CompanyLocation,string>>={}
+  const errors=result.error.flatten().fieldErrors;
+  Object.keys(errors).forEach((key)=>{
+    const field = key as keyof CompanyLocation;
+
+    if(errors[field]?.[0]){
+      fieldErrors[field]=errors[field][0]
+    }
+  })
+setErrors(fieldErrors)
+return
+}
+setErrors({})
+
+
+    const companyRequestId=localStorage.getItem("companyRequestId")
+console.log("Company Request ID:", companyRequestId);
+    if(!companyRequestId)
+    {
+    console.error("Company request ID not found");
+    return
+    }
+    try {
+        const response = await updateCompanyLocation(
+      companyRequestId,
+      formData
+      
+    );
+
+    console.log("Company location saved:", response);
+ navigate("/register/company-register/documents");
+
+    } catch (error) {
+       if(error instanceof Error ){
+toast.error(error.message)
+     }
+}
+    
+    
+
+
+   
   };
 
   return (
@@ -68,6 +116,7 @@ const CompanyLocation = () => {
               <p className="mt-1 text-sm text-gray-500">
                 Enter your company's registered address
               </p>
+              
             </div>
 
             {/* Form */}
@@ -92,6 +141,11 @@ const CompanyLocation = () => {
                     placeholder="Enter company address"
                     className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:border-blue-500"
                   />
+                  {errors.address && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.address}
+                    </p>
+                  )}
                 </div>
 
                 {/* City */}
@@ -108,6 +162,11 @@ const CompanyLocation = () => {
                     placeholder="Enter city"
                     className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:border-blue-500"
                   />
+                    {errors.city && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.city}
+                    </p>
+                  )}
                 </div>
 
                 {/* State */}
@@ -124,6 +183,11 @@ const CompanyLocation = () => {
                     placeholder="Enter state"
                     className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:border-blue-500"
                   />
+                    {errors.state && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.state}
+                    </p>
+                  )}
                 </div>
 
                 {/* Country */}
@@ -140,6 +204,11 @@ const CompanyLocation = () => {
                     placeholder="Enter country"
                     className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:border-blue-500"
                   />
+                      {errors.country && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.country}
+                    </p>
+                  )}
                 </div>
 
                 {/* Postal Code */}
@@ -156,6 +225,11 @@ const CompanyLocation = () => {
                     placeholder="Enter postal code"
                     className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:border-blue-500"
                   />
+                    {errors.postalCode && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.postalCode}
+                    </p>
+                  )}
                 </div>
 
               </div>

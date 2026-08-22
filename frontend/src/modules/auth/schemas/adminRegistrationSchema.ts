@@ -4,18 +4,21 @@ export const adminRegistrationSchema = z.object({
   firstName: z
     .string()
     .trim()
+    .min(1, "First name is required")
     .min(2, "First name must be at least 2 characters")
     .max(50, "First name is too long"),
 
   lastName: z
     .string()
     .trim()
+    .min(1,"Last name is required")
     .min(1, "Last name is required")
     .max(50, "Last name is too long"),
 
   designation: z
     .string()
     .trim()
+    .min(1,"Designation is required")
     .min(2, "Designation must be at least 2 characters")
     .max(100, "Designation is too long"),
 

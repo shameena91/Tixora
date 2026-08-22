@@ -70,6 +70,8 @@ const AdminRegister = () => {
       const res = await registerAdmin({ ...result.data, email });
       console.log("Admin registration response:", res);
       toast.success(res.message)
+      localStorage.setItem( "accountId", res.data.accountId
+);
       navigate("/register/company-register", {
         state: { email },
       });
@@ -129,7 +131,6 @@ toast.error(error.message)
                       value={formData.firstName}
                       onChange={handleChange}
                       placeholder="Enter first name"
-                      required
                       className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-[#6D3CC9] focus:ring-2 focus:ring-[#6D3CC9]/10"
                     />
                     {errors.firstName && (
@@ -155,7 +156,7 @@ toast.error(error.message)
                       value={formData.lastName}
                       onChange={handleChange}
                       placeholder="Enter last name"
-                      required
+                  
                       className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-[#6D3CC9] focus:ring-2 focus:ring-[#6D3CC9]/10"
                     />
                     {errors.lastName && (
@@ -182,7 +183,7 @@ toast.error(error.message)
                     value={formData.designation}
                     onChange={handleChange}
                     placeholder="Enter designation"
-                    required
+                  
                     className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-[#6D3CC9] focus:ring-2 focus:ring-[#6D3CC9]/10"
                   />
                   {errors.designation && (
@@ -214,7 +215,7 @@ toast.error(error.message)
                       value={formData.phoneNumber}
                       onChange={handleChange}
                       placeholder="Enter phone number"
-                      required
+                     
                       className="w-full rounded-r-lg border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-[#6D3CC9] focus:ring-2 focus:ring-[#6D3CC9]/10"
                     />
                     {errors.phoneNumber && (

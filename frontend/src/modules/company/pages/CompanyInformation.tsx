@@ -1,22 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../../../components/home/navbar";
 import RegistrationAuthSidebar from "../../auth/components/RegistrationAuthSidebar";
-import { useNavigate } from "react-router-dom";
+import type { CompanyInfo } from "../types/companyTypes";
+import { createCompanyRequest, getCompanyTypes, getEmployRange } from "../Services/CompanyRequestService";
+import toast from "react-hot-toast";
+import { companyRegistrationSchema } from "../schema/companyRegistrationSchema";
 
-interface CompanyInfo {
-  companyName: string;
-  registrationNumber: string;
-  companyEmail: string;
-  phone: string;
-  yearEstablished: string;
-  companyType: string;
-  numberOfEmployees: string;
-  website: string;
-  logo: string;
-  description: string;
-}
+
 const CompanyInformation = () => {
      const navigate=useNavigate()
+ 
   const [formData, setFormData] = useState<CompanyInfo>({
 
  
@@ -31,7 +25,40 @@ const CompanyInformation = () => {
     logo: "",
     description: "",
   });
+const [errors, setErrors] = useState<
+  Partial<Record<keyof CompanyInfo, string>>
+>({});
+const [companyTypes, setCompanyTypes] =
+  useState<string[]>([]);
+  const [employeeRange, setEmployeeRange] =
+  useState<string[]>([]);
 
+useEffect(() => {
+  const fetchCompanyTypes = async () => {
+    try {
+      const result = await getCompanyTypes();
+console.log("Result=:",result)
+      setCompanyTypes(result.data);
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
+    }
+  };
+  const fetchEmployeRange=async()=>{
+    try {
+      const res=await getEmployRange()
+      console.log("result",res)
+      setEmployeeRange(res.data)
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
+    }
+  }
+fetchEmployeRange()
+  fetchCompanyTypes();
+}, []);
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -45,14 +72,77 @@ const CompanyInformation = () => {
     }));
   };
 
-  const handleNext = (e: React.FormEvent) => {
-    e.preventDefault();
- navigate("/register/company-register/location");
-    console.log("Company Information:", formData);
+ const handleNext = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    // Next page navigation will be added later
-  };
+  // 1. Frontend validation
+  const result = companyRegistrationSchema.safeParse(formData);
 
+  if (!result.success) {
+    const fieldErrors: Partial<Record<keyof CompanyInfo, string>> = {};
+
+    const errors = result.error.flatten().fieldErrors;
+
+    Object.keys(errors).forEach((key) => {
+      const field = key as keyof CompanyInfo;
+
+      if (errors[field]?.[0]) {
+        fieldErrors[field] = errors[field][0];
+      }
+    });
+
+    setErrors(fieldErrors);
+
+    return;
+  }
+
+  // 2. Validation success ആയാൽ പഴയ errors clear ചെയ്യുക
+  setErrors({});
+
+  const accountId = localStorage.getItem("accountId");
+
+  console.log("Id:", accountId);
+
+  if (!accountId) {
+    toast.error("Account ID not found");
+    return;
+  }
+
+  try {
+    const payload = {
+      accountId,
+      ...formData,
+
+      yearEstablished: formData.yearEstablished
+        ? Number(formData.yearEstablished)
+        : null,
+
+      website: formData.website || null,
+      logo: formData.logo || null,
+      description: formData.description || null,
+    };
+
+    const response = await createCompanyRequest(payload);
+
+    console.log("Company request created:", response);
+
+    localStorage.setItem(
+      "companyRequestId",
+      response.data.id
+    );
+
+    toast.success("Company Info Saved");
+
+    navigate(
+      "/register/company-register/location"
+    );
+
+  } catch (error) {
+    if (error instanceof Error) {
+      toast.error(error.message);
+    }
+  }
+};
   return (
     <div className="min-h-screen bg-gray-100 p-6">
         <Navbar showRegister={false} />
@@ -135,6 +225,11 @@ const CompanyInformation = () => {
                 placeholder="Enter company name"
                 className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:border-blue-500"
               />
+               {errors.companyName && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.companyName}
+                    </p>
+                  )}
             </div>
 
             {/* Registration Number */}
@@ -152,6 +247,12 @@ const CompanyInformation = () => {
                 placeholder="Enter registration number"
                 className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:border-blue-500"
               />
+
+               {errors.registrationNumber && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.registrationNumber}
+                    </p>
+                  )}
             </div>
 
             {/* Company Email */}
@@ -169,6 +270,11 @@ const CompanyInformation = () => {
                 placeholder="company@example.com"
                 className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:border-blue-500"
               />
+               {errors.companyEmail && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.companyEmail}
+                    </p>
+                  )}
             </div>
 
             {/* Phone */}
@@ -186,6 +292,11 @@ const CompanyInformation = () => {
                 placeholder="9876543210"
                 className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:border-blue-500"
               />
+                {errors.phone && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.phone}
+                    </p>
+                  )}
             </div>
 
             {/* Year Established */}
@@ -203,6 +314,11 @@ const CompanyInformation = () => {
                 placeholder="2020"
                 className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:border-blue-500"
               />
+               {errors.yearEstablished && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.yearEstablished}
+                    </p>
+                  )}
             </div>
 
             {/* Company Type */}
@@ -221,27 +337,21 @@ const CompanyInformation = () => {
                 <option value="">
                   Select company type
                 </option>
+{
+  companyTypes.map((type)=>(
+    <option key={type} value={type}>
+    {type}
+    </option>
+  )
 
-                <option value="PRIVATE_LIMITED">
-                  Private Limited
-                </option>
-
-                <option value="PUBLIC_LIMITED">
-                  Public Limited
-                </option>
-
-                <option value="LLP">
-                  LLP
-                </option>
-
-                <option value="PARTNERSHIP">
-                  Partnership
-                </option>
-
-                <option value="OTHER">
-                  Other
-                </option>
+  )
+}
               </select>
+              {errors.companyType && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.companyType}
+                    </p>
+                  )}
             </div>
 
             {/* Employees */}
@@ -260,23 +370,17 @@ const CompanyInformation = () => {
                 <option value="">
                   Select employee range
                 </option>
-
-                <option value="1-50">
-                  1-50
-                </option>
-
-                <option value="51-200">
-                  51-200
-                </option>
-
-                <option value="201-500">
-                  201-500
-                </option>
-
-                <option value="500+">
-                  500+
-                </option>
+{employeeRange.map((range)=>(
+  <option key={range} value={range}>
+    {range}
+  </option>
+))}
               </select>
+                {errors.numberOfEmployees && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.numberOfEmployees}
+                    </p>
+                  )}
             </div>
 
             {/* Website */}

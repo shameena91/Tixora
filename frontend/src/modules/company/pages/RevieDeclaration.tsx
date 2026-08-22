@@ -1,23 +1,95 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Navbar from "../../../components/home/navbar";
 import RegistrationAuthSidebar from "../../auth/components/RegistrationAuthSidebar";
+import { getCompanyRequest, submitCompanyRegistration } from "../Services/CompanyRequestService";
+import type { CompanyRequest } from "../types/companyTypes";
+import toast from "react-hot-toast";
+
 
 const ReviewDeclaration = () => {
   const navigate = useNavigate();
 
   const [isConfirmed, setIsConfirmed] = useState(false);
+const [loading, setLoading] = useState(true);
+const [companyRequest, setCompanyRequest] =
+  useState<CompanyRequest | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+useEffect(() => {
+  const fetchCompanyRequest = async () => {
+    const companyRequestId =
+      localStorage.getItem("companyRequestId");
 
-    if (!isConfirmed) return;
+    if (!companyRequestId) {
+      console.error("Company request ID not found");
+      return;
+    }
 
-    // Final API submission will be added later
-    console.log("Registration submitted");
+    try {
+      const result =
+        await getCompanyRequest(companyRequestId);
+
+      console.log("Company request:", result);
+
+      setCompanyRequest(result.data);
+    } catch (error) {
+      console.error(
+        "Failed to fetch company request:",
+        error
+      );
+    }
+    finally {
+      setLoading(false);
+    }
   };
 
+  fetchCompanyRequest();
+}, []);
+if (loading) {
+  return <div>Loading...</div>;
+}
+
+if (!companyRequest) {
+  return <div>Company request not found</div>;
+}
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!isConfirmed) {
+    return;
+  }
+
+  const accountId =
+    localStorage.getItem("accountId");
+
+  if (!accountId) {
+    console.error("Account  not found");
+    return;
+  }
+
+  try {
+    const result =
+      await submitCompanyRegistration(accountId);
+
+    console.log(
+      "Registration submitted:",
+      result
+    );
+    toast.success("Registration submitted successfully")
+
+    navigate(
+      "/register/company-register/success"
+    );
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("failed to submit Register",error.message)
+     toast.error("Faile to register")
+
+    }
+  }
+};
   return (
     <div className="min-h-screen bg-gray-50">
 
@@ -68,6 +140,149 @@ const ReviewDeclaration = () => {
                 </p>
 
               </div>
+              {/* Company Information */}
+
+<div className="mt-6 rounded-lg border border-gray-200 p-5">
+  <h2 className="text-lg font-semibold text-gray-900">
+    Company Information
+  </h2>
+
+  <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+
+    <div>
+      <p className="text-sm text-gray-500">
+        Company Name
+      </p>
+      <p className="font-medium text-gray-900">
+        {companyRequest.companyName}
+      </p>
+    </div>
+
+    <div>
+      <p className="text-sm text-gray-500">
+        Registration Number
+      </p>
+      <p className="font-medium text-gray-900">
+        {companyRequest.registrationNumber}
+      </p>
+    </div>
+
+    <div>
+      <p className="text-sm text-gray-500">
+        Company Email
+      </p>
+      <p className="font-medium text-gray-900">
+        {companyRequest.companyEmail}
+      </p>
+    </div>
+
+    <div>
+      <p className="text-sm text-gray-500">
+        Phone
+      </p>
+      <p className="font-medium text-gray-900">
+        {companyRequest.phone}
+      </p>
+    </div>
+
+    <div>
+      <p className="text-sm text-gray-500">
+        Company Type
+      </p>
+      <p className="font-medium text-gray-900">
+        {companyRequest.companyType}
+      </p>
+    </div>
+
+    <div>
+      <p className="text-sm text-gray-500">
+        Number of Employees
+      </p>
+      <p className="font-medium text-gray-900">
+        {companyRequest.numberOfEmployees}
+      </p>
+    </div>
+
+  </div>
+</div>
+<div className="mt-6 rounded-lg border border-gray-200 p-5">
+  <h2 className="text-lg font-semibold text-gray-900">
+    Location
+  </h2>
+
+  <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+
+    <div>
+      <p className="text-sm text-gray-500">
+        Address
+      </p>
+      <p className="font-medium text-gray-900">
+        {companyRequest.location.address}
+      </p>
+    </div>
+
+    <div>
+      <p className="text-sm text-gray-500">
+        City
+      </p>
+      <p className="font-medium text-gray-900">
+        {companyRequest.location.city}
+      </p>
+    </div>
+
+    <div>
+      <p className="text-sm text-gray-500">
+        State
+      </p>
+      <p className="font-medium text-gray-900">
+        {companyRequest.location.state}
+      </p>
+    </div>
+
+    <div>
+      <p className="text-sm text-gray-500">
+        Country
+      </p>
+      <p className="font-medium text-gray-900">
+        {companyRequest.location.country}
+      </p>
+    </div>
+
+    <div>
+      <p className="text-sm text-gray-500">
+        Postal Code
+      </p>
+      <p className="font-medium text-gray-900">
+        {companyRequest.location.postalCode}
+      </p>
+    </div>
+
+  </div>
+</div>
+<div className="mt-6 rounded-lg border border-gray-200 p-5">
+  <h2 className="text-lg font-semibold text-gray-900">
+    Documents
+  </h2>
+
+  <div className="mt-4 space-y-3">
+    {companyRequest.documents.map((document) => (
+      <div
+        key={document.fileName}
+        className="flex items-center justify-between rounded-lg border p-4"
+      >
+        <div>
+          <p className="font-medium text-gray-900">
+            {document.documentType}
+          </p>
+
+          <p className="text-sm text-gray-500">
+            {document.fileName}
+          </p>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
 
               {/* Declaration */}
 

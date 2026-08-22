@@ -83,7 +83,18 @@ async updateAdminDetails(
   return this.toDomain(accountDocument);
 }
 
-
+async updateRegistrationStep(
+  accountId: string,
+  step: RegistrationStep
+): Promise<void> {
+  await AccountModel.findByIdAndUpdate(
+    accountId,
+    {
+      registrationStep: step,
+      updatedAt: new Date(),
+    }
+  );
+}
 
   // async update(account:Account):Promise<Account>{
   //   const accountDocument=await AccountModel.findByIdAndUpdate(account.id,{

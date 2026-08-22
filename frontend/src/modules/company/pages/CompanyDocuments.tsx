@@ -2,8 +2,14 @@ import { useState } from "react";
 import RegistrationAuthSidebar from "../../auth/components/RegistrationAuthSidebar";
 import Navbar from "../../../components/home/navbar";
 import {  useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { updateDocumentRequest } from "../Services/CompanyRequestService";
+import type { DocumentErrors } from "../types/companyTypes";
+import { companyDocumentsSchema } from "../schema/CompanyDocumentSchema";
+import z from "zod";
 
 const CompanyDocuments = () => {
+  const [errors, setErrors] = useState<DocumentErrors>({});
   const [documents, setDocuments] = useState({
     registrationCertificate: null as File | null,
     taxDocument: null as File | null,
@@ -20,11 +26,105 @@ const navigate=useNavigate()
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-navigate("/register/company-register/review-declaration")
-    console.log("Documents:", documents);
-  };
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+ const result = companyDocumentsSchema.safeParse(documents);
+
+  if (!result.success) {
+    const tree = z.treeifyError(result.error);
+
+    const fieldErrors: DocumentErrors = {};
+
+    if (tree.properties?.registrationCertificate?.errors?.length) {
+      fieldErrors.registrationCertificate =
+        tree.properties.registrationCertificate.errors[0];
+    }
+
+    if (tree.properties?.taxDocument?.errors?.length) {
+      fieldErrors.taxDocument =
+        tree.properties.taxDocument.errors[0];
+    }
+
+    if (tree.properties?.businessLicense?.errors?.length) {
+      fieldErrors.businessLicense =
+        tree.properties.businessLicense.errors[0];
+    }
+
+    setErrors(fieldErrors);
+
+    return;
+  }
+
+  setErrors({});
+
+
+  const companyRequestId =
+    localStorage.getItem("companyRequestId");
+
+  if (!companyRequestId) {
+    toast.error("Company request ID not found");
+    return;
+  }
+
+  try {
+const documentData = [];
+
+   
+ if (documents.registrationCertificate) {
+      documentData.push({
+        documentType: "REGISTRATION_CERTIFICATE",
+        fileName: documents.registrationCertificate.name,
+        fileUrl: "https://example.com/registration.pdf",
+      });
+    }
+
+    if (documents.taxDocument) {
+      documentData.push({
+        documentType: "TAX_DOCUMENT",
+        fileName: documents.taxDocument.name,
+        fileUrl: "https://example.com/tax.pdf",
+      });
+    }
+
+    if (documents.businessLicense) {
+      documentData.push({
+        documentType: "BUSINESS_LICENSE",
+        fileName: documents.businessLicense.name,
+        fileUrl: "https://example.com/license.pdf",
+      });
+    }
+
+  //  if (documentData.length === 0) {
+  //     toast.error("Please upload at least one document");
+  //     return;
+  //   }
+
+
+
+
+
+    const res = await updateDocumentRequest(
+      companyRequestId,
+      {
+         documents: documentData,
+      }
+    );
+
+    console.log("Saved documents:", res);
+
+    toast.success("Documents saved successfully");
+
+    navigate(
+      "/register/company-register/review-declaration"
+    );
+
+  } catch (error) {
+    if (error instanceof Error) {
+      toast.error(error.message);
+    }
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 lg:p-10">
@@ -78,6 +178,12 @@ navigate("/register/company-register/review-declaration")
                   {documents.registrationCertificate.name}
                 </p>
               )}
+              {errors.registrationCertificate && (
+  <p className="mt-1 text-sm text-red-500">
+    {errors.registrationCertificate}
+  </p>
+)}
+              
             </div>
 
             {/* Tax Document */}
@@ -104,6 +210,11 @@ navigate("/register/company-register/review-declaration")
                   {documents.taxDocument.name}
                 </p>
               )}
+              {errors.taxDocument && (
+  <p className="mt-1 text-sm text-red-500">
+    {errors.taxDocument}
+  </p>
+)}
             </div>
 
             {/* Business License */}
@@ -124,6 +235,11 @@ navigate("/register/company-register/review-declaration")
                 }
                 className="w-full rounded-lg border border-gray-300 px-4 py-2.5"
               />
+              {errors.businessLicense && (
+  <p className="mt-1 text-sm text-red-500">
+    {errors.businessLicense}
+  </p>
+)}
 
               {documents.businessLicense && (
                 <p className="mt-2 text-sm text-gray-500">

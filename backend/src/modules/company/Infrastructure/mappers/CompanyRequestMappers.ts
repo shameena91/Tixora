@@ -1,13 +1,8 @@
 import { Types } from "mongoose";
 
-import { CompanyRequest } from "../../../domain/entities/CompanyRequest";
-import {
-  CompanyType,
-  CompanyRequestStatus,
-  EmployeeCountRange,
-} from "../../../domain/entities/CompanyRequest";
-import { CompanyLocation } from "../../../domain/Value-objects/CompanyLocation";
-import { CompanyDocument } from "../../../domain/Value-objects/CompanyDocuments";
+import { CompanyRequest, CompanyRequestStatus, CompanyType, EmployeeCountRange } from "../../domain/entities/CompanyRequest";
+import { CompanyDocument } from "../../domain/Value-objects/CompanyDocuments";
+import { CompanyLocation } from "../../domain/Value-objects/CompanyLocation";
 
 
 export interface CompanyRequestDocument {
@@ -24,7 +19,7 @@ export interface CompanyRequestDocument {
   website: string | null;
   logo: string | null;
   description: string | null;
-  location: CompanyLocation;
+ location: CompanyLocation | null;
   documents: CompanyDocument[];
   createdAt: Date;
   updatedAt: Date;
