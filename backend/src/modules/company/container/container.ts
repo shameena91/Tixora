@@ -13,6 +13,8 @@ import { GetCompanyRequest } from "../application/usecases/GetCompanyRequest";
 import { UpdateCompanyDocuments } from "../application/usecases/UpdateCompanyDocuments";
 import { UpdateCompanyLocation } from "../application/usecases/UpdateCompanyLocation";
 import { CompanyRequestController } from "../presentation/controller/CompanyRequestController";
+import { S3FileStorage } from "../Infrastructure/storage/S3FileStorage";
+import { SubmitCompanyDocuments } from "../application/usecases/SubmitCompanyDocuments";
 
 
 const companyRequestRepository =
@@ -63,17 +65,25 @@ const updateCompanyLocation =
     companyRequestRepository,
     accountRepository
   );
-  const updateCompanyDocuments =
-  new UpdateCompanyDocuments(
-    companyRequestRepository,
-    accountRepository
-  );
+ 
   const getCompanyRequest =
   new GetCompanyRequest(
     companyRequestRepository
   );
   const completeCompanyRegistration =
   new CompleteCompanyRegistration(
+    accountRepository
+  );
+
+  const fileStorage = new S3FileStorage();
+  const updateCompanyDocuments =
+  new UpdateCompanyDocuments(
+    companyRequestRepository,
+    fileStorage
+  );
+  const submitCompanyDocuments =
+  new SubmitCompanyDocuments(
+    companyRequestRepository,
     accountRepository
   );
 export const companyRequestController =
@@ -87,5 +97,6 @@ export const companyRequestController =
      updateCompanyLocation,
      updateCompanyDocuments,
      getCompanyRequest,
-     completeCompanyRegistration
+     completeCompanyRegistration,
+       submitCompanyDocuments,
   );

@@ -1,5 +1,4 @@
 import { RegistrationStep } from "../../../auth/domain/entities/Account";
-import { IAccountRepository } from "../../../auth/domain/repositories/IAccountRepository";
 import { ICompanyRequestRepository } from "../../domain/repositories/ICompanyRequestRepository";
 import { CompanyDocumentFile } from "../../domain/types/CompanyDocumentFile";
 import { CompanyDocument } from "../../domain/Value-objects/CompanyDocuments";
@@ -8,51 +7,65 @@ import { IFileStoragePort } from "../ports/IFileStoragePort";
 export class UpdateCompanyDocuments {
   constructor(
     private readonly companyRequestRepository: ICompanyRequestRepository,
-    private readonly accountRepository: IAccountRepository,
-     private readonly fileStorage: IFileStoragePort
+    private readonly fileStorage: IFileStoragePort,
   ) {}
 
   async execute(
     companyRequestId: string,
-    documents: CompanyDocumentFile[]
+    document: CompanyDocumentFile
   ) {
     const companyRequest =
-      await this.companyRequestRepository.findById(
-        companyRequestId
-      );
+      await this.companyRequestRepository.findById(companyRequestId);
 
     if (!companyRequest) {
       throw new Error("Company request not found");
     }
 
-const uploadedDocuments :CompanyDocument[] = await Promise.all(
-  documents.map(async (document) => {
-    const fileUrl = await this.fileStorage.upload(
+    const documentPath =
+      `company-requests/${companyRequestId}/documents`;
+
+    const uploadedFile = await this.fileStorage.upload(
       document.file,
       document.fileName,
-      document.mimeType
+      document.mimeType,
+      documentPath
     );
 
-    return {
+    const newDocument: CompanyDocument = {
       documentType: document.documentType,
-      fileUrl,
       fileName: document.fileName,
-      mimeType: document.mimeType,
+      fileUrl: uploadedFile.url,
     };
-  })
-);
 
-    const updatedCompanyRequest =
-      await this.companyRequestRepository.updateDocuments(
-        companyRequestId,
-        uploadedDocuments
-      );
+    const existingDocuments =
+      companyRequest.documents ?? [];
 
-    await this.accountRepository.updateRegistrationStep(
-      companyRequest.accountId,
-      RegistrationStep.DOCUMENTS
+    const updatedDocuments: CompanyDocument[] = [
+      ...existingDocuments.filter(
+        (doc) => doc.documentType !== newDocument.documentType
+      ),
+      newDocument,
+    ];
+
+   try {
+  const updatedCompanyRequest =
+    await this.companyRequestRepository.updateDocuments(
+      companyRequestId,
+      updatedDocuments
     );
 
-    return updatedCompanyRequest;
+  return updatedCompanyRequest;
+} catch (error) {
+ try {
+    await this.fileStorage.delete(uploadedFile.key);
+  } catch (deleteError) {
+    console.error(
+      "Failed to cleanup S3 file:",
+      deleteError
+    );
   }
+
+  throw error;
+}
+}
 }

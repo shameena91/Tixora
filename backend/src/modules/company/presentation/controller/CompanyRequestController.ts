@@ -17,6 +17,8 @@ import { UpdateCompanyRequestData } from "../../domain/types/UpdateCompanyReques
 import { CompanyType, EmployeeCountRange } from "../../domain/entities/CompanyRequest";
 import { CompanyDocumentType } from "../../domain/Value-objects/CompanyDocuments";
 import { CompanyDocumentFile } from "../../domain/types/CompanyDocumentFile";
+import { SubmitCompanyDocuments } from "../../application/usecases/SubmitCompanyDocuments";
+import multer from "multer";
 export class CompanyRequestController {
   constructor(
       private readonly createCompanyRequest: CreateCompanyRequest,
@@ -29,8 +31,8 @@ export class CompanyRequestController {
   private readonly updateCompanyLocation:UpdateCompanyLocation,
 private readonly updateCompanyDocuments: UpdateCompanyDocuments,
 private readonly getCompanyRequest: GetCompanyRequest,
-private readonly completeCompanyRegistration:CompleteCompanyRegistration
-
+private readonly completeCompanyRegistration:CompleteCompanyRegistration,
+private readonly submitCompanyDocuments: SubmitCompanyDocuments
 ) {}
 
 async create(
@@ -240,16 +242,11 @@ async updateDocuments(
   req: Request,
   res: Response
 ): Promise<void> {
+    console.log("REQ URL:", req.originalUrl);
+  console.log("REQ PARAMS:", req.params);
   const { companyRequestId } = req.params;
-
-  //  if (typeof companyRequestId !== "string") {
-  //   res.status(400).json({
-  //     success: false,
-  //     message: "Invalid company request id",
-  //   });
-  //   return;
-  // }
-  if (!companyRequestId||  Array.isArray(companyRequestId)) {
+  console.log("COMPANY REQUEST ID:", companyRequestId);
+  if (!companyRequestId || Array.isArray(companyRequestId)) {
     res.status(400).json({
       success: false,
       message: "Invalid company request id",
@@ -258,73 +255,66 @@ async updateDocuments(
   }
 
   try {
-    const files = req.files as {
-      [fieldname: string]: Express.Multer.File[];
-    };
+    const file = req.file;
 
-    console.log("Uploaded files:", files);
-
-    const registrationCertificate =
-      files.registrationCertificate?.[0];
-
-    const taxDocument =
-      files.taxDocument?.[0];
-
-    const businessLicense =
-      files.businessLicense?.[0];
-
-    if (
-      !registrationCertificate ||
-      !taxDocument ||
-      !businessLicense
-    ) {
+    if (!file) {
       res.status(400).json({
         success: false,
-        message: "All company documents are required",
+        message: "Document file is required",
       });
       return;
     }
 
-    console.log("Registration:", registrationCertificate.originalname);
-    console.log("Tax:", taxDocument.originalname);
-    console.log("License:", businessLicense.originalname);
-const documents: CompanyDocumentFile[] = [
-  {
-    documentType: CompanyDocumentType.REGISTRATION_CERTIFICATE,
-    file: registrationCertificate.buffer,
-    fileName: registrationCertificate.originalname,
-    mimeType: registrationCertificate.mimetype,
-  },
-  {
-    documentType: CompanyDocumentType.TAX_DOCUMENT,
-    file: taxDocument.buffer,
-    fileName: taxDocument.originalname,
-    mimeType: taxDocument.mimetype,
-  },
-  {
-    documentType: CompanyDocumentType.BUSINESS_LICENSE,
-    file: businessLicense.buffer,
-    fileName: businessLicense.originalname,
-    mimeType: businessLicense.mimetype,
-  },
-];
+    const { documentType } = req.body;
 
-console.log("Documents:", documents);
-  const companyRequest =
-  await this.updateCompanyDocuments.execute(
-    companyRequestId,
-    documents
-  );  
-    
+    if (!documentType ||!Object.values(CompanyDocumentType).includes(documentType)) {
+      res.status(400).json({
+        success: false,
+        message: "Document type is required",
+      });
+      return;
+    }
 
+    const document: CompanyDocumentFile = {
+      documentType,
+      file: file.buffer,
+      fileName: file.originalname,
+      mimeType: file.mimetype,
+    };
 
+    const companyRequest =
+      await this.updateCompanyDocuments.execute(
+        companyRequestId,
+        document
+      );
+
+    res.status(200).json({
+      success: true,
+      message: "Document uploaded successfully",
+      data: companyRequest,
+    });
   } catch (error) {
+    if (error instanceof multer.MulterError) {
+    if (error.code === "LIMIT_FILE_SIZE") {
+      res.status(400).json({
+        success: false,
+        message: "File size should not exceed 5 MB",
+      });
+      return;
+    }
+
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+    return;
+  }
     res.status(400).json({
       success: false,
       message:
         error instanceof Error
           ? error.message
-          : "Failed to update company documents",
+          : "Failed to update company document",
     });
   }
 }
@@ -371,6 +361,45 @@ const validatedData =
     });
   }
 }
+async submitDocuments(
+  req: Request,
+  res: Response
+): Promise<void> {
+  const { companyRequestId } = req.params;
+
+  if (!companyRequestId || Array.isArray(companyRequestId)) {
+    res.status(400).json({
+      success: false,
+      message: "Invalid company request id",
+    });
+    return;
+  }
+
+  try {
+    const companyRequest =
+      await this.submitCompanyDocuments.execute(
+        companyRequestId
+      );
+
+    res.status(200).json({
+      success: true,
+      message: "Company documents submitted successfully",
+      data: companyRequest,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to submit company documents",
+    });
+  }
+}
+
+
+
+
 // async updateDocuments(
 //   req: Request,
 //   res: Response

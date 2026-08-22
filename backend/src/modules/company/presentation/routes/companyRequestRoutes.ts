@@ -39,22 +39,26 @@ router.patch("/:id/resubmit", async (req, res) => {
 router.patch("/:id/location", async (req, res) => {
   await companyRequestController.updateLocation(req, res);
 });
-router.patch("/:id/documents", async (req, res) => {
-  await companyRequestController.updateDocuments(req, res);
-});
+// router.patch("/:id/documents", async (req, res) => {
+//   await companyRequestController.updateDocuments(req, res);
+// });
 router.get("/:id", async (req, res) => {
   await companyRequestController.getById(req, res);
 });
 
 router.patch(
   "/:companyRequestId/documents",
-  documentUpload.fields([
-    { name: "registrationCertificate", maxCount: 1 },
-    { name: "taxDocument", maxCount: 1 },
-    { name: "businessLicense", maxCount: 1 },
-  ]),
+
+  documentUpload.single("document"),
+
   async (req, res) => {
     await companyRequestController.updateDocuments(req, res);
+  }
+);
+router.patch(
+  "/:companyRequestId/documents/submit",
+  async (req, res) => {
+    await companyRequestController.submitDocuments(req, res);
   }
 );
 
