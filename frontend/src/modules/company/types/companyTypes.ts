@@ -17,7 +17,7 @@ export interface DocumentData {
   fileUrl: string;
 }
 
-export interface CompanyLocation {
+export interface CompanyLocationData {
   address: string;
   city: string;
   state: string;
@@ -43,7 +43,7 @@ export interface CompanyRequest {
   website: string | null;
   logo: string | null;
   description: string | null;
-  location: CompanyLocation;
+  location: CompanyLocationData;
   documents: CompanyDocument[];
   createdAt: string;
   updatedAt: string;
@@ -59,3 +59,11 @@ export type DocumentErrors  = {
   taxDocument?: string;
   businessLicense?: string;
 };
+
+export interface LocationData {
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  postalCode: string;
+}

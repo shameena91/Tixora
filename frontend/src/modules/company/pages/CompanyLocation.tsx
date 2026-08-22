@@ -1,25 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import type { CompanyLocation } from "../types/companyTypes";
+import type {  CompanyLocationData, LocationData } from "../types/companyTypes";
 import Navbar from "../../../components/home/navbar";
 import RegistrationAuthSidebar from "../../auth/components/RegistrationAuthSidebar";
 import toast from "react-hot-toast";
 import { updateCompanyLocation } from "../Services/CompanyRequestService";
 import { companyLocationSchema } from "../schema/CompanyLocationSchema";
 
-interface LocationData {
-  address: string;
-  city: string;
-  state: string;
-  country: string;
-  postalCode: string;
-}
 
 
 const CompanyLocation = () => {
   const navigate = useNavigate();
 const [errors, setErrors] = useState<
-  Partial<Record<keyof CompanyLocation, string>>
+  Partial<Record<keyof CompanyLocationData, string>>
 >({});
   const [formData, setFormData] = useState<LocationData>({
     address: "",
@@ -46,10 +39,10 @@ const [errors, setErrors] = useState<
 const result=companyLocationSchema.safeParse(formData)
 
 if(!result.success){
-  const fieldErrors:Partial<Record<keyof CompanyLocation,string>>={}
+  const fieldErrors:Partial<Record<keyof CompanyLocationData,string>>={}
   const errors=result.error.flatten().fieldErrors;
   Object.keys(errors).forEach((key)=>{
-    const field = key as keyof CompanyLocation;
+    const field = key as keyof CompanyLocationData;
 
     if(errors[field]?.[0]){
       fieldErrors[field]=errors[field][0]
