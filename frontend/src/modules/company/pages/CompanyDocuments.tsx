@@ -1,280 +1,374 @@
+
 import { useState } from "react";
 import RegistrationAuthSidebar from "../../auth/components/RegistrationAuthSidebar";
 import Navbar from "../../../components/home/navbar";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { updateDocumentRequest } from "../Services/CompanyRequestService";
+
+import {
+  uploadCompanyDocument,
+  submitCompanyDocuments,
+} from "../Services/CompanyRequestService";
 import type { DocumentErrors } from "../types/companyTypes";
-import { companyDocumentsSchema } from "../schema/CompanyDocumentSchema";
-import z from "zod";
+
+type DocumentKey =
+  | "registrationCertificate"
+  | "taxDocument"
+  | "businessLicense";
 
 const CompanyDocuments = () => {
-  const [errors, setErrors] = useState<DocumentErrors>({});
-  const [documents, setDocuments] = useState({
-    registrationCertificate: null as File | null,
-    taxDocument: null as File | null,
-    businessLicense: null as File | null,
+  const navigate = useNavigate();
+
+  const [documents, setDocuments] = useState<
+    Record<DocumentKey, File | null>
+  >({
+    registrationCertificate: null,
+    taxDocument: null,
+    businessLicense: null,
   });
-const navigate=useNavigate()
-  const handleFileChange = (
-    name: keyof typeof documents,
-    file: File | null
-  ) => {
-    setDocuments((prev) => ({
-      ...prev,
-      [name]: file,
-    }));
+
+  const [uploading, setUploading] = useState<
+    Record<DocumentKey, boolean>
+  >({
+    registrationCertificate: false,
+    taxDocument: false,
+    businessLicense: false,
+  });
+
+  const [uploaded, setUploaded] = useState<
+    Record<DocumentKey, boolean>
+  >({
+    registrationCertificate: false,
+    taxDocument: false,
+    businessLicense: false,
+  });
+  const [errors, setErrors] = useState<DocumentErrors>({});
+
+  const documentTypeMap: Record<DocumentKey, string> = {
+    registrationCertificate: "REGISTRATION_CERTIFICATE",
+    taxDocument: "TAX_DOCUMENT",
+    businessLicense: "BUSINESS_LICENSE",
   };
 
- const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-
- const result = companyDocumentsSchema.safeParse(documents);
-
-  if (!result.success) {
-    const tree = z.treeifyError(result.error);
-
-    const fieldErrors: DocumentErrors = {};
-
-    if (tree.properties?.registrationCertificate?.errors?.length) {
-      fieldErrors.registrationCertificate =
-        tree.properties.registrationCertificate.errors[0];
+  const handleFileChange = async (
+    name: DocumentKey,
+    file: File | null
+  ) => {
+    if (!file) {
+      return;
     }
 
-    if (tree.properties?.taxDocument?.errors?.length) {
-      fieldErrors.taxDocument =
-        tree.properties.taxDocument.errors[0];
+    const companyRequestId =
+      localStorage.getItem("companyRequestId");
+console.log("Company Request ID:", companyRequestId);
+    if (!companyRequestId) {
+      toast.error("Company request ID not found");
+      return;
     }
 
-    if (tree.properties?.businessLicense?.errors?.length) {
-      fieldErrors.businessLicense =
-        tree.properties.businessLicense.errors[0];
+    try {
+      setUploading((prev) => ({
+        ...prev,
+        [name]: true,
+      }));
+
+      setUploaded((prev) => ({
+        ...prev,
+        [name]: false,
+      }));
+
+      setDocuments((prev) => ({
+        ...prev,
+        [name]: file,
+      }));
+
+      await uploadCompanyDocument(
+        companyRequestId,
+        file,
+        documentTypeMap[name]
+      );
+
+      setUploaded((prev) => ({
+        ...prev,
+        [name]: true,
+      }));
+  setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
+      toast.success(
+        `${file.name} uploaded successfully`
+      );
+    } catch (error) {
+  setDocuments((prev) => ({
+    ...prev,
+    [name]: null,
+  }));
+
+  setUploaded((prev) => ({
+    ...prev,
+    [name]: false,
+  }));
+
+  setErrors((prev) => ({
+    ...prev,
+    [name]:
+      error instanceof Error
+        ? error.message
+        : "Failed to upload document",
+  }));
+}
+finally {
+      setUploading((prev) => ({
+        ...prev,
+        [name]: false,
+      }));
+    }
+  };
+
+  const handleSubmit = async (
+    e: React.FormEvent
+  ) => {
+    e.preventDefault();
+
+    const companyRequestId =
+      localStorage.getItem("companyRequestId");
+
+    if (!companyRequestId) {
+      toast.error("Company request ID not found");
+      return;
     }
 
-    setErrors(fieldErrors);
+    const allDocumentsUploaded =
+      uploaded.registrationCertificate &&
+      uploaded.taxDocument &&
+      uploaded.businessLicense;
 
-    return;
-  }
-
-  setErrors({});
-
-
-  const companyRequestId =
-    localStorage.getItem("companyRequestId");
-
-  if (!companyRequestId) {
-    toast.error("Company request ID not found");
-    return;
-  }
-
-  try {
-const documentData = [];
-
-   
- if (documents.registrationCertificate) {
-      documentData.push({
-        documentType: "REGISTRATION_CERTIFICATE",
-        fileName: documents.registrationCertificate.name,
-        fileUrl: "https://example.com/registration.pdf",
-      });
+    if (!allDocumentsUploaded) {
+      toast.error(
+        "Please upload all required company documents"
+      );
+      return;
     }
 
-    if (documents.taxDocument) {
-      documentData.push({
-        documentType: "TAX_DOCUMENT",
-        fileName: documents.taxDocument.name,
-        fileUrl: "https://example.com/tax.pdf",
-      });
+    try {
+      await submitCompanyDocuments(
+        companyRequestId
+      );
+
+      toast.success(
+        "Company documents submitted successfully"
+      );
+
+      navigate(
+        "/register/company-register/review-declaration"
+      );
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to submit company documents"
+      );
     }
-
-    if (documents.businessLicense) {
-      documentData.push({
-        documentType: "BUSINESS_LICENSE",
-        fileName: documents.businessLicense.name,
-        fileUrl: "https://example.com/license.pdf",
-      });
-    }
-
-  //  if (documentData.length === 0) {
-  //     toast.error("Please upload at least one document");
-  //     return;
-  //   }
-
-
-
-
-
-    const res = await updateDocumentRequest(
-      companyRequestId,
-      {
-         documents: documentData,
-      }
-    );
-
-    console.log("Saved documents:", res);
-
-    toast.success("Documents saved successfully");
-
-    navigate(
-      "/register/company-register/review-declaration"
-    );
-
-  } catch (error) {
-    if (error instanceof Error) {
-      toast.error(error.message);
-    }
-  }
-};
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 lg:p-10">
-     <Navbar showRegister={false} />
-     <div className="mx-auto flex min-h-[calc(100vh-64px)] max-w-7xl gap-8 px-5 lg:px-8">
+      <Navbar showRegister={false} />
 
-     {/* <div className="mx-auto flex min-h-[calc(100vh-64px)] max-w-8xl gap-8 px-5 lg:px-8"> */}
+      <div className="mx-auto flex min-h-[calc(100vh-64px)] max-w-7xl gap-8 px-5 lg:px-8">
+
         {/* Sidebar */}
         <RegistrationAuthSidebar currentStep={3} />
 
-      <div className="mx-auto max-w-4xl">
+        <div className="mx-auto max-w-4xl w-full">
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold text-gray-900">
+              Company Documents
+            </h1>
 
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 bg">
-            Company Documents
-          </h1>
+            <p className="mt-1 text-sm text-gray-500">
+              Upload the required company documents
+            </p>
+          </div>
 
-          <p className="mt-1 text-sm text-gray-500">
-            Upload the required company documents
-          </p>
-        </div>
+          <form
+            onSubmit={handleSubmit}
+            className="rounded-xl bg-white p-8 shadow-sm"
+          >
+            <div className="space-y-6">
 
-        <form
-          onSubmit={handleSubmit}
-          className="rounded-xl bg-white p-8 shadow-sm"
-        >
+              {/* Registration Certificate */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  Registration Certificate
+                </label>
 
-          <div className="space-y-6">
+                <input
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  disabled={
+                    uploading.registrationCertificate
+                  }
+                  onChange={(e) =>
+                    handleFileChange(
+                      "registrationCertificate",
+                      e.target.files?.[0] ?? null
+                    )
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5"
+                />
 
-            {/* Registration Certificate */}
+                {documents.registrationCertificate && (
+                  <p className="mt-2 text-sm text-gray-500">
+                    {documents.registrationCertificate.name}
+                  </p>
+                )}
 
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Registration Certificate
-              </label>
+                {uploading.registrationCertificate && (
+                  <p className="mt-2 text-sm text-blue-600">
+                    Uploading...
+                  </p>
+                )}
 
-              <input
-                type="file"
-                accept=".pdf,.jpg,.jpeg,.png"
-                onChange={(e) =>
-                  handleFileChange(
-                    "registrationCertificate",
-                    e.target.files?.[0] ?? null
-                  )
-                }
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5"
-              />
-
-              {documents.registrationCertificate && (
-                <p className="mt-2 text-sm text-gray-500">
-                  {documents.registrationCertificate.name}
-                </p>
-              )}
-              {errors.registrationCertificate && (
+                {uploaded.registrationCertificate &&
+                  !uploading.registrationCertificate && (
+                    <p className="mt-2 text-sm font-medium text-green-600">
+                      Uploaded successfully
+                    </p>
+                  )}
+                  {errors.registrationCertificate && (
   <p className="mt-1 text-sm text-red-500">
     {errors.registrationCertificate}
   </p>
 )}
-              
-            </div>
+              </div>
 
-            {/* Tax Document */}
+              {/* Tax Document */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  Tax Document
+                </label>
 
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Tax Document
-              </label>
+                <input
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  disabled={
+                    uploading.taxDocument
+                  }
+                  onChange={(e) =>
+                    handleFileChange(
+                      "taxDocument",
+                      e.target.files?.[0] ?? null
+                    )
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5"
+                />
 
-              <input
-                type="file"
-                accept=".pdf,.jpg,.jpeg,.png"
-                onChange={(e) =>
-                  handleFileChange(
-                    "taxDocument",
-                    e.target.files?.[0] ?? null
-                  )
-                }
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5"
-              />
+                {documents.taxDocument && (
+                  <p className="mt-2 text-sm text-gray-500">
+                    {documents.taxDocument.name}
+                  </p>
+                )}
 
-              {documents.taxDocument && (
-                <p className="mt-2 text-sm text-gray-500">
-                  {documents.taxDocument.name}
-                </p>
-              )}
-              {errors.taxDocument && (
+                {uploading.taxDocument && (
+                  <p className="mt-2 text-sm text-blue-600">
+                    Uploading...
+                  </p>
+                )}
+
+                {uploaded.taxDocument &&
+                  !uploading.taxDocument && (
+                    <p className="mt-2 text-sm font-medium text-green-600">
+                      Uploaded successfully
+                    </p>
+                  )}
+                  {errors.taxDocument && (
   <p className="mt-1 text-sm text-red-500">
     {errors.taxDocument}
   </p>
 )}
-            </div>
+              </div>
 
-            {/* Business License */}
+              {/* Business License */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  Business License
+                </label>
 
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Business License
-              </label>
+                <input
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  disabled={
+                    uploading.businessLicense
+                  }
+                  onChange={(e) =>
+                    handleFileChange(
+                      "businessLicense",
+                      e.target.files?.[0] ?? null
+                    )
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5"
+                />
 
-              <input
-                type="file"
-                accept=".pdf,.jpg,.jpeg,.png"
-                onChange={(e) =>
-                  handleFileChange(
-                    "businessLicense",
-                    e.target.files?.[0] ?? null
-                  )
-                }
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5"
-              />
-              {errors.businessLicense && (
+                {documents.businessLicense && (
+                  <p className="mt-2 text-sm text-gray-500">
+                    {documents.businessLicense.name}
+                  </p>
+                )}
+
+                {uploading.businessLicense && (
+                  <p className="mt-2 text-sm text-blue-600">
+                    Uploading...
+                  </p>
+                )}
+
+                {uploaded.businessLicense &&
+                  !uploading.businessLicense && (
+                    <p className="mt-2 text-sm font-medium text-green-600">
+                      Uploaded successfully
+                    </p>
+                  )}
+                                  {errors.businessLicense && (
   <p className="mt-1 text-sm text-red-500">
     {errors.businessLicense}
   </p>
 )}
-
-              {documents.businessLicense && (
-                <p className="mt-2 text-sm text-gray-500">
-                  {documents.businessLicense.name}
-                </p>
-              )}
+              </div>
             </div>
 
-          </div>
+            {/* Buttons */}
+            <div className="mt-8 flex justify-between border-t pt-6">
 
-          {/* Buttons */}
+              <button
+                type="button"
+                onClick={() =>
+                  window.history.back()
+                }
+                className="rounded-lg border border-gray-300 px-6 py-2.5 font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Back
+              </button>
 
-          <div className="mt-8 flex justify-between border-t pt-6">
-
-            <button
-              type="button"
-              onClick={() =>
-                window.history.back()
-              }
-              className="rounded-lg border border-gray-300 px-6 py-2.5 font-medium text-gray-700 hover:bg-gray-50"
-            >
-              Back
-            </button>
-
-            <button
-              type="submit"
-              className="rounded-lg bg-blue-600 px-7 py-2.5 font-medium text-white hover:bg-blue-700"
-            >
-              Submit Registration
-            </button>
-
-          </div>
-
-        </form>
-      </div>
+              <button
+                type="submit"
+                disabled={
+                  uploading.registrationCertificate ||
+                  uploading.taxDocument ||
+                  uploading.businessLicense ||
+                  !(
+                    uploaded.registrationCertificate &&
+                    uploaded.taxDocument &&
+                    uploaded.businessLicense
+                  )
+                }
+                className="rounded-lg bg-blue-600 px-7 py-2.5 font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Submit Registration
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

@@ -100,18 +100,21 @@ data:object
     return result
 }
 
-export const updateDocumentRequest = async (
+export const uploadCompanyDocument = async (
   id: string,
-  document: object
+  file: File,
+  documentType: string
 ) => {
+  const formData = new FormData();
+
+  formData.append("document", file);
+  formData.append("documentType", documentType);
+
   const res = await fetch(
     `${API_URL}/company-requests/${id}/documents`,
     {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(document),
+      body: formData,
     }
   );
 
@@ -119,7 +122,7 @@ export const updateDocumentRequest = async (
 
   if (!res.ok) {
     throw new Error(
-      result.message || "Failed to update Documents"
+      result.message || "Failed to upload document"
     );
   }
 
@@ -166,7 +169,29 @@ export const getEmployRange=async()=>{
   return result
 }
 
+export const submitCompanyDocuments = async (
+  companyRequestId: string
+) => {
+  const res = await fetch(
+    `${API_URL}/company-requests/${companyRequestId}/documents/submit`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
+  const result = await res.json();
+
+  if (!res.ok) {
+    throw new Error(
+      result.message || "Failed to submit company documents"
+    );
+  }
+
+  return result;
+};
 
 export const submitCompanyRegistration = async (
   accountId: string
