@@ -1,6 +1,9 @@
-import type { CreatePasswordRequest, CreatePasswordResponse,
-   SendOtpRequest, VerifyOtpRequest, VerifyOtpResponse ,AdminRegistrationResponse,} from "../types/auth.types";
-   import type { AdminRegistrationData } from "../schemas/adminRegistrationSchema";
+import type {
+  AdminRegistrationResponse,
+  CreatePasswordRequest, CreatePasswordResponse,
+  SendOtpRequest, VerifyOtpRequest, VerifyOtpResponse,
+} from "../types/auth.types";
+import type { AdminRegistrationData } from "../validators/adminRegistrationSchema";
 const API_URL= import.meta.env.VITE_API_BASE_URL; 
 
 export const sendVerificationOtp = async (
@@ -104,3 +107,23 @@ export const registerAdmin = async (
 
   return result;
 };
+
+export const login=async(email:string,password:string)=>{
+  const response=await fetch(`${API_URL}/auth/login`,{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      email,password
+    })
+  })
+
+  const data=await response.json()
+
+  if(!response.ok)
+  {
+ throw new Error(data.message || "Login failed");
+  }
+  return data;
+}

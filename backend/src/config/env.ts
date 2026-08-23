@@ -8,5 +8,7 @@ export const env = {
    emailUser:process.env.EMAIL_USER,
    emailPswd:process.env.EMAIL_PASSWORD,
    awsregion:process.env.AWS_REGION,
-   awsBucketName:process.env.AWS_S3_BUCKET_NAME
+   awsBucketName:process.env.AWS_S3_BUCKET_NAME,
+  jwtAccessToken: process.env.JWT_ACCESS_SECRET!,
+  jwtRefreshToken :process.env.JWT_REFRESH_SECRET!,
 };

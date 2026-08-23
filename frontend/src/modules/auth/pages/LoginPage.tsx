@@ -1,9 +1,12 @@
 
-import { useState } from "react";
 import { Eye, EyeOff, Ticket } from "lucide-react";
+import { useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { login } from "../services/authService";
+import { loginSchema } from "../validators/loginSchema";
 
-const Login = () => {
+const LoginPage = () => {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -12,6 +15,10 @@ const Login = () => {
     email: "",
     password: "",
   });
+
+  const [error,setErrors]=useState<{email?:string;
+    password?:string;}>({})
+  
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -24,10 +31,46 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({})
+      const result = loginSchema.safeParse(formData);
 
+  if (!result.success) {
+    const newErrors: {
+      email?: string;
+      password?: string;
+    } = {};
+
+ result.error.issues.forEach((issue) => {
+      const field = issue.path[0];
+
+      if (field === "email" || field === "password") {
+        newErrors[field] = issue.message;
+      }
+    });
+
+    setErrors(newErrors);
+    return;
+  }
+    try {
+
+      
     console.log("Login data:", formData);
+      const response= await login(formData.email,formData.password)
+
+      console.log("LoginResponse",response)
+navigate("/dashboard")
+    } catch (error) {
+       console.error("Login error:", error);
+
+       if(error instanceof Error)
+       {
+toast.error(error.message)
+       }
+       
+    }
+
 
     // Backend login API will be connected here later.
   };
@@ -94,9 +137,14 @@ const Login = () => {
                   onChange={handleChange}
                   placeholder="Enter your email"
                   autoComplete="email"
-                  required
+                  
                   className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#5420a8] focus:ring-2 focus:ring-[#5420a8]/10"
                 />
+                {error.email && (
+  <p className="text-red-500 text-sm mt-1">
+    {error.email}
+  </p>
+)}
               </div>
 
               {/* Password */}
@@ -125,9 +173,14 @@ const Login = () => {
                     onChange={handleChange}
                     placeholder="Enter your password"
                     autoComplete="current-password"
-                    required
+                    
                     className="w-full rounded-lg border border-slate-300 px-4 py-3 pr-12 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#5420a8] focus:ring-2 focus:ring-[#5420a8]/10"
                   />
+                  {error.password && (
+  <p className="text-red-500 text-sm mt-1">
+    {error.password}
+  </p>
+)}
 
                   {/* Show / Hide Password */}
                   <button
@@ -205,5 +258,5 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginPage;
 

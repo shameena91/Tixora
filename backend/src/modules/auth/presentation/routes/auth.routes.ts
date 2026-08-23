@@ -2,6 +2,8 @@ import { Router } from "express";
 import { authController } from "../../container/container";
 
 import {adminRegistrationSchema} from "../../application/validators/AdminRegistrationValidator"
+// import { AuthMiddleware } from "../middlewares/AuthMiddleware";
+import { authMiddleware } from "../../container/container";
 const router = Router();
 
 router.post("/send-otp", async (req, res) => {
@@ -95,4 +97,63 @@ router.post("/admin-register",async(req,res)=>{
   }
 })
 
+router.post("/login",async(req,res)=>{
+  try {
+    const result=await authController.loginRequest(req.body)
+       return res.status(200).json({
+      success: true,
+      data: result,
+    });
+    
+  } catch (error) {
+     return res.status(401).json({
+      success: false,
+      message: error instanceof Error
+        ? error.message
+        : "Login failed",
+    });
+  }
+})
+
+router.get(
+  "/protected-test",
+  authMiddleware.authenticate.bind(authMiddleware),
+  (req, res) => {
+    return res.status(200).json({
+      success: true,
+      message: "Authenticated successfully",
+      account: req.user,
+    });
+  }
+);
+
+
+router.post("/refresh", async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(401).json({
+        success: false,
+        message: "Refresh token is required",
+      });
+    }
+
+    const accessToken =
+      await authController.refreshAccessTokenRequest(refreshToken);
+
+    return res.status(200).json({
+      success: true,
+      accessToken,
+    });
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Invalid refresh token",
+    });
+  }
+});
 export default router;
