@@ -1,11 +1,15 @@
-export interface SendOtpRequest {
-  email: string;
-}
+import type { AxiosRequestConfig } from "axios";
 
-export interface VerifyOtpRequest{
-    email:string,
-    otp:string
-}
+export type SendOtpRequest = {
+  email: string;
+  purpose?: string;
+};
+
+export type VerifyOtpRequest = {
+  email: string;
+  otp: string;
+  purpose?: string;
+};
 export interface VerifyOtpResponse {
   success: boolean;
   message: string;
@@ -29,7 +33,18 @@ export interface AdminRegistrationResponse {
   };
 }
 
-export interface AuthContextType{
-  accessToken:string|null,
-  setAccessToken: (token: string | null) => void
+import { createContext} from "react";
+import type { AuthContextType } from "../types/auth.types";
+
+export const AuthContext=createContext<AuthContextType| null>(null)
+
+
+
+
+export interface ProtectedRouteProps{
+  children:React.ReactNode
+}
+
+export interface RetryAxiosRequestConfig extends AxiosRequestConfig {
+  _retry?: boolean;
 }

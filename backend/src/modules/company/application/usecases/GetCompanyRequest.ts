@@ -1,6 +1,11 @@
+import { HttpStatusCode } from "../../../../shared/constants/httpStattusCode";
+import { MESSAGES } from "../../../../shared/constants/messages";
+import { AppErrors } from "../../../../shared/errors/AppErrors";
+import { ErrorCode } from "../../../../shared/errors/ErrorCode";
 import { ICompanyRequestRepository } from "../../domain/repositories/ICompanyRequestRepository";
-
-export class GetCompanyRequest {
+import { IGetCompanyRequest } from "../abstraction/IGetCompanyRequest";
+// Review before final submission
+export class GetCompanyRequest implements IGetCompanyRequest{
   constructor(
     private readonly companyRequestRepository: ICompanyRequestRepository
   ) {}
@@ -10,8 +15,12 @@ export class GetCompanyRequest {
       await this.companyRequestRepository.findById(id);
 
     if (!companyRequest) {
-      throw new Error("Company request not found");
-    }
+  throw new AppErrors(
+    MESSAGES.COMPANY_REQUEST_NOT_FOUND,
+      ErrorCode.COMPANY_REQUEST_NOT_FOUND
+
+  );
+}
 
     return companyRequest;
   }

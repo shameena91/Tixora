@@ -1,7 +1,11 @@
 import { ICompanyRequestRepository } from "../../domain/repositories/ICompanyRequestRepository";
 import { CompanyRequest } from "../../domain/entities/CompanyRequest";
-
-export class ApproveCompanyRequest {
+import { MESSAGES } from "../../../../shared/constants/messages";
+import { AppErrors } from "../../../../shared/errors/AppErrors";
+import { ErrorCode } from "../../../../shared/errors/ErrorCode";
+import { IApproveCompanyRequest } from "../abstraction/IApproveCompanyrequest";
+// Change status to approve
+export class ApproveCompanyRequest implements IApproveCompanyRequest {
   constructor(
     private readonly companyRequestRepository: ICompanyRequestRepository
   ) {}
@@ -11,7 +15,10 @@ export class ApproveCompanyRequest {
       await this.companyRequestRepository.findById(id);
 
     if (!companyRequest) {
-      throw new Error("Company request not found");
+      throw new AppErrors( MESSAGES.COMPANY_REQUEST_NOT_FOUND, 
+        ErrorCode.COMPANY_REQUEST_NOT_FOUND
+
+  );
     }
 
     companyRequest.approve();

@@ -8,6 +8,13 @@ export class S3FileStorage implements IFileStoragePort {
   private readonly s3Client: S3Client;
 
   constructor() {
+
+
+  //   console.log("AWS KEY:", process.env.AWS_ACCESS_KEY_ID);
+  // console.log(
+  //   "AWS SECRET EXISTS:",
+  //   !!process.env.AWS_SECRET_ACCESS_KEY
+  // );
     this.s3Client = new S3Client({
       region: env.awsregion,
     });
@@ -25,6 +32,7 @@ export class S3FileStorage implements IFileStoragePort {
     const uniqueFileName = `${Date.now()}-${fileName}`;
 
     const key = `${path}/${uniqueFileName}`;
+    
 console.log("Bucket name",env.awsBucketName,)
     const command = new PutObjectCommand({
       Bucket:env.awsBucketName,

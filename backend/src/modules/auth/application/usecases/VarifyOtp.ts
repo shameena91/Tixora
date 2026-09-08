@@ -1,13 +1,12 @@
-import { OtpStore } from "../ports/OtpStore";
+import { IVarifyOtp } from "../abstractions/IVarifyOtp";
 import { VerifyOtpDto } from "../dto/VarifyOtpDto";
+import { IOtpStore } from "../ports/IOtpStore";
 
-export class VarifyOtp {
-  constructor(
-    private readonly otpStore: OtpStore
-  ) {}
+export class VarifyOtp implements IVarifyOtp{
+  constructor(private readonly otpStore: IOtpStore) {}
 
   async execute(dto: VerifyOtpDto): Promise<boolean> {
-    const storedOtp = await this.otpStore.get(dto.email);
+    const storedOtp = await this.otpStore.get(dto.email, dto.purpose);
 
     if (!storedOtp) {
       return false;
@@ -17,7 +16,7 @@ export class VarifyOtp {
       return false;
     }
 
-    await this.otpStore.delete(dto.email);
+    await this.otpStore.delete(dto.email, dto.purpose);
 
     return true;
   }

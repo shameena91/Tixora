@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { CompanyDocumentType } from "../../../domain/Value-objects/CompanyDocuments";
+import { CompanyDocumentType } from "../../../domain/value-objects/CompanyDocuments";
 
 export const companyDocumentSchema = new Schema(
   {

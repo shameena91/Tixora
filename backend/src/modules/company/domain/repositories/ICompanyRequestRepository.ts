@@ -1,16 +1,14 @@
 
 
-import { CompanyRequest, CompanyRequestStatus } from "../entities/CompanyRequest"
+import { IBaseRepository } from "../../../../shared/repository/IBaseRepository";
+import { CompanyRequest, CompanyRequestStatus } from "../entities/CompanyRequest";
 import { UpdateCompanyRequestData } from "../types/UpdateCompanyRequesstData";
-import { CompanyDocument } from "../Value-objects/CompanyDocuments";
-import { CompanyLocation } from "../Value-objects/CompanyLocation";
+import { CompanyDocument } from "../value-objects/CompanyDocuments";
+import { CompanyLocation } from "../value-objects/CompanyLocation";
 // import { UpdateCompanyRequestDto } from "../../application/Validators/updatecompanyrequestSchema";
 
- export interface ICompanyRequestRepository{
-create(companyRequest:CompanyRequest):Promise<CompanyRequest>
-
+ export interface ICompanyRequestRepository extends IBaseRepository<CompanyRequest>{
 findByAccountId(accountId:string):Promise<CompanyRequest|null>
-findById(id:string):Promise<CompanyRequest|null>
   updateInfo(
     id: string,
     data: UpdateCompanyRequestData

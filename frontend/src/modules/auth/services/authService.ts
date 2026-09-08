@@ -27,11 +27,15 @@ body:JSON.stringify(data)
      return result;
 };
 
+
+
+
+
 export const verifyOtp = async (
   data: VerifyOtpRequest
 ): Promise<VerifyOtpResponse> => {
   const response = await fetch(
-    `${API_URL}/auth/varify-otp`,
+    `${API_URL}/auth/verify-otp`,
     {
       method: "POST",
       headers: {
@@ -44,12 +48,13 @@ export const verifyOtp = async (
   const result = await response.json();
 
   if (!response.ok) {
-    throw new Error(result.message || "OTP verification failed");
+    throw new Error(
+      result.message || "OTP verification failed"
+    );
   }
 
   return result;
 };
-
 export const createPassword=async(
   data:CreatePasswordRequest):Promise<CreatePasswordResponse>=>{
    const response=await fetch(`${API_URL}/auth/create-password`,{
@@ -67,6 +72,33 @@ export const createPassword=async(
   }
     return result;
 }
+
+
+export const sendForgotPasswordOtp = async (
+  data: SendOtpRequest
+) => {
+  const response = await fetch(
+    `${API_URL}/auth/forgot-password`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      result.message || "Failed to send reset OTP"
+    );
+  }
+
+  return result;
+};
+
 
 
 export const registerAdmin = async (
@@ -114,6 +146,7 @@ export const login=async(email:string,password:string)=>{
     headers:{
       "Content-Type":"application/json"
     },
+    credentials:"include",
     body:JSON.stringify({
       email,password
     })
@@ -127,3 +160,60 @@ export const login=async(email:string,password:string)=>{
   }
   return data;
 }
+
+export const logout=async()=>
+{
+  const response=await fetch(`${API_URL}/auth/logout`,{
+
+   method:"POST",
+    credentials:"include",
+   
+  })
+
+  const data=await response.json()
+
+  if (!response.ok) {
+    throw new Error(data.message || "Logout failed");
+  }
+
+  return data;
+}
+export const refreshAccessToken = async () => {
+  const response = await fetch(`${API_URL}/auth/refresh`, {
+    method: "POST",
+    credentials: "include",
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to refresh access token");
+  }
+
+  return data;
+};
+
+export const resetPassword = async (
+  data: CreatePasswordRequest
+): Promise<CreatePasswordResponse> => {
+  const response = await fetch(
+    `${API_URL}/auth/reset-password`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      result.message || "Failed to reset password"
+    );
+  }
+
+  return result;
+};

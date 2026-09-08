@@ -96,24 +96,21 @@ async updateRegistrationStep(
   );
 }
 
-  // async update(account:Account):Promise<Account>{
-  //   const accountDocument=await AccountModel.findByIdAndUpdate(account.id,{
-  //     email: account.email,
-  //       firstName: account.firstName,
-  //     lastName: account.lastName,
-  //     phone: account.phone,
-  //     designation: account.designation,
-  //         passwordHash: account.passwordHash,
-  //         status: account.status,
-  //         emailVerified: account.emailVerified,
-  //         registrationStep: account.registrationStep,
-  //         updatedAt: account.updatedAt,  
-  //   },{new:true}).lean<AccountDocument>()
-  //   if(!accountDocument){
-  //       throw new Error("Account not found")
-  //   }
-  //  return this.toDomain(accountDocument);;
-  // }
+async updatePassword(
+  id: string,
+  passwordHash: string
+): Promise<void> {
+  await AccountModel.findByIdAndUpdate(
+    id,
+    {
+      passwordHash,
+    },
+    {
+      new: false,
+    }
+  );
+}
+  
    private toDomain(doc: AccountDocument): Account {
     return new Account(
       doc._id.toString(),
@@ -132,4 +129,10 @@ async updateRegistrationStep(
   }
 
 }
+
+
+
+
+
+
 

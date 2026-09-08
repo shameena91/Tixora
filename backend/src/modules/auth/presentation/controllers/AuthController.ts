@@ -1,42 +1,266 @@
-import { SendOtp } from "../../application/usecases/SendOtp";
-import { VarifyOtp } from "../../application/usecases/VarifyOtp"
-import { VerifyOtpDto } from "../../application/dto/VarifyOtpDto";
-import { CreatePassword } from "../../application/usecases/CreatePassword";
-import { CreatePasswordRequestDto } from "../../application/dto/CreatePasswordDto";
-import { AdminRegistration } from "../../application/usecases/AdminRegistration";
-import { AdminRegistrationRequestDto } from "../../application/validators/AdminRegistrationValidator";
-import { LoginRequestDto } from "../../application/dto/LoginRequestDto";
-import { Login } from "../../application/usecases/Login";
-import { RefreshAccessToken } from "../../application/usecases/RefreshAccessToken";
+import { NextFunction, Request, Response } from "express";
+
+import { env } from "../../../../config/env";
+import { HttpStatusCode } from "../../../../shared/constants/httpStattusCode";
+
+import { ILogin } from "../../application/abstractions/ILogin";
+import { ISendRegistrationOtp } from "../../application/abstractions/ISendRegistrationOtp";
+import { IVarifyOtp } from "../../application/abstractions/IVarifyOtp";
+import { ICreatePassword } from "../../application/abstractions/ICreatepassword";
+import { IResetPassword } from "../../application/abstractions/IResetPassword";
+import { IForgotPassword } from "../../application/abstractions/IforgotPassword";
+import { IRefreshAccessToken } from "../../application/abstractions/IRefreshAccessToken";
+import { IAdminRegistration } from "../../application/abstractions/IAdminRegistration";
+
+import { adminRegistrationSchema } from "../../application/validators/AdminRegistrationValidator";
+import { sendError, sendSuccess } from "../../../../presentation/response/ResponseHelper";
+import { ILogout } from "../../application/abstractions/ILogout";
+
 
 export class AuthController {
   constructor(
-    private readonly sendOtp: SendOtp,
-    private readonly verifyOtp: VarifyOtp,
-    private readonly createPassword:CreatePassword,
-    private readonly adminRegistration:AdminRegistration,
-    private readonly login:Login,
-    private readonly refreshAcessToken:RefreshAccessToken
+    private readonly login: ILogin,
+    private readonly sendOtp: ISendRegistrationOtp,
+    private readonly verifyOtp: IVarifyOtp,
+    private readonly createPassword: ICreatePassword,
+    private readonly forgotPassword: IForgotPassword,
+    private readonly resetPassword: IResetPassword,
+    private readonly refreshAccessToken: IRefreshAccessToken,
+    private readonly adminRegistration: IAdminRegistration,
+    private readonly logout: ILogout
   ) {}
 
-  async sendOtpRequest(email: string): Promise<void> {
+  // Login
+  async loginRequest(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const result = await this.login.execute(req.body);
+
+      res.cookie("refreshToken", result.refreshToken, {
+        httpOnly: true,
+        secure: env.nodeEnv === "production",
+        sameSite: "lax",
+        maxAge: env.maxAge
+      });
+      const userName=`${result.account.firstName} ${result.account.lastName}`
+console.log("mannn:",result.account.firstName)
+      return sendSuccess(
+        res,
+        "Login successful",
+        {
+      name: userName,
+          accessToken: result.accessToken,
+        },
+        HttpStatusCode.OK
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Send OTP
+  async sendOtpRequest(
+    req: Request,
+    res: Response
+  ) {
+    const { email } = req.body;
+
     await this.sendOtp.execute(email);
+
+    return sendSuccess(
+      res,
+      "OTP sent successfully",
+      undefined,
+      HttpStatusCode.OK
+    );
   }
 
-  async verifyOtpRequest(dto: VerifyOtpDto): Promise<boolean> {
-    return await this.verifyOtp.execute(dto);
+  // Verify OTP
+  async verifyOtpRequest(
+    req: Request,
+    res: Response
+  ) {
+    const { email, otp, purpose } = req.body;
+
+    const isValid = await this.verifyOtp.execute({
+      email,
+      otp,
+      purpose,
+    });
+
+    if (!isValid) {
+      return sendError(
+        res,
+        "Invalid or expired OTP",
+        HttpStatusCode.BAD_REQUEST
+      );
+    }
+
+    return sendSuccess(
+      res,
+      "OTP verified successfully",
+      undefined,
+      HttpStatusCode.OK
+    );
   }
 
-  async createPasswordRequest(dto:CreatePasswordRequestDto):Promise<void> {
-return await this.createPassword.execute(dto)
+  // Create Password
+  async createPasswordRequest(
+    req: Request,
+    res: Response
+  ) {
+    await this.createPassword.execute({
+      email: req.body.email,
+      password: req.body.password,
+      confirmPassword: req.body.confirmPassword,
+    });
+
+    return sendSuccess(
+      res,
+      "Password created successfully",
+      undefined,
+      HttpStatusCode.OK
+    );
   }
-  async adminRegistrationRequest(dto:AdminRegistrationRequestDto){
-    return await this.adminRegistration.execute(dto)
+
+  // Forgot Password
+  async forgotPasswordRequest(
+    req: Request,
+    res: Response
+  ) {
+    await this.forgotPassword.execute(
+      req.body.email
+    );
+
+    return sendSuccess(
+      res,
+      "OTP sent successfully",
+      undefined,
+      HttpStatusCode.OK
+    );
   }
-  async loginRequest(dto:LoginRequestDto){
-    return await this.login.execute(dto)
+
+  // Verify Reset OTP
+  async verifyResetOtpRequest(
+    req: Request,
+    res: Response
+  ) {
+    const isValid = await this.verifyOtp.execute({
+      email: req.body.email,
+      otp: req.body.otp,
+      purpose: "forgot-password",
+    });
+
+    if (!isValid) {
+      return sendError(
+        res,
+        "Invalid or expired OTP",
+        HttpStatusCode.BAD_REQUEST
+      );
+    }
+
+    return sendSuccess(
+      res,
+      "Password reset OTP verified successfully",
+      undefined,
+      HttpStatusCode.OK
+    );
   }
-  async refreshAccessTokenRequest(refreshTocken:string){
-return await this.refreshAcessToken.execute(refreshTocken)
+
+  // Reset Password
+  async resetPasswordRequest(
+    req: Request,
+    res: Response
+  ) {
+    await this.resetPassword.execute(
+      req.body.email,
+      req.body.password,
+      req.body.confirmPassword
+    );
+
+    return sendSuccess(
+      res,
+      "Password reset successfully",
+      undefined,
+      HttpStatusCode.OK
+    );
   }
+
+  // Refresh Access Token
+  async refreshAccessTokenRequest(
+    req: Request,
+    res: Response
+  ) {
+    const { refreshToken } = req.cookies;
+
+    if (!refreshToken) {
+      return sendError(
+        res,
+        "Refresh token is required",
+        HttpStatusCode.UNAUTHORIZED
+      );
+    }
+
+    const accessToken =
+      await this.refreshAccessToken.execute(
+        refreshToken
+      );
+
+    return sendSuccess(
+      res,
+      "Access token refreshed successfully",
+      {
+        accessToken,
+      },
+      HttpStatusCode.OK
+    );
+  }
+
+  // Admin Registration
+  async adminRegistrationRequest(
+    req: Request,
+    res: Response
+  ) {
+    const validatedData =
+      adminRegistrationSchema.parse(req.body);
+
+    const result =
+      await this.adminRegistration.execute(
+        validatedData
+      );
+
+    return sendSuccess(
+      res,
+      "Admin registered successfully",
+      result,
+      HttpStatusCode.CREATED
+    );
+  }
+// Logout
+  async logoutRequest(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  
+    await this.logout.execute();
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: env.nodeEnv === "production",
+      sameSite: "lax",
+    });
+
+
+    return sendSuccess(res,"Logged out successfully",HttpStatusCode.OK)
+   
+ 
 }
+}
+
+
+
+

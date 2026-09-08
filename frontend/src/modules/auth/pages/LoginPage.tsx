@@ -1,10 +1,13 @@
 
 import { Eye, EyeOff, Ticket } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/authService";
 import { loginSchema } from "../validators/loginSchema";
+import { AuthContext } from "../context/AuthContext";
+import { storeAccessToken } from "../api/tokenStorage";
+
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -18,7 +21,13 @@ const LoginPage = () => {
 
   const [error,setErrors]=useState<{email?:string;
     password?:string;}>({})
-  
+
+  const auth = useContext(AuthContext);
+
+
+if (!auth) {
+  throw new Error("AuthContext must be used inside AuthProvider");
+}
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -60,7 +69,18 @@ const LoginPage = () => {
       const response= await login(formData.email,formData.password)
 
       console.log("LoginResponse",response)
-navigate("/dashboard")
+       console.log("LoginResponse",response.data.name)
+
+
+auth.setAccessToken(response.data.accessToken)
+storeAccessToken(response.data.accessToken);
+auth.setUserName(response.data.name)
+localStorage.setItem("userName",response.data.name)
+
+navigate("/dashboard"
+
+ 
+)
     } catch (error) {
        console.error("Login error:", error);
 

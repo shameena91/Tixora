@@ -5,12 +5,12 @@ import { connectRedis } from "./modules/auth/infrastructure/database/redis/redis
 
 const startServer = async (): Promise<void> => {
   await connectDatabase();
-    await connectRedis();
-     console.log("Redis  connected");
+  await connectRedis();
+  console.log("Redis  connected");
 
 
 app.listen(env.port, () => {
-  console.log(`Tixor server running on port ${env.port}`);
+  console.log(`Tixora server running on port ${env.port}`);
 });
 }
 startServer()

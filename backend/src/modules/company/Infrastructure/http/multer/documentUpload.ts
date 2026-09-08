@@ -23,6 +23,3 @@ export const documentUpload = multer({
     }
   },
 });
-
-// നമ്മൾ ഇപ്പോൾ file memory-ൽ temporarily receive ചെയ്യാൻ configure ചെയ്യും.
-//  S3-ലേക്ക് ഇപ്പോൾ save ചെയ്യില്ല.

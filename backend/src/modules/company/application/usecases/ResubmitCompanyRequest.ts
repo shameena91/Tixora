@@ -1,7 +1,12 @@
+import { HttpStatusCode } from "../../../../shared/constants/httpStattusCode";
+import { MESSAGES } from "../../../../shared/constants/messages";
+import { AppErrors } from "../../../../shared/errors/AppErrors";
+import { ErrorCode } from "../../../../shared/errors/ErrorCode";
 import { CompanyRequest } from "../../domain/entities/CompanyRequest";
 import { ICompanyRequestRepository } from "../../domain/repositories/ICompanyRequestRepository";
-
-export class ResubmitCompanyRequest {
+import { IResubmitCompanyRequest } from "../abstraction/IResubmitCompanyRequest";
+// status changes to resubmit
+export class ResubmitCompanyRequest implements IResubmitCompanyRequest{
   constructor(
     private readonly companyRequestRepository: ICompanyRequestRepository
   ) {}
@@ -11,7 +16,11 @@ export class ResubmitCompanyRequest {
       await this.companyRequestRepository.findById(id);
 
     if (!companyRequest) {
-      throw new Error("Company request not found");
+      throw new AppErrors(
+  MESSAGES.COMPANY_REQUEST_NOT_FOUND,
+    ErrorCode.COMPANY_REQUEST_NOT_FOUND
+
+);
     }
 
 companyRequest.resubmit();

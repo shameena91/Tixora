@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { CompanyDocumentType } from "../../domain/Value-objects/CompanyDocuments";
+import { CompanyDocumentType } from "../../domain/value-objects/CompanyDocuments";
 
 export const updateCompanyDocumentsSchema = z.object({
   documents: z

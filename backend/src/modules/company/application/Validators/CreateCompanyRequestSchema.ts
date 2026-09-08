@@ -1,9 +1,8 @@
 import { z } from "zod";
 import {
-  CompanyType,
-  EmployeeCountRange,
+    CompanyType,
+    EmployeeCountRange,
 } from "../../domain/entities/CompanyRequest";
-import { CompanyDocumentType } from "../../domain/Value-objects/CompanyDocuments";
 
 export const createCompanyRequestSchema = z.object({
   accountId: z.string(),

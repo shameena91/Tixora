@@ -1,8 +1,8 @@
 import { Types } from "mongoose";
 
 import { CompanyRequest, CompanyRequestStatus, CompanyType, EmployeeCountRange } from "../../domain/entities/CompanyRequest";
-import { CompanyDocument } from "../../domain/Value-objects/CompanyDocuments";
-import { CompanyLocation } from "../../domain/Value-objects/CompanyLocation";
+import { CompanyDocument } from "../../domain/value-objects/CompanyDocuments";
+import { CompanyLocation } from "../../domain/value-objects/CompanyLocation";
 
 
 export interface CompanyRequestDocument {
@@ -24,7 +24,10 @@ export interface CompanyRequestDocument {
   createdAt: Date;
   updatedAt: Date;
 }
-
+export type CompanyRequestCreateData = Omit<
+  CompanyRequestDocument,
+  "_id" | "createdAt" | "updatedAt"
+>;
 export class CompanyRequestMapper {
   static toDomain(doc: CompanyRequestDocument): CompanyRequest {
     return new CompanyRequest(
@@ -48,7 +51,10 @@ export class CompanyRequestMapper {
     );
   }
 
-  static toPersistence(companyRequest: CompanyRequest) {
+static toPersistence(
+  companyRequest: CompanyRequest
+): CompanyRequestCreateData {
+
   return {
     accountId: companyRequest.accountId,
     companyName: companyRequest.companyName,
@@ -64,8 +70,6 @@ export class CompanyRequestMapper {
     description: companyRequest.description,
     location: companyRequest.location,
     documents: companyRequest.documents,
-    createdAt: companyRequest.createdAt,
-    updatedAt: companyRequest.updatedAt,
   };
 }
 }

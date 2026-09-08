@@ -1,10 +1,14 @@
-import { RegistrationStep } from "../../../auth/domain/entities/Account";
+import { HttpStatusCode } from "../../../../shared/constants/httpStattusCode";
+import { MESSAGES } from "../../../../shared/constants/messages";
+import { AppErrors } from "../../../../shared/errors/AppErrors";
+import { ErrorCode } from "../../../../shared/errors/ErrorCode";
 import { ICompanyRequestRepository } from "../../domain/repositories/ICompanyRequestRepository";
 import { CompanyDocumentFile } from "../../domain/types/CompanyDocumentFile";
-import { CompanyDocument } from "../../domain/Value-objects/CompanyDocuments";
+import { CompanyDocument } from "../../domain/value-objects/CompanyDocuments";
+import { IUpdateCompanyDocuments } from "../abstraction/IUpdateCompanyDocuments";
 import { IFileStoragePort } from "../ports/IFileStoragePort";
-
-export class UpdateCompanyDocuments {
+// Adding company Documents only adding each documents not submitting at this step
+export class UpdateCompanyDocuments implements IUpdateCompanyDocuments{
   constructor(
     private readonly companyRequestRepository: ICompanyRequestRepository,
     private readonly fileStorage: IFileStoragePort,
@@ -18,7 +22,11 @@ export class UpdateCompanyDocuments {
       await this.companyRequestRepository.findById(companyRequestId);
 
     if (!companyRequest) {
-      throw new Error("Company request not found");
+        throw new AppErrors(
+    MESSAGES.COMPANY_REQUEST_NOT_FOUND,
+     ErrorCode.COMPANY_REQUEST_NOT_FOUND
+
+  );
     }
 
     const documentPath =

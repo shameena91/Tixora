@@ -12,7 +12,10 @@ import CompanyRegistrationSuccess from "./modules/company/pages/CompanyRegistrat
 import CompanyLocation from "./modules/company/pages/CompanyLocation";
 import LoginPage from "./modules/auth/pages/LoginPage";
 import ForgotPassword from "./modules/auth/pages/ForgotPassword";
-import Dashboard from "./modules/dashbord/pages/Dashbord";
+
+import ProtectedRoute from "./modules/auth/components/protectedRoute";
+import PasswordReset from "./modules/auth/pages/PasswordReset";
+import Dashbord from "./modules/dashbord/pages/Dashbord";
 
 
 const App = () => {
@@ -64,9 +67,23 @@ const App = () => {
           path="/forgot-password"
           element={<ForgotPassword/>}
         />
+           <Route
+          path="/forgot-password/verify-otp"
+          element={<OtpVerification/>}
+        />
+         <Route
+          path="/forgot-password/reset-password"
+          element={<PasswordReset/>}
+        />
+
+        /forgot-password/reset-password
           <Route
           path="/dashboard"
-          element={<Dashboard/>}
+          element={
+         <ProtectedRoute>
+      <Dashbord />
+    </ProtectedRoute>
+        }
         />
       </Routes>
     </BrowserRouter>

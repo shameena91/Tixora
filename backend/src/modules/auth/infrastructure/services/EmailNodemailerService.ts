@@ -1,7 +1,7 @@
-import nodemailer from"nodemailer"
-import { EmailService } from "../../application/ports/EmailService"
+import nodemailer from "nodemailer";
 import { env } from "../../../../config/env";
-export class EmailNodemailerService implements EmailService{
+import {  IEmailService } from "../../application/ports/IEmailService";
+export class EmailNodemailerService implements IEmailService{
 
     private transporter;
     constructor(){

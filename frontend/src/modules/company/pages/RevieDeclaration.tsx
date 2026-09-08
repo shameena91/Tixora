@@ -1,11 +1,11 @@
-import { useState,useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Navbar from "../../../components/home/navbar";
+import toast from "react-hot-toast";
+import Navbar from "../../../components/home/Navbar";
 import RegistrationAuthSidebar from "../../auth/components/RegistrationAuthSidebar";
 import { getCompanyRequest, submitCompanyRegistration } from "../Services/CompanyRequestService";
 import type { CompanyRequest } from "../types/companyTypes";
-import toast from "react-hot-toast";
 
 
 const ReviewDeclaration = () => {

@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import type {  CompanyLocationData, LocationData } from "../types/companyTypes";
-import Navbar from "../../../components/home/navbar";
-import RegistrationAuthSidebar from "../../auth/components/RegistrationAuthSidebar";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import Navbar from "../../../components/home/Navbar";
+import RegistrationAuthSidebar from "../../auth/components/RegistrationAuthSidebar";
 import { updateCompanyLocation } from "../Services/CompanyRequestService";
 import { companyLocationSchema } from "../schema/CompanyLocationSchema";
+import type { CompanyLocationData, LocationData } from "../types/companyTypes";
 
 
 

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Navbar from "../../../components/home/navbar";
-import RegistrationAuthSidebar from "../../auth/components/RegistrationAuthSidebar";
-import type { CompanyInfo } from "../types/companyTypes";
-import { createCompanyRequest, getCompanyTypes, getEmployRange } from "../Services/CompanyRequestService";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+
+import RegistrationAuthSidebar from "../../auth/components/RegistrationAuthSidebar";
 import { companyRegistrationSchema } from "../schema/companyRegistrationSchema";
+import { createCompanyRequest, getCompanyTypes, getEmployRange } from "../Services/CompanyRequestService";
+import type { CompanyInfo } from "../types/companyTypes";
+import Navbar from "../../../components/home/Navbar";
+
 
 
 const CompanyInformation = () => {

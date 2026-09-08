@@ -1,5 +1,3 @@
-import { CompanyRequest } from "../../../company/domain/entities/CompanyRequest";
-import { CompanyLocation } from "../../../company/domain/Value-objects/CompanyLocation";
 import { Account, RegistrationStep } from "../entities/Account";
 
 export interface IAccountRepository {
@@ -16,5 +14,8 @@ export interface IAccountRepository {
     step: RegistrationStep
   ): Promise<void>;
 
-
+ updatePassword(
+    id: string,
+    passwordHash: string
+  ): Promise<void>;
 }

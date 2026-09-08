@@ -1,6 +1,9 @@
 import { env } from "../../../../config/env";
 import jwt from "jsonwebtoken";
 import { ITokenService } from "../../application/ports/ITokenServices";
+import { AppErrors } from "../../../../shared/errors/AppErrors";
+import { MESSAGES } from "../../../../shared/constants/messages";
+import { HttpStatusCode } from "../../../../shared/constants/httpStattusCode";
 export class JwtTokenService implements ITokenService {
   private readonly accessTokenSecret: string;
   private readonly refreshTokenSecret: string;
@@ -36,10 +39,25 @@ export class JwtTokenService implements ITokenService {
         email:string
       }
   }
-  verifyRefreshToken(token: string): { accountId: string; } {
-      const decoded=jwt.verify(token,this.refreshTokenSecret)
-       return decoded as {
-    accountId: string;
-  };
+  verifyRefreshToken(
+  token: string
+): { accountId: string } {
+
+  try {
+    const decoded = jwt.verify(
+      token,
+      this.refreshTokenSecret
+    );
+
+    return decoded as {
+      accountId: string;
+    };
+
+  } catch (error) {
+    throw new AppErrors(
+      MESSAGES.INVALID_REFRESH_TOKEN,
+      HttpStatusCode.UNAUTHORIZED
+    );
   }
+}
 }
