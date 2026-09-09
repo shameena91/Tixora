@@ -1,10 +1,12 @@
 import { Clock3 } from "lucide-react";
 
 
-import Navbar from "../../../components/home/Navbar";
+
 
 import { AuthContext } from "../../auth/context/AuthContext"
 import { useContext } from "react";
+import Navbar from "../../../components/home/Navbar";
+
 
 
 function Dashbord() {

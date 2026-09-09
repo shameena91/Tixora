@@ -52,6 +52,7 @@ console.log("mannn:",result.account.firstName)
         "Login successful",
         {
       name: userName,
+      role:result.account.role,
           accessToken: result.accessToken,
         },
         HttpStatusCode.OK
@@ -204,16 +205,18 @@ console.log("mannn:",result.account.firstName)
       );
     }
 
-    const accessToken =
+    const result =
       await this.refreshAccessToken.execute(
         refreshToken
       );
-
+// console.log("refresh tokeeeeeeeeee,",result)
     return sendSuccess(
       res,
       "Access token refreshed successfully",
       {
-        accessToken,
+        accessToken: result.accessToken,
+    name: `${result.account.firstName} ${result.account.lastName}`,
+    role: result.account.role,
       },
       HttpStatusCode.OK
     );

@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 import EmailVerificationForm from "../components/EmailVerificationForm";
 import { sendForgotPasswordOtp } from "../services/authService";
 import AuthSidebar from "../components/AuthSidebar";
-import Navbar from "../../../components/home/navbar";
+import Navbar from "../../../components/home/Navbar";
+
 
 const ForgotPassword = () => {
   const navigate = useNavigate();

@@ -2,7 +2,10 @@ export enum AccountStatus {
   PENDING = "PENDING",
   ACTIVE = "ACTIVE",
 }
-
+export enum AccountRole {
+  SUPER_ADMIN = "SUPER_ADMIN",
+  COMPANY_ADMIN = "COMPANY_ADMIN",
+}
 export enum RegistrationStep {
   ADMIN_DETAILS = "ADMIN_DETAILS",
   COMPANY_DETAILS = "COMPANY_DETAILS",
@@ -15,13 +18,13 @@ export class Account {
   constructor(
     public readonly id: string,
     public readonly email: string,
-
     public readonly firstName: string,
     public readonly lastName: string,
     public  phone: string,
     public designation: string,
 
     public passwordHash: string | null,
+       public role: AccountRole,
     public status: AccountStatus,
     public emailVerified: boolean,
     public registrationStep: RegistrationStep,

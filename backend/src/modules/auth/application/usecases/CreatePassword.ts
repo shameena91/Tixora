@@ -2,7 +2,7 @@
 import { CreatePasswordRequestDto } from "../dto/CreatePasswordDto";
 
 import { IAccountRepository } from "../../domain/repositories/IAccountRepository";
-import {Account,AccountStatus,RegistrationStep} from "../../domain/entities/Account";
+import {AccountRole,Account,AccountStatus,RegistrationStep} from "../../domain/entities/Account";
 
 import { MESSAGES } from "../../../../shared/constants/messages";
 import { AppErrors } from "../../../../shared/errors/AppErrors";
@@ -35,6 +35,7 @@ export class CreatePassword implements ICreatePassword {
       "",
       "",
       hashedPassword,
+       AccountRole.COMPANY_ADMIN,
       AccountStatus.PENDING,
       true,
       RegistrationStep.ADMIN_DETAILS,

@@ -2,7 +2,7 @@ import { HttpStatusCode } from "../../../../shared/constants/httpStattusCode";
 import { MESSAGES } from "../../../../shared/constants/messages";
 import { AppErrors } from "../../../../shared/errors/AppErrors";
 import { IAccountRepository } from "../../domain/repositories/IAccountRepository";
-import { IRefreshAccessToken } from "../abstractions/IRefreshAccessToken";
+import { IRefreshAccessToken, RefreshAccessTokenResult } from "../abstractions/IRefreshAccessToken";
 import { ITokenService } from "../ports/ITokenServices";
 
 export class RefreshAccessToken implements IRefreshAccessToken{
@@ -11,7 +11,7 @@ export class RefreshAccessToken implements IRefreshAccessToken{
     private readonly tokenService: ITokenService,
   ) {}
 
-  async execute(refreshToken: string): Promise<string> {
+  async execute(refreshToken: string): Promise<RefreshAccessTokenResult> {
     const payload = this.tokenService.verifyRefreshToken(refreshToken);
     const account = await this.accountRepository.findById(payload.accountId);
     if (!account) {
@@ -21,6 +21,6 @@ export class RefreshAccessToken implements IRefreshAccessToken{
       accountId: account.id,
       email: account.email,
     });
-    return accessToken;
+    return {accessToken,account};
   }
 }

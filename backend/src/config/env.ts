@@ -11,5 +11,7 @@ export const env = {
    awsBucketName:process.env.AWS_S3_BUCKET_NAME,
   jwtAccessToken: process.env.JWT_ACCESS_SECRET!,
   jwtRefreshToken :process.env.JWT_REFRESH_SECRET!,
-  maxAge:Number(process.env.REFRESH_TOKEN_MAX_AGE)
+  maxAge:Number(process.env.REFRESH_TOKEN_MAX_AGE),
+  emailSuperAdmin:process.env.SUPER_ADMIN_EMAIL,
+  passwordSuperAdmin:process.env.SUPER_ADMIN_PASSWORD
 };

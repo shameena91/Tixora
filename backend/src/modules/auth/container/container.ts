@@ -33,6 +33,9 @@ import { SendRegistrationOtp } from "../application/usecases/SendRegistrationOtp
 
 import { SendForgotPasswordOtp } from "../application/usecases/SendForgotPassword";
 import { Logout } from "../application/usecases/Logout";
+import { BaseRepository } from "../../../infrastructure/repositories/Baserepository";
+import { AccountModel } from "../infrastructure/database/models/AccountModel";
+import { AccountCreateData, AccountDocument } from "../application/mappers/Accountmapper";
 
 
 
@@ -40,7 +43,13 @@ const emailService = new EmailNodemailerService();
 
 const otpStore = new RedisOtpStore();
 
-const accountRepository = new AccountRepository();
+const baseAccountRepository =
+  new BaseRepository<AccountDocument, AccountCreateData>(
+    AccountModel
+  );
+
+const accountRepository =
+  new AccountRepository(baseAccountRepository);
 
 const otpService = new OtpService(
   otpStore,

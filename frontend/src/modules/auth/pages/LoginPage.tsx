@@ -75,12 +75,23 @@ if (!auth) {
 auth.setAccessToken(response.data.accessToken)
 storeAccessToken(response.data.accessToken);
 auth.setUserName(response.data.name)
-localStorage.setItem("userName",response.data.name)
+auth.setRole(response.data.role)
+// localStorage.setItem("userName",response.data.name)
 
-navigate("/dashboard"
+
+if(response.data.role==="COMPANY_ADMIN")
+{
+navigate("/dashboard")
+}
+
+if(response.data.role==="SUPER_ADMIN")
+{
+navigate("/super-admin/dashbord")
+}
+
 
  
-)
+
     } catch (error) {
        console.error("Login error:", error);
 

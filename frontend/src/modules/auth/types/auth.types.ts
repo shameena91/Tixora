@@ -10,6 +10,8 @@ export type VerifyOtpRequest = {
   otp: string;
   purpose?: string;
 };
+
+export type UserRole = "SUPER_ADMIN" | "COMPANY_ADMIN";
 export interface VerifyOtpResponse {
   success: boolean;
   message: string;
@@ -33,12 +35,15 @@ export interface AdminRegistrationResponse {
   };
 }
 
-import { createContext} from "react";
-import type { AuthContextType } from "../types/auth.types";
-
-export const AuthContext=createContext<AuthContextType| null>(null)
-
-
+export interface AuthContextType {
+  accessToken: string | null;
+  userName: string | null;
+  isInitializing: boolean;
+  role: UserRole | null;
+  setRole: (role: UserRole | null) => void;
+  setAccessToken: (token: string | null) => void;
+  setUserName: (name: string | null) => void;
+}
 
 
 export interface ProtectedRouteProps{
@@ -48,3 +53,4 @@ export interface ProtectedRouteProps{
 export interface RetryAxiosRequestConfig extends AxiosRequestConfig {
   _retry?: boolean;
 }
+

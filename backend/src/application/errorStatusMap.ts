@@ -1,5 +1,5 @@
-import { HttpStatusCode } from "../../shared/constants/httpStattusCode";
-import { ErrorCode } from "../../shared/errors/ErrorCode";
+import { HttpStatusCode } from "../shared/constants/httpStattusCode";
+import { ErrorCode } from "../shared/errors/ErrorCode";
 
 export const errorStatusMap: Record<string, number> = {
   [ErrorCode.ACCOUNT_NOT_FOUND]: HttpStatusCode.NOT_FOUND,

@@ -1,5 +1,8 @@
 import mongoose, { Schema } from "mongoose";
-import { AccountStatus, RegistrationStep } from "../../../domain/entities/Account";
+import {  AccountRole,AccountStatus, RegistrationStep } from "../../../domain/entities/Account";
+import { AccountDocument } from "../../../application/mappers/AccountMapper";
+
+
 
 const accountSchema = new Schema(
   {
@@ -34,6 +37,11 @@ const accountSchema = new Schema(
     
       trim: true,
     },
+    role: {
+  type: String,
+  enum: Object.values(AccountRole),
+  required: true,
+},
     passwordHash: {
       type: String,
       default: null,
@@ -61,7 +69,7 @@ const accountSchema = new Schema(
   }
 );
 
-export const AccountModel = mongoose.model(
+export const AccountModel = mongoose.model<AccountDocument>(
   "Account",
   accountSchema
 );

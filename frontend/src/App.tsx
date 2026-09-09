@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import EmailVarification from "./modules/auth/pages/EmailVarification"
+import EmailVarification from "./modules/auth/pages/EmailVarification";
 import OtpVerification from "./modules/auth/pages/OtpVerification";
 import CreatePassword from "./modules/auth/pages/CreatePassword";
 import AdminRegister from "./modules/auth/pages/AdminRegister";
@@ -15,76 +15,58 @@ import ForgotPassword from "./modules/auth/pages/ForgotPassword";
 
 import ProtectedRoute from "./modules/auth/components/protectedRoute";
 import PasswordReset from "./modules/auth/pages/PasswordReset";
-import Dashbord from "./modules/dashbord/pages/Dashbord";
-
+import Dashbord from "./modules/dashbord/pages/CompanyDashbord";
+import SuperAdminDashbord from "./modules/superadmin/SuperAdminDashbord";
 
 const App = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-   <Route
-          path="/register/email"
-          element={<EmailVarification />}
-        />
-        <Route
-          path="/register/otp"
-          element={<OtpVerification />}
-        />
-         <Route
-          path="/register/create-password"
-          element={<CreatePassword />}
-        />
-        <Route
-          path="/register/admin-register"
-          element={<AdminRegister/>}
-        />
+        <Route path="/register/email" element={<EmailVarification />} />
+        <Route path="/register/otp" element={<OtpVerification />} />
+        <Route path="/register/create-password" element={<CreatePassword />} />
+        <Route path="/register/admin-register" element={<AdminRegister />} />
         <Route
           path="/register/company-register"
-          element={<CompanyInformation/>}
+          element={<CompanyInformation />}
         />
         <Route
           path="/register/company-register/location"
-          element={<CompanyLocation/>}
+          element={<CompanyLocation />}
         />
-          <Route
+        <Route
           path="/register/company-register/documents"
-          element={<CompanyDocuments/>}
+          element={<CompanyDocuments />}
         />
-          <Route
+        <Route
           path="/register/company-register/review-declaration"
-          element={<ReviewDeclaration/>}
+          element={<ReviewDeclaration />}
         />
-           <Route
+        <Route
           path="/register/company-register/success"
-          element={<CompanyRegistrationSuccess/>}
+          element={<CompanyRegistrationSuccess />}
         />
-       <Route
-          path="/login"
-          element={<LoginPage/>}
-        />
-          <Route
-          path="/forgot-password"
-          element={<ForgotPassword/>}
-        />
-           <Route
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route
           path="/forgot-password/verify-otp"
-          element={<OtpVerification/>}
+          element={<OtpVerification />}
         />
-         <Route
+        <Route
           path="/forgot-password/reset-password"
-          element={<PasswordReset/>}
+          element={<PasswordReset />}
         />
 
-        /forgot-password/reset-password
-          <Route
+        <Route
           path="/dashboard"
           element={
-         <ProtectedRoute>
-      <Dashbord />
-    </ProtectedRoute>
-        }
+            <ProtectedRoute>
+              <Dashbord />
+            </ProtectedRoute>
+          }
         />
+      <Route path="/super-admin/dashbord" element={<SuperAdminDashbord/>}/>
       </Routes>
     </BrowserRouter>
   );

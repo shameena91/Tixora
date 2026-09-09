@@ -5,7 +5,7 @@ export const sendSuccess = <T>(
   res: Response,
   message: string,
   data?: T,
-  statusCode: number = 200
+  statusCode: number = 200,
 ): Response => {
   const response: ApiResponse<T> = {
     success: true,
@@ -20,7 +20,7 @@ export const sendError = (
   res: Response,
   message: string,
   statusCode: number,
-  error?: unknown
+  error?: unknown,
 ): Response => {
   const response: ApiErrorResponse = {
     success: false,
