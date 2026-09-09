@@ -1,525 +1,301 @@
 import { Request, Response } from "express";
 
-import { ApproveCompanyRequest } from "../../application/usecases/ApproveCompanyRequest";
+
+import { AppErrors } from "../../../../shared/errors/AppErrors";
 import { CompleteCompanyRegistration } from "../../application/usecases/CompleteCompanyRegistration";
 import { CreateCompanyRequest } from "../../application/usecases/CreateCompanyRequest";
 import { GetCompanyRequest } from "../../application/usecases/GetCompanyRequest";
 import { MoreInfoCompanyrequest } from "../../application/usecases/MoreInfoCompanyRequest";
 import { RejectCompanyRequest } from "../../application/usecases/RejectCompanyRequest";
 import { ResubmitCompanyRequest } from "../../application/usecases/ResubmitCompanyRequest";
+import { SubmitCompanyDocuments } from "../../application/usecases/SubmitCompanyDocuments";
 import { UpdateCompanyDocuments } from "../../application/usecases/UpdateCompanyDocuments";
 import { UpdateCompanyLocation } from "../../application/usecases/UpdateCompanyLocation";
 import { UpdateCompanyRequest } from "../../application/usecases/UpdateCompanyRequest";
-import { updateCompanyDocumentsSchema } from "../../application/Validators/UpdateCompanyDocumentSchema";
 import { updateCompanyLocationSchema } from "../../application/Validators/UpdateCompanyLocationSchema";
 import { updateCompanyRequestSchema } from "../../application/Validators/UpdateCompanyRequestSchema";
-import { UpdateCompanyRequestData } from "../../domain/types/UpdateCompanyRequesstData";
 import { CompanyType, EmployeeCountRange } from "../../domain/entities/CompanyRequest";
-import { CompanyDocumentType } from "../../domain/Value-objects/CompanyDocuments";
 import { CompanyDocumentFile } from "../../domain/types/CompanyDocumentFile";
-import { SubmitCompanyDocuments } from "../../application/usecases/SubmitCompanyDocuments";
-import multer from "multer";
+import { UpdateCompanyRequestData } from "../../domain/types/UpdateCompanyRequesstData";
+import { CompanyDocumentType } from "../../domain/value-objects/CompanyDocuments";
+import { HttpStatusCode } from "../../../../shared/constants/httpStattusCode";
+import { ErrorCode } from "../../../../shared/errors/ErrorCode";
+import { IApproveCompanyRequest } from "../../application/abstraction/IApproveCompanyrequest";
+import { ICompleteCompanyRegistration } from "../../application/abstraction/ICompleteCompanyRegistration";
+import { ICreateCompanyRequest } from "../../application/abstraction/ICreateCompanyRequest";
+import { IRejectCompanyRequest } from "../../application/abstraction/IRejectCompanyRequest";
+import { IMoreInfoCompanyRequest } from "../../application/abstraction/IMoreInfoCompanyRequest";
+import { IGetCompanyRequest } from "../../application/abstraction/IGetCompanyRequest";
+import { IUpdateCompanyLocation } from "../../application/abstraction/IUpdateCompanyLocation";
+import { IResubmitCompanyRequest } from "../../application/abstraction/IResubmitCompanyRequest";
+import { IUpdateCompanyRequest } from "../../application/abstraction/IUpdateCompanyRequest";
+import { IUpdateCompanyDocuments } from "../../application/abstraction/IUpdateCompanyDocuments";
+import { ISubmitCompanyDocuments } from "../../application/abstraction/ISubmitCompanyDocuments";
 export class CompanyRequestController {
-  constructor(
-      private readonly createCompanyRequest: CreateCompanyRequest,
-
-    private readonly approveCompanyRequest: ApproveCompanyRequest,
-  private readonly rejectCompanyRequest: RejectCompanyRequest,
-    private readonly requestMoreInfo: MoreInfoCompanyrequest,
-  private readonly resubmitCompanyRequest: ResubmitCompanyRequest,
-  private readonly updateCompanyRequest: UpdateCompanyRequest,
-  private readonly updateCompanyLocation:UpdateCompanyLocation,
-private readonly updateCompanyDocuments: UpdateCompanyDocuments,
-private readonly getCompanyRequest: GetCompanyRequest,
-private readonly completeCompanyRegistration:CompleteCompanyRegistration,
-private readonly submitCompanyDocuments: SubmitCompanyDocuments
+constructor(
+private readonly createCompanyRequest: ICreateCompanyRequest,
+private readonly approveCompanyRequest: IApproveCompanyRequest,
+private readonly rejectCompanyRequest: IRejectCompanyRequest,
+private readonly requestMoreInfo: IMoreInfoCompanyRequest,
+private readonly resubmitCompanyRequest: IResubmitCompanyRequest,
+private readonly updateCompanyRequest: IUpdateCompanyRequest,
+private readonly updateCompanyLocation:IUpdateCompanyLocation,
+private readonly updateCompanyDocuments: IUpdateCompanyDocuments,
+private readonly getCompanyRequest: IGetCompanyRequest,
+private readonly completeCompanyRegistration:ICompleteCompanyRegistration,
+private readonly submitCompanyDocuments: ISubmitCompanyDocuments
 ) {}
 
+
+// during creation
 async create(
   req: Request,
   res: Response
 ): Promise<void> {
-  try {
-    const companyRequest =
-      await this.createCompanyRequest.execute(req.body);
-console.log("company data:",companyRequest)
-    res.status(201).json({
-      success: true,
-      message: "Company request created successfully",
-      data: companyRequest,
-    });
 
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : "Failed to create company request",
-    });
-  }
-}
+  const companyRequest =
+    await this.createCompanyRequest.execute(req.body);
 
+  console.log("company data:", companyRequest);
 
-async approve(
-    req:Request,
-    res:Response
-):Promise<void>{
-const { id }=req.params;
-try {
-     if (typeof id !== "string") {
-    res.status(400).json({
-      success: false,
-      message: "Invalid company request id",
-    });
-    return;
-  }
-   const companyRequest =
-        await this.approveCompanyRequest.execute(id);
-        res.status(200).json({
-            success:true,
-            message:"Company request Approved Successfully",
-            data:companyRequest
-        });  
-} catch (error) {
-     res.status(400).json({
-        success: false,
-        message:
-          error instanceof Error
-            ? error.message
-            : "Failed to approve company request",
-      });
-}
-     
-
-}
-async reject(
-  req: Request,
-  res: Response
-): Promise<void> {
-  const { id } = req.params;
-
-  if (typeof id !== "string") {
-    res.status(400).json({
-      success: false,
-      message: "Invalid company request id",
-    });
-    return;
-  }
-
-  try {
-    const companyRequest =
-      await this.rejectCompanyRequest.execute(id);
-
-    res.status(200).json({
-      success: true,
-      message: "Company request rejected successfully",
-      data: companyRequest,
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : "Failed to reject company request",
-    });
-  }
-}
-
-
-async moreInfo(
-  req: Request,
-  res: Response
-): Promise<void> {
-  const { id } = req.params;
-
-  if (typeof id !== "string") {
-    res.status(400).json({
-      success: false,
-      message: "Invalid company request id",
-    });
-    return;
-  }
-
-  try {
-    const companyRequest =
-      await this.requestMoreInfo.execute(id);
-
-    res.status(200).json({
-      success: true,
-      message: "More information requested successfully",
-      data: companyRequest,
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : "Failed to request more information",
-    });
-  }
-}
-
-
-async resubmit(
-  req: Request,
-  res: Response
-): Promise<void> {
-  const { id } = req.params;
-
-  if (typeof id !== "string") {
-    res.status(400).json({
-      success: false,
-      message: "Invalid company request id",
-    });
-    return;
-  }
-
-  try {
-    const companyRequest =
-      await this.resubmitCompanyRequest.execute(id);
-
-    res.status(200).json({
-      success: true,
-      message: "Company request resubmitted successfully",
-      data: companyRequest,
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : "Failed to resubmit company request",
-    });
-  }
-}
-
-async update(
-  req: Request,
-  res: Response
-): Promise<void> {
-  const { id } = req.params;
-
-  if (typeof id !== "string") {
-    res.status(400).json({
-      success: false,
-      message: "Invalid company request id",
-    });
-    return;
-  }
-
-  try {
-const validatedData =
-  updateCompanyRequestSchema.parse(req.body);
-
-const updateData: UpdateCompanyRequestData = validatedData;
-
-const companyRequest =
-  await this.updateCompanyRequest.execute(
-    id,
-    updateData
-  );
-
-    res.status(200).json({
-      success: true,
-      message: "Company request updated successfully",
-      data: companyRequest,
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : "Failed to update company request",
-    });
-  }
-}
-async updateDocuments(
-  req: Request,
-  res: Response
-): Promise<void> {
-    console.log("REQ URL:", req.originalUrl);
-  console.log("REQ PARAMS:", req.params);
-  const { companyRequestId } = req.params;
-  console.log("COMPANY REQUEST ID:", companyRequestId);
-  if (!companyRequestId || Array.isArray(companyRequestId)) {
-    res.status(400).json({
-      success: false,
-      message: "Invalid company request id",
-    });
-    return;
-  }
-
-  try {
-    const file = req.file;
-
-    if (!file) {
-      res.status(400).json({
-        success: false,
-        message: "Document file is required",
-      });
-      return;
-    }
-
-    const { documentType } = req.body;
-
-    if (!documentType ||!Object.values(CompanyDocumentType).includes(documentType)) {
-      res.status(400).json({
-        success: false,
-        message: "Document type is required",
-      });
-      return;
-    }
-
-    const document: CompanyDocumentFile = {
-      documentType,
-      file: file.buffer,
-      fileName: file.originalname,
-      mimeType: file.mimetype,
-    };
-
-    const companyRequest =
-      await this.updateCompanyDocuments.execute(
-        companyRequestId,
-        document
-      );
-
-    res.status(200).json({
-      success: true,
-      message: "Document uploaded successfully",
-      data: companyRequest,
-    });
-  } catch (error) {
-    if (error instanceof multer.MulterError) {
-    if (error.code === "LIMIT_FILE_SIZE") {
-      res.status(400).json({
-        success: false,
-        message: "File size should not exceed 5 MB",
-      });
-      return;
-    }
-
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
-    return;
-  }
-    res.status(400).json({
-      success: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : "Failed to update company document",
-    });
-  }
+  res.status(HttpStatusCode.OK).json({
+    success: true,
+    message: "Company request created successfully",
+    data: companyRequest,
+  });
 }
 async updateLocation(
-  req: Request,
+  req: Request<{ id: string }>,
   res: Response
 ): Promise<void> {
+
   const { id } = req.params;
-    console.log("1 PARAMS:", id);
-  console.log("2 BODY:", req.body);
 
-  if (typeof id !== "string") {
-    res.status(400).json({
-      success: false,
-      message: "Invalid company request id",
-    });
-    return;
-  }
+  const validatedData =
+    updateCompanyLocationSchema.parse(req.body);
 
-  try {
+  const companyRequest =
+    await this.updateCompanyLocation.execute(
+      id,
+      validatedData
+    );
 
-const validatedData =
-  updateCompanyLocationSchema.parse(req.body);
-
-
-    const companyRequest =
-      await this.updateCompanyLocation.execute(
-        id,
-        validatedData
-      );
-
-    res.status(200).json({
-      success: true,
-      message: "Company location updated successfully",
-      data: companyRequest,
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : "Failed to update company location",
-    });
-  }
+  res.status(HttpStatusCode.OK).json({
+    success: true,
+    message: "Company location updated successfully",
+    data: companyRequest,
+  });
 }
-async submitDocuments(
-  req: Request,
+async updateDocuments(
+  req: Request<{ companyRequestId: string }>,
   res: Response
 ): Promise<void> {
+
   const { companyRequestId } = req.params;
 
-  if (!companyRequestId || Array.isArray(companyRequestId)) {
-    res.status(400).json({
-      success: false,
-      message: "Invalid company request id",
-    });
-    return;
+  const file = req.file;
+
+  if (!file) {
+    throw new AppErrors(
+      "Document file is required",
+       HttpStatusCode.BAD_REQUEST
+    );
   }
 
-  try {
-    const companyRequest =
-      await this.submitCompanyDocuments.execute(
-        companyRequestId
-      );
+  const { documentType } = req.body;
 
-    res.status(200).json({
-      success: true,
-      message: "Company documents submitted successfully",
-      data: companyRequest,
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : "Failed to submit company documents",
-    });
+  if (
+    !documentType ||
+    !Object.values(CompanyDocumentType).includes(documentType)
+  ) {
+    throw new AppErrors(
+      "Document type is required",
+      HttpStatusCode.BAD_REQUEST
+    );
   }
+
+  const document: CompanyDocumentFile = {
+    documentType,
+    file: file.buffer,
+    fileName: file.originalname,
+    mimeType: file.mimetype,
+  };
+
+  const companyRequest =
+    await this.updateCompanyDocuments.execute(
+      companyRequestId,
+      document
+    );
+
+  res.status(HttpStatusCode.OK).json({
+    success: true,
+    message: "Document uploaded successfully",
+    data: companyRequest,
+  });
+}
+async submitDocuments(
+  req: Request<{ companyRequestId: string }>,
+  res: Response
+): Promise<void> {
+
+  const { companyRequestId } = req.params;
+
+  const companyRequest =
+    await this.submitCompanyDocuments.execute(
+      companyRequestId
+    );
+
+  res.status(HttpStatusCode.OK).json({
+    success: true,
+    message: "Company documents submitted successfully",
+    data: companyRequest,
+  });
 }
 
-
-
-
-// async updateDocuments(
-//   req: Request,
-//   res: Response
-// ): Promise<void> {
-//   const { id } = req.params;
-
-//   if (typeof id !== "string") {
-//     res.status(400).json({
-//       success: false,
-//       message: "Invalid company request id",
-//     });
-//     return;
-//   }
-
-//   try {
-//     const validatedData =
-//       updateCompanyDocumentsSchema.parse(req.body);
-
-//     const companyRequest =
-//       await this.updateCompanyDocuments.execute(
-//         id,
-//         validatedData.documents
-//       );
-
-//     res.status(200).json({
-//       success: true,
-//       message: "Company documents updated successfully",
-//       data: companyRequest,
-//     });
-//   } catch (error) {
-//     res.status(400).json({
-//       success: false,
-//       message:
-//         error instanceof Error
-//           ? error.message
-//           : "Failed to update company documents",
-//     });
-//   }
-// }
-
-
+// it shows company details in review page
 async getById(
-  req: Request,
+  req: Request<{ id: string }>,
   res: Response
 ): Promise<void> {
   const { id } = req.params;
 
-  if (typeof id !== "string") {
-    res.status(400).json({
-      success: false,
-      message: "Invalid company request id",
-    });
-    return;
-  }
+  // if (typeof id !== "string") {
+  //   res.status(400).json({
+  //     success: false,
+  //     message: "Invalid company request id",
+  //   });
+  //   return;
+  // }
 
-  try {
+  
     const companyRequest =
       await this.getCompanyRequest.execute(id);
 
-    res.status(200).json({
-      success: true,
-      message: "Company request fetched successfully",
-      data: companyRequest,
-    });
-  } catch (error) {
-    res.status(404).json({
-      success: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : "Failed to fetch company request",
-    });
-  }
+    res.status(HttpStatusCode.OK).json({
+    success: true,
+    message: "Company request fetched successfully",
+    data: companyRequest,
+  });
+  
 }
-
+// Complete registration
 async submit(
   req: Request,
   res: Response
 ): Promise<void> {
   const { accountId } = req.body;
-
-  if (typeof accountId !== "string") {
-    res.status(400).json({
-      success: false,
-      message: "Invalid account id",
-    });
-    return;
-  }
-
-  try {
     await this.completeCompanyRegistration.execute(
       accountId
     );
 
-    res.status(200).json({
+    res.status(HttpStatusCode.OK).json({
       success: true,
       message: "Company registration submitted successfully",
     });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message:
-        error instanceof Error
-          ? error.message
-          : "Failed to submit company registration",
-    });
-  }
 }
+
+
+
+
+async approve(
+  req: Request<{ id: string }>,
+  res: Response
+): Promise<void> {
+
+  const { id } = req.params;
+
+  const companyRequest =
+    await this.approveCompanyRequest.execute(id);
+
+  res.status(HttpStatusCode.OK).json({
+    success: true,
+    message: "Company request Approved Successfully",
+    data: companyRequest,
+  });
+}
+async reject(
+  req: Request<{id:string}>,
+  res: Response
+): Promise<void> {
+  const { id } = req.params;
+  
+    const companyRequest =
+      await this.rejectCompanyRequest.execute(id);
+
+    res.status(HttpStatusCode.OK).json({
+      success: true,
+      message: "Company request rejected successfully",
+      data: companyRequest,
+    });
+  
+}
+async moreInfo(
+  req: Request<{id:string}>,
+  res: Response
+): Promise<void> {
+  const { id } = req.params;
+    const companyRequest =
+      await this.requestMoreInfo.execute(id);
+
+    res.status(HttpStatusCode.OK).json({
+      success: true,
+      message: "More information requested successfully",
+      data: companyRequest,
+    });
+
+}
+// / after admin ask for more info can edit our details
+async update(
+  req: Request<{ id: string }>,
+  res: Response
+): Promise<void> {
+
+  const { id } = req.params;
+
+  const validatedData =
+    updateCompanyRequestSchema.parse(req.body);
+
+  const updateData: UpdateCompanyRequestData =
+    validatedData;
+
+  const companyRequest =
+    await this.updateCompanyRequest.execute(
+      id,
+      updateData
+    );
+
+  res.status(HttpStatusCode.OK).json({
+    success: true,
+    message: "Company request updated successfully",
+    data: companyRequest,
+  });
+}
+async resubmit(
+  req: Request<{ id: string }>,
+  res: Response
+): Promise<void> {
+
+  const { id } = req.params;
+
+  const companyRequest =
+    await this.resubmitCompanyRequest.execute(id);
+
+  res.status(HttpStatusCode.OK).json({
+    success: true,
+    message: "Company request resubmitted successfully",
+    data: companyRequest,
+  });
+}
+
 async getCompanyTypes(req:Request,res:Response):Promise<void>
-{ res.status(200).json({
+{ res.status(HttpStatusCode.OK).json({
     success: true,
     data: Object.values(CompanyType),
   });
-
-
-
 }
 
 async getEmployeeRange(req:Request,res:Response):Promise<void>{
-  res.status(200).json({
+  res.status(HttpStatusCode.OK).json({
     success:true,
     data:Object.values(EmployeeCountRange)
   })

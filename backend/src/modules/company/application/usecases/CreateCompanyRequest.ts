@@ -1,23 +1,19 @@
-import { ICompanyRequestRepository } from "../../domain/repositories/ICompanyRequestRepository";
-import { CompanyRequest, CompanyRequestStatus } from "../../domain/entities/CompanyRequest";
-import { CreateCompanyRequestDto } from "../Validators/CreateCompanyRequestSchema";
 import { randomUUID } from "crypto";
-import { CompanyLocation } from "../../domain/Value-objects/CompanyLocation";
-import { CompanyDocument } from "../../domain/Value-objects/CompanyDocuments";
-import { IAccountRepository } from "../../../auth/domain/repositories/IAccountRepository";
 import { RegistrationStep } from "../../../auth/domain/entities/Account";
+import { IAccountRepository } from "../../../auth/domain/repositories/IAccountRepository";
+import { CompanyRequest, CompanyRequestStatus } from "../../domain/entities/CompanyRequest";
+import { ICompanyRequestRepository } from "../../domain/repositories/ICompanyRequestRepository";
+import { CreateCompanyRequestDto } from "../Validators/CreateCompanyRequestSchema";
+import { ICreateCompanyRequest } from "../abstraction/ICreateCompanyRequest";
 
 
-
-export class CreateCompanyRequest {
+// After register admin create company with company details
+export class CreateCompanyRequest implements ICreateCompanyRequest{
   constructor(
     private readonly companyRequestRepository: ICompanyRequestRepository,
     private readonly accountRepository:IAccountRepository
   ) {}
 
-
-
-  
   async execute(
 
     data: CreateCompanyRequestDto
@@ -65,7 +61,7 @@ export class CreateCompanyRequest {
         companyRequest
       );
 
-    // Company Information completed
+    // Company Information completed registration step as companyinformation
     await this.accountRepository.updateRegistrationStep(
       data.accountId,
       RegistrationStep.COMPANY_DETAILS

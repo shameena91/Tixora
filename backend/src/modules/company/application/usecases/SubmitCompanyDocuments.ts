@@ -1,9 +1,14 @@
+import { HttpStatusCode } from "../../../../shared/constants/httpStattusCode";
+import { MESSAGES } from "../../../../shared/constants/messages";
+import { AppErrors } from "../../../../shared/errors/AppErrors";
+import { ErrorCode } from "../../../../shared/errors/ErrorCode";
 import { RegistrationStep } from "../../../auth/domain/entities/Account";
 import { IAccountRepository } from "../../../auth/domain/repositories/IAccountRepository";
 import { ICompanyRequestRepository } from "../../domain/repositories/ICompanyRequestRepository";
-import { CompanyDocumentType } from "../../domain/Value-objects/CompanyDocuments";
-
-export class SubmitCompanyDocuments {
+import { CompanyDocumentType } from "../../domain/value-objects/CompanyDocuments";
+import { ISubmitCompanyDocuments,  } from "../abstraction/ISubmitCompanyDocuments";
+// Aftre uploading each document submit the documents
+export class SubmitCompanyDocuments implements ISubmitCompanyDocuments {
   constructor(
     private readonly companyRequestRepository: ICompanyRequestRepository,
     private readonly accountRepository: IAccountRepository
@@ -16,8 +21,12 @@ export class SubmitCompanyDocuments {
       );
 
     if (!companyRequest) {
-      throw new Error("Company request not found");
-    }
+  throw new AppErrors(
+    MESSAGES.COMPANY_REQUEST_NOT_FOUND,
+      ErrorCode.COMPANY_REQUEST_NOT_FOUND
+
+  );
+}
 
     const requiredDocumentTypes = [
   CompanyDocumentType.REGISTRATION_CERTIFICATE,
@@ -37,8 +46,13 @@ const allDocumentsUploaded =
   );
 
 if (!allDocumentsUploaded) {
-  throw new Error("Please upload all required documents");
+  throw new AppErrors(
+    MESSAGES.COMPANY_REQUEST_ALL_DOCUMENTS_REQUIRED,
+    ErrorCode.COMPANY_REQUEST_ALL_DOCUMENTS_REQUIRED
+  );
 }
+
+// now registrattion step as Documents uploaded
 await this.accountRepository.updateRegistrationStep(
       companyRequest.accountId,
       RegistrationStep.DOCUMENTS

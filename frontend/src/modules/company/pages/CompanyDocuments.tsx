@@ -1,13 +1,13 @@
 
 import { useState } from "react";
-import RegistrationAuthSidebar from "../../auth/components/RegistrationAuthSidebar";
-import Navbar from "../../../components/home/navbar";
-import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import Navbar from "../../../components/home/navbar";
+import RegistrationAuthSidebar from "../../auth/components/RegistrationAuthSidebar";
 
 import {
-  uploadCompanyDocument,
   submitCompanyDocuments,
+  uploadCompanyDocument,
 } from "../Services/CompanyRequestService";
 import type { DocumentErrors } from "../types/companyTypes";
 

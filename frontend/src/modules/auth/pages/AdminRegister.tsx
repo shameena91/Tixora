@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import RegistrationAuthSidebar from "../components/RegistrationAuthSidebar";
-import {
-  adminRegistrationSchema,
-  type AdminRegistrationData,
-} from "../schemas/adminRegistrationSchema";
-import Navbar from "../../../components/home/navbar";
-import { registerAdmin } from "../services/authService";
 import toast from "react-hot-toast";
+import RegistrationAuthSidebar from "../components/RegistrationAuthSidebar";
+import { registerAdmin } from "../services/authService";
+import {
+    adminRegistrationSchema,
+    type AdminRegistrationData,
+} from "../validators/adminRegistrationSchema";
+import Navbar from "../../../components/home/Navbar";
+
 
 const AdminRegister = () => {
   const navigate = useNavigate();

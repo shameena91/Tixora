@@ -13,12 +13,17 @@ import { GetCompanyRequest } from "../application/usecases/GetCompanyRequest";
 import { UpdateCompanyDocuments } from "../application/usecases/UpdateCompanyDocuments";
 import { UpdateCompanyLocation } from "../application/usecases/UpdateCompanyLocation";
 import { CompanyRequestController } from "../presentation/controller/CompanyRequestController";
-import { S3FileStorage } from "../Infrastructure/storage/S3FileStorage";
+import { S3FileStorage } from "../Infrastructure/storageservices/S3FileStorage";
 import { SubmitCompanyDocuments } from "../application/usecases/SubmitCompanyDocuments";
+import { BaseRepository } from "../../../infrastructure/repositories/Baserepository";
+import { CompanyRequestModel } from "../Infrastructure/database/models/CompanyRequestModel";
 
-
+const baseCompanyRequestRepository =
+  new BaseRepository(
+    CompanyRequestModel
+  );
 const companyRequestRepository =
-  new CompanyRequestRepository();
+  new CompanyRequestRepository(baseCompanyRequestRepository);
 
 
 const accountRepository =

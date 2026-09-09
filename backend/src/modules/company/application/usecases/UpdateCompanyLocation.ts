@@ -1,10 +1,18 @@
 
+import { HttpStatusCode } from "../../../../shared/constants/httpStattusCode";
+import { MESSAGES } from "../../../../shared/constants/messages";
+import { AppErrors } from "../../../../shared/errors/AppErrors";
+import { ErrorCode } from "../../../../shared/errors/ErrorCode";
 import { RegistrationStep } from "../../../auth/domain/entities/Account";
 import { IAccountRepository } from "../../../auth/domain/repositories/IAccountRepository";
 import { ICompanyRequestRepository } from "../../domain/repositories/ICompanyRequestRepository";
-import { CompanyLocation } from "../../domain/Value-objects/CompanyLocation";
+import { CompanyLocation } from "../../domain/value-objects/CompanyLocation";
+import { IUpdateCompanyDocuments } from "../abstraction/IUpdateCompanyDocuments";
+import { IUpdateCompanyLocation } from "../abstraction/IUpdateCompanyLocation";
 
-export class UpdateCompanyLocation {
+
+// After company Information ading location dadetails
+export class UpdateCompanyLocation implements IUpdateCompanyLocation{
   constructor(
     private readonly companyRequestRepository: ICompanyRequestRepository,
     private readonly accountRepository: IAccountRepository
@@ -20,9 +28,13 @@ export class UpdateCompanyLocation {
       );
 console.log("COMPANY REQUEST:", companyRequest);
 console.log("STATUS:", companyRequest?.status);
-    if (!companyRequest) {
-      throw new Error("Company request not found");
-    }
+  if (!companyRequest) {
+  throw new AppErrors(
+    MESSAGES.COMPANY_REQUEST_NOT_FOUND,
+      ErrorCode.COMPANY_REQUEST_NOT_FOUND
+
+  );
+}
 console.log("COMPANY REQUEST ID:", companyRequestId);
 console.log("LOCATION:", location);console.log("COMPANY REQUEST ID:", companyRequestId);
 console.log("LOCATION:", location);
@@ -31,7 +43,7 @@ console.log("LOCATION:", location);
         companyRequestId,
         location
       );
-
+// Company registration Step as company location
     await this.accountRepository.updateRegistrationStep(
       companyRequest.accountId,
       RegistrationStep.COMPANY_LOCATION

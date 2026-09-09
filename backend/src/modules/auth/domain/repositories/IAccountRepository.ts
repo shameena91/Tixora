@@ -1,12 +1,9 @@
-import { CompanyRequest } from "../../../company/domain/entities/CompanyRequest";
-import { CompanyLocation } from "../../../company/domain/Value-objects/CompanyLocation";
 import { Account, RegistrationStep } from "../entities/Account";
 
 export interface IAccountRepository {
   create(account: Account): Promise<Account>;
   findByEmail(email: string): Promise<Account | null>;
   findById(id: string): Promise<Account | null>;
-  //  update(account: Account): Promise<Account>;
   updateAdminDetails( id: string,
   firstName: string,
   lastName: string,
@@ -17,5 +14,8 @@ export interface IAccountRepository {
     step: RegistrationStep
   ): Promise<void>;
 
-
+ updatePassword(
+    id: string,
+    passwordHash: string
+  ): Promise<void>;
 }

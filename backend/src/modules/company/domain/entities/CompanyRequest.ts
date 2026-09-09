@@ -1,13 +1,8 @@
-import { CompanyLocation } from "../Value-objects/CompanyLocation";
-import { CompanyDocument } from "../Value-objects/CompanyDocuments";
-
-export enum CompanyType {
-  PRIVATE_LIMITED = "PRIVATE_LIMITED",
-  PUBLIC_LIMITED = "PUBLIC_LIMITED",
-  LLP = "LLP",
-  PARTNERSHIP = "PARTNERSHIP",
-  OTHER = "OTHER",
-}
+import { CompanyDocument } from "../value-objects/CompanyDocuments";
+import { CompanyLocation } from "../value-objects/CompanyLocation";
+// import { CompanyType } from "../enums/CompanyType";
+// import { CompanyRequestStatus } from "../enums/CompanyRequestStatus";
+// import { EmployeeCountRange } from "../enums/EmployeeCountrange";
 
 export enum CompanyRequestStatus {
   PENDING = "PENDING",
@@ -15,18 +10,24 @@ export enum CompanyRequestStatus {
   REJECTED = "REJECTED",
   MORE_INFO_REQUIRED = "MORE_INFO_REQUIRED",
 }
-
 export enum EmployeeCountRange {
   ONE_TO_FIFTY = "1-50",
   FIFTY_ONE_TO_TWO_HUNDRED = "51-200",
   TWO_HUNDRED_ONE_TO_FIVE_HUNDRED = "201-500",
   FIVE_HUNDRED_PLUS = "500+",
 }
+export enum CompanyType {
+  PRIVATE_LIMITED = "PRIVATE_LIMITED",
+  PUBLIC_LIMITED = "PUBLIC_LIMITED",
+  LLP = "LLP",
+  PARTNERSHIP = "PARTNERSHIP",
+  OTHER = "OTHER",
+}
 export class CompanyRequest {
-  constructor(
-    public readonly id: string,
+constructor(
+public readonly id: string,
 public readonly accountId: string,
- public companyName: string,
+public companyName: string,
 public registrationNumber: string,
 public companyEmail: string,
 public phone: string,
