@@ -1,9 +1,5 @@
 import { CompanyDocument } from "../value-objects/CompanyDocuments";
 import { CompanyLocation } from "../value-objects/CompanyLocation";
-// import { CompanyType } from "../enums/CompanyType";
-// import { CompanyRequestStatus } from "../enums/CompanyRequestStatus";
-// import { EmployeeCountRange } from "../enums/EmployeeCountrange";
-
 export enum CompanyRequestStatus {
   PENDING = "PENDING",
   APPROVED = "APPROVED",
@@ -23,6 +19,11 @@ export enum CompanyType {
   PARTNERSHIP = "PARTNERSHIP",
   OTHER = "OTHER",
 }
+export enum RegistrationType {
+  REGISTRATION = "REGISTRATION",
+  UPDATE = "UPDATE",
+}
+
 export class CompanyRequest {
 constructor(
 public readonly id: string,

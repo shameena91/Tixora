@@ -31,6 +31,9 @@ import { IResubmitCompanyRequest } from "../../application/abstraction/IResubmit
 import { IUpdateCompanyRequest } from "../../application/abstraction/IUpdateCompanyRequest";
 import { IUpdateCompanyDocuments } from "../../application/abstraction/IUpdateCompanyDocuments";
 import { ISubmitCompanyDocuments } from "../../application/abstraction/ISubmitCompanyDocuments";
+
+import {IGetAllCompanyRequest} from "../../application/abstraction/IGetAllCompanyRequest"
+import { MESSAGES } from "../../../../shared/constants/messages";
 export class CompanyRequestController {
 constructor(
 private readonly createCompanyRequest: ICreateCompanyRequest,
@@ -42,6 +45,7 @@ private readonly updateCompanyRequest: IUpdateCompanyRequest,
 private readonly updateCompanyLocation:IUpdateCompanyLocation,
 private readonly updateCompanyDocuments: IUpdateCompanyDocuments,
 private readonly getCompanyRequest: IGetCompanyRequest,
+  private readonly getAllCompanyRequests: IGetAllCompanyRequest,
 private readonly completeCompanyRegistration:ICompleteCompanyRegistration,
 private readonly submitCompanyDocuments: ISubmitCompanyDocuments
 ) {}
@@ -170,7 +174,7 @@ async getById(
   
     const companyRequest =
       await this.getCompanyRequest.execute(id);
-
+console.log("GET dataaaaaaa",companyRequest)
     res.status(HttpStatusCode.OK).json({
     success: true,
     message: "Company request fetched successfully",
@@ -180,20 +184,31 @@ async getById(
 }
 // Complete registration
 async submit(
-  req: Request,
+  req: Request
+ 
+,
   res: Response
 ): Promise<void> {
+
   const { accountId } = req.body;
-    await this.completeCompanyRegistration.execute(
-      accountId
-    );
-
-    res.status(HttpStatusCode.OK).json({
-      success: true,
-      message: "Company registration submitted successfully",
-    });
+    const { companyRequestId } = req.params;
+     console.log("from controller",companyRequestId)
+if (typeof companyRequestId !== "string") {
+  throw new AppErrors(
+    MESSAGES.COMPANY_REQUEST_NOT_FOUND,
+    ErrorCode.COMPANY_REQUEST_NOT_FOUND
+  );
 }
+  await this.completeCompanyRegistration.execute(
+    accountId,companyRequestId
+   
+  );
 
+  res.status(HttpStatusCode.OK).json({
+    success: true,
+    message: "Company registration submitted successfully",
+  });
+}
 
 
 
@@ -299,5 +314,19 @@ async getEmployeeRange(req:Request,res:Response):Promise<void>{
     success:true,
     data:Object.values(EmployeeCountRange)
   })
+}
+async getAll(
+  req: Request,
+  res: Response
+): Promise<void> {
+
+  const companyRequests =
+    await this.getAllCompanyRequests.execute();
+console.log("cpany reqqqq",companyRequests)
+  res.status(HttpStatusCode.OK).json({
+    success: true,
+    message: "Company requests fetched successfully",
+    data: companyRequests,
+  });
 }
 }

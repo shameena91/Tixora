@@ -1,22 +1,25 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import AdminRegister from "./modules/auth/pages/AdminRegister";
+import CreatePassword from "./modules/auth/pages/CreatePassword";
 import EmailVarification from "./modules/auth/pages/EmailVarification";
 import OtpVerification from "./modules/auth/pages/OtpVerification";
-import CreatePassword from "./modules/auth/pages/CreatePassword";
-import AdminRegister from "./modules/auth/pages/AdminRegister";
 import CompanyInformation from "./modules/company/pages/CompanyInformation";
+import Home from "./pages/Home";
 
-import CompanyDocuments from "./modules/company/pages/CompanyDocuments";
-import ReviewDeclaration from "./modules/company/pages/RevieDeclaration";
-import CompanyRegistrationSuccess from "./modules/company/pages/CompanyRegistrationSuccess";
-import CompanyLocation from "./modules/company/pages/CompanyLocation";
-import LoginPage from "./modules/auth/pages/LoginPage";
 import ForgotPassword from "./modules/auth/pages/ForgotPassword";
+import LoginPage from "./modules/auth/pages/LoginPage";
+import CompanyDocuments from "./modules/company/pages/CompanyDocuments";
+import CompanyLocation from "./modules/company/pages/CompanyLocation";
+import CompanyRegistrationSuccess from "./modules/company/pages/CompanyRegistrationSuccess";
+import ReviewDeclaration from "./modules/company/pages/RevieDeclaration";
 
 import ProtectedRoute from "./modules/auth/components/protectedRoute";
 import PasswordReset from "./modules/auth/pages/PasswordReset";
-import Dashbord from "./modules/dashbord/pages/CompanyDashbord";
-import SuperAdminDashbord from "./modules/superadmin/SuperAdminDashbord";
+import Dashbord from "./modules/company/pages/CompanyDashbord";
+import SuperAdminLayout from "./modules/superadmin/layout/SuperAdminLayout";
+import CompanyRequests from "./modules/superadmin/pages/CompanyRequests";
+import CompanyRequestDetails from "./modules/superadmin/pages/CompanyrequestDetails";
+import SuperAdminDashbord from "./modules/superadmin/pages/SuperAdminDashbord";
 
 const App = () => {
   return (
@@ -66,8 +69,40 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-      <Route path="/super-admin/dashbord" element={<SuperAdminDashbord/>}/>
+
+
+
+<Route path="/super-admin" element={<SuperAdminLayout />}>
+
+  <Route
+    path="dashbord"
+    element={<SuperAdminDashbord />}
+  />
+
+ <Route
+  path="company-requests"
+  element={<CompanyRequests />}
+/>
+
+<Route
+  path="company-requests/:companyRequestId"
+  element={<CompanyRequestDetails />}
+/>
+  <Route
+    path="companies"
+    element={<div>Companies</div>}
+  />
+
+</Route>
+
+
+
+
       </Routes>
+
+
+
+      
     </BrowserRouter>
   );
 };

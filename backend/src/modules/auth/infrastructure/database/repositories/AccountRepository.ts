@@ -1,6 +1,7 @@
 
 import {
   Account,
+  AccountRole,
   RegistrationStep,
 } from "../../../domain/entities/Account";
 import { IAccountRepository } from "../../../domain/repositories/IAccountRepository";
@@ -9,7 +10,7 @@ import {
   AccountCreateData,
   AccountDocument,
   AccountMapper,
-} from "../../../application/mappers/AccountMapper"
+} from "../../../application/mappers/Accountmapper"
 import { IBaseRepository } from "../../../../../shared/repository/IBaseRepository";
 
 export class AccountRepository implements IAccountRepository {
@@ -96,5 +97,16 @@ export class AccountRepository implements IAccountRepository {
         new: false,
       },
     );
+  }
+
+  async findSuperAdmin():Promise<Account|null>{
+    const accountDocument=await AccountModel.findOne({role:AccountRole.SUPER_ADMIN
+
+    }).lean<AccountDocument>()
+    if(!accountDocument)
+    {
+      return null
+    }
+    return AccountMapper.toDomain(accountDocument)
   }
 }

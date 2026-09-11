@@ -18,4 +18,6 @@ export interface IAccountRepository {
     id: string,
     passwordHash: string
   ): Promise<void>;
+
+  findSuperAdmin():Promise<Account|null>
 }

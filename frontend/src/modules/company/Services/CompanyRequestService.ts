@@ -113,6 +113,7 @@ export const getCompanyRequest = async (id: string) => {
   return result;
 };
 
+
 export const getCompanyTypes = async () => {
   const response = await fetch(`${API_URL}/company-requests/company-types`);
 
@@ -155,8 +156,8 @@ export const submitCompanyDocuments = async (companyRequestId: string) => {
   return result;
 };
 
-export const submitCompanyRegistration = async (accountId: string) => {
-  const response = await fetch(`${API_URL}/company-requests/submit`, {
+export const submitCompanyRegistration = async (accountId: string, companyRequestId: string) => {
+  const response = await fetch(`${API_URL}/company-requests/${companyRequestId}/submit`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",

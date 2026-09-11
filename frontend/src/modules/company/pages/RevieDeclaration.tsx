@@ -56,6 +56,13 @@ if (!companyRequest) {
 
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
+  const companyRequestId =
+    localStorage.getItem("companyRequestId");
+
+     if (!companyRequestId) {
+    console.error("Company request ID not found");
+    return;
+  }
 
   if (!isConfirmed) {
     return;
@@ -71,7 +78,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   try {
     const result =
-      await submitCompanyRegistration(accountId);
+      await submitCompanyRegistration(accountId,companyRequestId);
 
     console.log(
       "Registration submitted:",

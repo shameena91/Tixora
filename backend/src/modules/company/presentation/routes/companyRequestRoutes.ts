@@ -42,7 +42,12 @@ router.patch(
     await companyRequestController.updateDocuments(req, res);
   },
 );
-
+router.get(
+  COMPANY_REQUEST_ROUTES.GET_ALL,
+  async (req, res) => {
+    await companyRequestController.getAll(req, res);
+  }
+);
 // After uploading 3 document  submit
 
 router.patch(COMPANY_REQUEST_ROUTES.SUBMIT_DOCUMENTS, async (req, res) => {

@@ -14,7 +14,7 @@ export const AUTH_ROUTES = {
 
 export const COMPANY_REQUEST_ROUTES = {
   CREATE: "/",
-  SUBMIT: "/submit",
+  SUBMIT: "/:companyRequestId/submit",
 
   COMPANY_TYPES: "/company-types",
   EMPLOYEE_RANGE: "/employee-range",
@@ -25,6 +25,9 @@ export const COMPANY_REQUEST_ROUTES = {
 
   UPDATE: "/:id",
   GET_BY_ID: "/:id",
+
+  GET_ALL:"/",
+
 
   APPROVE: "/:id/approve",
   REJECT: "/:id/reject",

@@ -17,6 +17,13 @@ import { S3FileStorage } from "../Infrastructure/storageservices/S3FileStorage";
 import { SubmitCompanyDocuments } from "../application/usecases/SubmitCompanyDocuments";
 import { BaseRepository } from "../../../infrastructure/repositories/Baserepository";
 import { CompanyRequestModel } from "../Infrastructure/database/models/CompanyRequestModel";
+import { AccountModel } from "../../auth/infrastructure/database/models/AccountModel";
+import { AccountCreateData, AccountDocument } from "../../auth/application/mappers/Accountmapper"
+import { CreateNotification } from "../../notification/application/usecases/CreateNotification";
+import { NotificationRepository } from "../../notification/infrastructure/repository/NotificationRepository";
+import { NotificationCreateData, NotificationDocument } from "../../notification/application/mapper/NotificationMappers";
+import { NotificationModel } from "../../notification/infrastructure/models/NotifiationModel";
+import { GetAllCompanyRequests } from "../application/usecases/GetAllCompanyRequests";
 
 const baseCompanyRequestRepository =
   new BaseRepository(
@@ -26,8 +33,14 @@ const companyRequestRepository =
   new CompanyRequestRepository(baseCompanyRequestRepository);
 
 
+const baseAccountRepository =
+  new BaseRepository<AccountDocument, AccountCreateData>(
+    AccountModel
+  );
+
 const accountRepository =
-  new AccountRepository();
+  new AccountRepository(baseAccountRepository);
+
   
 const createCompanyRequest =
   new CreateCompanyRequest(
@@ -73,11 +86,28 @@ const updateCompanyLocation =
  
   const getCompanyRequest =
   new GetCompanyRequest(
-    companyRequestRepository
+    companyRequestRepository,
+    accountRepository
+  );
+  const baseNotificationRepository =
+    new BaseRepository<
+      NotificationDocument,
+      NotificationCreateData
+    >(NotificationModel);
+  
+const notificationRepository =
+  new NotificationRepository(
+    baseNotificationRepository
+  );
+  const createNotification =
+  new CreateNotification(
+    notificationRepository
   );
   const completeCompanyRegistration =
   new CompleteCompanyRegistration(
-    accountRepository
+    accountRepository,
+    createNotification
+
   );
 
   const fileStorage = new S3FileStorage();
@@ -88,6 +118,11 @@ const updateCompanyLocation =
   );
   const submitCompanyDocuments =
   new SubmitCompanyDocuments(
+    companyRequestRepository,
+    accountRepository
+  );
+  const getAllCompanyRequest =
+  new GetAllCompanyRequests(
     companyRequestRepository,
     accountRepository
   );
@@ -102,6 +137,9 @@ export const companyRequestController =
      updateCompanyLocation,
      updateCompanyDocuments,
      getCompanyRequest,
-     completeCompanyRegistration,
-       submitCompanyDocuments,
+     getAllCompanyRequest,
+    completeCompanyRegistration,
+    submitCompanyDocuments,
+       
+       
   );
