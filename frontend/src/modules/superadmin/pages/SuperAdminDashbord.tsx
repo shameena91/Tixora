@@ -69,7 +69,7 @@ function Dashbord() {
   return (
     <div className="min-h-screen bg-[#faf7ff] text-[#182238]">
       {/* Main */}
-      <main className="mx-auto max-w-7xl px-6 py-8">
+      <main className="mx-auto  py-8">
 
         {/* Header */}
         <div className="mb-8">

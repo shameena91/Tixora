@@ -47,6 +47,7 @@ export class Login implements ILogin {
     const accessToken = await this.tokenService.generateAccessToken({
       accountId: account.id,
       email: account.email,
+      role:account.role
     });
 
     const refreshToken = this.tokenService.generateRefreshToken({

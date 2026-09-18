@@ -4,6 +4,7 @@ export interface IAccountRepository {
   create(account: Account): Promise<Account>;
   findByEmail(email: string): Promise<Account | null>;
   findById(id: string): Promise<Account | null>;
+  findByPhone(phone: string): Promise<Account | null>;
   updateAdminDetails( id: string,
   firstName: string,
   lastName: string,

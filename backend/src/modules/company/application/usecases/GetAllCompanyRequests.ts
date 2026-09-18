@@ -24,15 +24,24 @@ export class GetAllCompanyRequests
               companyRequest.accountId
             );
 
-          return {
-            id: companyRequest.id,
-            companyName: companyRequest.companyName,
-            adminName: account
-              ? `${account.firstName} ${account.lastName}`
-              : "Unknown",
-            status: companyRequest.status,
-            createdAt: companyRequest.createdAt,
-          };
+         return {
+  id: companyRequest.id,
+
+  requestId: companyRequest.requestId,
+  requestType: companyRequest.requestType,
+
+  companyName: companyRequest.companyName,
+
+  adminName: account
+    ? `${account.firstName} ${account.lastName}`
+    : "Unknown",
+
+  status: companyRequest.status,
+
+  submittedAt: companyRequest.submittedAt,
+
+  createdAt: companyRequest.createdAt,
+};
         })
       );
 

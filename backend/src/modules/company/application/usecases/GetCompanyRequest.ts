@@ -6,11 +6,13 @@ import { IAccountRepository } from "../../../auth/domain/repositories/IAccountRe
 import { ICompanyRequestRepository } from "../../domain/repositories/ICompanyRequestRepository";
 import { IGetCompanyRequest } from "../abstraction/IGetCompanyRequest";
 import { CompanyRequestDetails } from "../dto/CompanyrequestDetailsDto";
+import { IFileStoragePort } from "../ports/IFileStoragePort";
 // Review before final submission
 export class GetCompanyRequest implements IGetCompanyRequest {
   constructor(
     private readonly companyRequestRepository: ICompanyRequestRepository,
-    private readonly accountRepository: IAccountRepository
+    private readonly accountRepository: IAccountRepository,
+      private readonly s3Service: IFileStoragePort
   ) {}
 
   async execute(id: string): Promise<CompanyRequestDetails> { 
@@ -27,13 +29,16 @@ export class GetCompanyRequest implements IGetCompanyRequest {
     await this.accountRepository.findById(
       companyRequest.accountId
     );
-
-  console.log("Accountttttttt:", account);
+const logoUrl = companyRequest.logo
+  ? await this.s3Service.getSignedUrl(companyRequest.logo)
+  : null;
+  console.log("Accountttttttt:", companyRequest);
     return {
   id: companyRequest.id,
 
   company: {
     companyName: companyRequest.companyName,
+    requestId:companyRequest.requestId,
     registrationNumber: companyRequest.registrationNumber,
     companyEmail: companyRequest.companyEmail,
     phone: companyRequest.phone,
@@ -41,7 +46,7 @@ export class GetCompanyRequest implements IGetCompanyRequest {
     companyType: companyRequest.companyType,
     numberOfEmployees: companyRequest.numberOfEmployees,
     website: companyRequest.website,
-    logo: companyRequest.logo,
+    logo: logoUrl,
     description: companyRequest.description,
   },
 

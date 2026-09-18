@@ -30,6 +30,9 @@ export const errorHandler = (
   }
 
   if (error instanceof ZodError) {
+     console.log("🔥🔥 ZOD ERROR REACHED GLOBAL HANDLER");
+  console.log("ZOD ERROR:", error);
+  console.log("ZOD ISSUES:", error.issues);
     res.status(HttpStatusCode.BAD_REQUEST).json({
       success: false,
       message: "Validation failed",

@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+
+ 
 export const companyRegistrationSchema = z.object({
   companyName: z
     .string()
@@ -30,7 +32,17 @@ export const companyRegistrationSchema = z.object({
 
   yearEstablished: z
     .string()
-    .min(1, "Year established is required"),
+    .min(1, "Year established is required")
+     .regex(/^\d{4}$/, "Enter a valid 4-digit year")
+  .refine(
+    (year) => {
+      const yearNumber = Number(year);
+      const currentYear = new Date().getFullYear();
+
+      return yearNumber >= 1900 && yearNumber <= currentYear;
+    },
+    `Year established must be between 1900 and ${new Date().getFullYear()}`,
+  ),
 
   companyType: z
     .string()
@@ -47,12 +59,10 @@ export const companyRegistrationSchema = z.object({
     .or(z.literal("")),
 
   logo: z
-    .string()
-    .optional(),
-
-  description: z
-    .string()
-    .optional(),
+  .string()
+  .or(z.literal(""))
+  .nullable()
+  .optional(),
 });
 
 export type CompanyRegistrationData =

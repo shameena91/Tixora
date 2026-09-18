@@ -5,6 +5,9 @@ import authRoutes from "./modules/auth/presentation/routes/authRoutes";
 import companyRequestRoutes from "./modules/company/presentation/routes/companyRequestRoutes";
 import { errorHandler } from "./presentation/middlewares/errorHandlers";
 import { notFoundHandler } from "./presentation/middlewares/notFoundHandler";
+import subcsriptionPlanRoutes from "./modules/SubScriptionPlans/presentation/routes/SubcsriptionPlanRoutes"
+
+
 
 const app = express();
 
@@ -19,13 +22,14 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth", authRoutes);
-// app.use("/api/auth", emailVerificationRoutes);
-// app.use("/api/auth", passwordRoutes);
-// app.use("/api/auth", registrationRoutes);
-// app.use("/api/auth", tokenRoutes);
+
 app.use(
   "/api/company-requests",
   companyRequestRoutes
+);
+app.use(
+  "/api/subscription-plans",
+  subcsriptionPlanRoutes
 );
 app.get("/health", (_req, res) => {
   res.status(200).json({

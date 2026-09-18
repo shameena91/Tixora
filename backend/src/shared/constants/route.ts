@@ -18,19 +18,30 @@ export const COMPANY_REQUEST_ROUTES = {
 
   COMPANY_TYPES: "/company-types",
   EMPLOYEE_RANGE: "/employee-range",
+UPDATE_LOGO: "/logo",
 
   UPDATE_LOCATION: "/:id/location",
   UPDATE_DOCUMENT: "/:companyRequestId/documents",
   SUBMIT_DOCUMENTS: "/:companyRequestId/documents/submit",
 
   UPDATE: "/:id",
-  GET_BY_ID: "/:id",
-
+ GET_REGISTRATION_BY_ID: "/registration/:id",
+GET_SUPER_ADMIN_BY_ID: "/super-admin/:id",
+ VIEW_COMPANY_dOCUMENTS:"/:companyRequestId/documents/:documentType/view",
+ DOWNLOAD_COMPANY_dOCUMENTS:"/:companyRequestId/documents/:documentType/download",
   GET_ALL:"/",
-
-
+GET_MY_REQUEST:"/my-request",
+  DOCUMENT_VARIFIED:"/:companyRequestId/documents/:documentType/verify",
+DOCUMENT_REJECTED:"/:companyRequestId/documents/:documentType/reject",
   APPROVE: "/:id/approve",
   REJECT: "/:id/reject",
   MORE_INFO: "/:id/more-info",
   RESUBMIT: "/:id/resubmit",
 };
+
+
+export const SUBSCRIPTION_ROUTE_CONSTANTS={
+  CREATE:"/"
+
+}
+

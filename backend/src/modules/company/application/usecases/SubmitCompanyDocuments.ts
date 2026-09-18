@@ -39,6 +39,15 @@ const uploadedDocumentTypes =
     (document) => document.documentType
   ) ?? [];
 
+  console.log(
+  "Uploaded document types:",
+  uploadedDocumentTypes
+);
+
+console.log(
+  "Company documents:",
+  companyRequest.documents
+);
 const allDocumentsUploaded =
   requiredDocumentTypes.every(
     (documentType) =>

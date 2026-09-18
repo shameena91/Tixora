@@ -1,5 +1,5 @@
 import { ICompanyRequestRepository } from "../../domain/repositories/ICompanyRequestRepository";
-import { CompanyRequest } from "../../domain/entities/CompanyRequest";
+import { CompanyRequest, CompanyRequestStatus } from "../../domain/entities/CompanyRequest";
 import { MESSAGES } from "../../../../shared/constants/messages";
 import { AppErrors } from "../../../../shared/errors/AppErrors";
 import { ErrorCode } from "../../../../shared/errors/ErrorCode";
@@ -10,22 +10,29 @@ export class ApproveCompanyRequest implements IApproveCompanyRequest {
     private readonly companyRequestRepository: ICompanyRequestRepository
   ) {}
 
-  async execute(id: string): Promise<CompanyRequest> {
+  async execute(
+    id: string,
+    reviewedBy: string
+  ): Promise<CompanyRequest> {
     const companyRequest =
       await this.companyRequestRepository.findById(id);
 
     if (!companyRequest) {
-      throw new AppErrors( MESSAGES.COMPANY_REQUEST_NOT_FOUND, 
+      throw new AppErrors(
+        MESSAGES.COMPANY_REQUEST_NOT_FOUND,
         ErrorCode.COMPANY_REQUEST_NOT_FOUND
-
-  );
+      );
     }
 
     companyRequest.approve();
 
-    return this.companyRequestRepository.updateStatus(
+    return await this.companyRequestRepository.updateStatus(
       id,
-      companyRequest.status
+      CompanyRequestStatus.APPROVED,
+      reviewedBy,
+      new Date(),
+      null,
+      null
     );
   }
 }

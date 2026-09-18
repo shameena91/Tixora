@@ -1,3 +1,4 @@
+import { useContext, useEffect } from "react";
 import CTA from "../components/home/CTA";
 import Features from "../components/home/Features";
 import Footer from "../components/home/Footer";
@@ -7,7 +8,32 @@ import Navbar from "../components/home/Navbar";
 
 import Testimonials from "../components/home/Testimonal";
 
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../modules/auth/context/AuthContext";
+
 const Home = () => {
+
+
+  const auth = useContext(AuthContext);
+  const navigate = useNavigate();
+useEffect(() => {
+    if (auth?.isInitializing) {
+      return;
+    }
+
+    if (auth?.role === "COMPANY_ADMIN") {
+      navigate("/Company-admin/check-status", { replace: true });
+      return;
+    }
+
+    if (auth?.role === "SUPER_ADMIN") {
+      navigate("/super-admin/dashbord", { replace: true });
+    }
+  }, [auth?.isInitializing, auth?.role, navigate]);
+
+  if (auth?.isInitializing) {
+    return <div>Loading...</div>;
+  }
   return (
     <>
       <Navbar />

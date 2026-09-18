@@ -11,7 +11,8 @@ export class MoreInfoCompanyrequest implements IMoreInfoCompanyRequest {
     private readonly companyRequestRepository: ICompanyRequestRepository,
   ) {}
 
-  async execute(id: string): Promise<CompanyRequest> {
+  async execute(id: string,  reviewedBy: string,
+    remarks: string): Promise<CompanyRequest> {
     const companyRequest = await this.companyRequestRepository.findById(id);
 
     if (!companyRequest) {
@@ -22,10 +23,15 @@ export class MoreInfoCompanyrequest implements IMoreInfoCompanyRequest {
       );
     }
     companyRequest.requestMoreInfo();
-
+  const reviewedAt = new Date();
     return this.companyRequestRepository.updateStatus(
-      id,
-      companyRequest.status,
+   id,
+    companyRequest.status,
+    reviewedBy,
+    reviewedAt,
+    remarks,
+    null,
+      
     );
   }
 }

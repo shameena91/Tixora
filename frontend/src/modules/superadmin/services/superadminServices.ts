@@ -1,30 +1,88 @@
+import axiosInstance from "../../auth/api/axiosInstance";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL;
+
 export const getAllCompanyRequests = async () => {
-  const res = await fetch(`${API_URL}/company-requests`);
+  const res = await axiosInstance.get("/company-requests");
 
-  const result = await res.json();
+  console.log("alllll", res);
 
-  if (!res.ok) {
-    throw new Error(result.message || "Failed to fetch company requests");
-  }
-
-  return result;
+  return res.data;
 };
-export const getCompanyRequestById = async (
-  companyRequestId: string
+export const getCompanyRequestById = async (companyRequestId: string) => {
+  const response = await axiosInstance.get(
+    `/company-requests/super-admin/${companyRequestId}`,
+  );
+  
+  return response.data;
+};
+
+
+export const approveCompanyRequest = async (companyRequestId: string) => {
+  const response = await axiosInstance.patch(
+    `/company-requests/${companyRequestId}/approve`,
+  );
+  console.log("aprove",response)
+  return response.data;
+};
+
+
+export const rejectCompanyRequest=async(companyRequestId:string)=>{
+  const response=await axiosInstance.patch(`/company-requests/${companyRequestId}/reject`)
+  return response.data;
+}
+export const moreInfoCompanyRequest = async (
+  companyRequestId: string,
+  remarks: string
 ) => {
-  const res = await fetch(
-    `${API_URL}/company-requests/${companyRequestId}`
+  const response = await axiosInstance.patch(
+    `/company-requests/${companyRequestId}/more-info`,
+    {
+      remarks,
+    }
   );
 
-  const result = await res.json();
+  return response.data;
+};
 
-  if (!res.ok) {
-    throw new Error(
-      result.message || "Failed to fetch company request"
-    );
-  }
 
-  return result;
+export const getCompanyDocumentViewUrl = async (
+  companyRequestId: string,
+  documentType: string,
+) => {
+  const response = await axiosInstance.get(
+    `/company-requests/${companyRequestId}/documents/${documentType}/view`,
+  );
+
+  return response.data;
+};
+export const getCompanyDocumentDownloadUrl =async (
+  companyRequestId: string,
+  documentType: string,
+) => {
+  const response=await axiosInstance.get(
+    `/company-requests/${companyRequestId}/documents/${documentType}/download`,
+  );
+  return response.data
+};
+export const verifyCompanyDocument = async(
+  companyRequestId: string,
+  documentType: string,
+) => {
+  const response=await axiosInstance.patch(
+    `/company-requests/${companyRequestId}/documents/${documentType}/verify`,
+ 
+ 
+  );
+  return response.data
+};
+
+export const rejectCompanyDocument =async (
+  companyRequestId: string,
+  documentType: string,
+) => {
+ const response=await axiosInstance.patch(
+    `/company-requests/${companyRequestId}/documents/${documentType}/reject`,
+  );
+  
+  return response.data
 };

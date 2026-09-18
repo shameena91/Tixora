@@ -1,4 +1,4 @@
-import { CompanyDocument } from "../value-objects/CompanyDocuments";
+import { CompanyDocument, CompanyDocumentType, DocumentVerificationStatus } from "../value-objects/CompanyDocuments";
 import { CompanyLocation } from "../value-objects/CompanyLocation";
 export enum CompanyRequestStatus {
   PENDING = "PENDING",
@@ -26,26 +26,42 @@ export enum RegistrationType {
 
 export class CompanyRequest {
 constructor(
-public readonly id: string,
-public readonly accountId: string,
-public companyName: string,
-public registrationNumber: string,
-public companyEmail: string,
-public phone: string,
-public yearEstablished: number | null,
+  public readonly id: string,
 
-public companyType: CompanyType,
-public numberOfEmployees: EmployeeCountRange,
-public status: CompanyRequestStatus,
-public website: string | null,
-public logo: string | null,
-public description: string | null,
+  public readonly requestId: string,
+  public readonly requestType: RegistrationType,
 
-public location: CompanyLocation | null,
-public readonly documents:CompanyDocument[],
-public readonly createdAt: Date,
-public updatedAt: Date
-  ) {}
+  public readonly accountId: string,
+
+  public companyName: string,
+  public registrationNumber: string,
+  public companyEmail: string,
+  public phone: string,
+  public yearEstablished: number | null,
+
+  public companyType: CompanyType,
+  public numberOfEmployees: EmployeeCountRange,
+
+  public status: CompanyRequestStatus,
+
+  public website: string | null,
+  public logo: string | null,
+  public description: string | null,
+
+  public location: CompanyLocation | null,
+
+  public readonly documents: CompanyDocument[],
+
+  public readonly submittedAt: Date,
+
+  public readonly reviewedBy: string | null,
+  public readonly reviewedAt: Date | null,
+  public reviewRemarks: string | null,
+  public rejectionReason: string | null,
+
+  public readonly createdAt: Date,
+  public updatedAt: Date
+) {} 
 
 private ensurePending(): void {
   if (
@@ -83,7 +99,8 @@ public requestMoreInfo(): void {
   this.updatedAt = new Date();
 }
 public resubmit(): void {
-  if (this.status !== CompanyRequestStatus.MORE_INFO_REQUIRED) {
+  if (this.status !== CompanyRequestStatus.MORE_INFO_REQUIRED &&
+    this.status !== CompanyRequestStatus.REJECTED) {
     throw new Error(
       `Cannot resubmit request with status ${this.status}`
     );
@@ -92,4 +109,41 @@ public resubmit(): void {
   this.status = CompanyRequestStatus.PENDING;
   this.updatedAt = new Date();
 }
+  // verifyDocument(documentType: CompanyDocumentType): void {
+  //   const document = this.documents.find(
+  //     (document) => document.documentType === documentType,
+  //   );
+
+  //   if (!document) {
+  //     throw new Error("Document not found");
+  //   }
+
+  //   document.verificationStatus = DocumentVerificationStatus.VERIFIED;
+  // }
+  //   rejectDocument(documentType: CompanyDocumentType): void {
+  //   const document = this.documents.find(
+  //     (document) => document.documentType === documentType,
+  //   );
+
+  //   if (!document) {
+  //     throw new Error("Document not found");
+  //   }
+
+  //   document.verificationStatus = DocumentVerificationStatus.REJECTED;
+  // }
+  updateDocumentStatus(
+  documentType: CompanyDocumentType,
+  status: DocumentVerificationStatus,
+): void {
+  const document = this.documents.find(
+    (document) => document.documentType === documentType,
+  );
+
+  if (!document) {
+    throw new Error("Document not found");
+  }
+
+  document.verificationStatus = status;
 }
+}
+

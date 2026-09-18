@@ -4,7 +4,7 @@ import { AppErrors } from "../../../../shared/errors/AppErrors";
 import { ErrorCode } from "../../../../shared/errors/ErrorCode";
 import { ICompanyRequestRepository } from "../../domain/repositories/ICompanyRequestRepository";
 import { CompanyDocumentFile } from "../../domain/types/CompanyDocumentFile";
-import { CompanyDocument } from "../../domain/value-objects/CompanyDocuments";
+import { CompanyDocument, DocumentVerificationStatus } from "../../domain/value-objects/CompanyDocuments";
 import { IUpdateCompanyDocuments } from "../abstraction/IUpdateCompanyDocuments";
 import { IFileStoragePort } from "../ports/IFileStoragePort";
 // Adding company Documents only adding each documents not submitting at this step
@@ -39,11 +39,14 @@ export class UpdateCompanyDocuments implements IUpdateCompanyDocuments{
       documentPath
     );
 
-    const newDocument: CompanyDocument = {
-      documentType: document.documentType,
-      fileName: document.fileName,
-      fileUrl: uploadedFile.url,
-    };
+   const newDocument: CompanyDocument = {
+  documentType: document.documentType,
+  fileName: document.fileName,
+    fileKey: uploadedFile.key,
+  fileUrl: uploadedFile.url,
+  uploadedAt: new Date(),
+  verificationStatus: DocumentVerificationStatus.PENDING,
+};
 
     const existingDocuments =
       companyRequest.documents ?? [];

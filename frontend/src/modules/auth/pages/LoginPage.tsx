@@ -81,7 +81,7 @@ auth.setRole(response.data.role)
 
 if(response.data.role==="COMPANY_ADMIN")
 {
-navigate("/dashboard")
+navigate("/Company-admin/check-status")
 }
 
 if(response.data.role==="SUPER_ADMIN")

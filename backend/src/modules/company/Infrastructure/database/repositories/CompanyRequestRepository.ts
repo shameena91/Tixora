@@ -12,8 +12,8 @@ import {
   CompanyRequest,
   CompanyRequestStatus,
 } from "../../../domain/entities/CompanyRequest";
-
 import { ICompanyRequestRepository } from "../../../domain/repositories/ICompanyRequestRepository";
+
 import { UpdateCompanyRequestData } from "../../../domain/types/UpdateCompanyRequesstData";
 import { CompanyDocument } from "../../../domain/value-objects/CompanyDocuments";
 import { CompanyLocation } from "../../../domain/value-objects/CompanyLocation";
@@ -53,10 +53,30 @@ constructor(
       companyRequestDocument
     );
   }
+async findByPhone(phone: string): Promise<CompanyRequest | null> {
+  const companyRequestDocument=
+    await CompanyRequestModel.findOne({
+      phone,
+    }).lean<CompanyRequestDocument>();
+
+  if (!companyRequestDocument) {
+    return null;
+  }
+
+  return CompanyRequestMapper.toDomain (companyRequestDocument);
+}
 
 
+async findByEmail(email: string): Promise<CompanyRequest|null> {
+    const companyRequestDocument=await CompanyRequestModel.findOne({
+      companyEmail:email
+    }).lean<CompanyRequestDocument>()
+  if (!companyRequestDocument) {
+    return null;
+  }
 
-
+  return CompanyRequestMapper.toDomain (companyRequestDocument);
+}
 
 
   async findById(
@@ -103,19 +123,27 @@ constructor(
     );
   }
 
-  async updateStatus(
-    id: string,
-    status: CompanyRequestStatus
-  ): Promise<CompanyRequest> {
+async updateStatus(
+  id: string,
+  status: CompanyRequestStatus,
+  reviewedBy: string|null,
+    reviewedAt: Date | null,
+  reviewRemarks: string | null,
+  rejectionReason: string | null
+): Promise<CompanyRequest> {
 
     const companyRequestDocument =
       await CompanyRequestModel.findByIdAndUpdate(
         id,
         {
           $set: {
-            status,
-            updatedAt: new Date(),
-          },
+  status,
+  reviewedBy,
+  reviewedAt,
+  reviewRemarks,
+  rejectionReason,
+  updatedAt: new Date(),
+}
         },
         {
           new: true,

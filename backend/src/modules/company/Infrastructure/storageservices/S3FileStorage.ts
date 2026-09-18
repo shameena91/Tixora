@@ -1,7 +1,7 @@
 import { env } from "../../../../config/env";
 import { IFileStoragePort } from "../../application/ports/IFileStoragePort";
-import { S3Client,  PutObjectCommand, DeleteObjectCommand, } from "@aws-sdk/client-s3";
-
+import { S3Client,  PutObjectCommand, DeleteObjectCommand, GetObjectCommand, } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 
 export class S3FileStorage implements IFileStoragePort {
@@ -60,4 +60,31 @@ console.log("Bucket name",env.awsBucketName,)
 
     await this.s3Client.send(command);
   }
+  async getSignedDownloadUrl(key: string): Promise<string> {
+  const command = new GetObjectCommand({
+    Bucket: env.awsBucketName,
+    Key: key,
+      ResponseContentDisposition: "attachment",
+  });
+
+  
+
+  return await getSignedUrl(this.s3Client, command, {
+    expiresIn: 300,
+  });
+}
+ async getSignedUrl(key: string): Promise<string> {
+  const command = new GetObjectCommand({
+    Bucket: env.awsBucketName,
+    Key: key,
+     ResponseContentDisposition: "inline"
+     
+  });
+  
+  
+
+  return await getSignedUrl(this.s3Client, command, {
+    expiresIn: 300,
+  });
+}
 }

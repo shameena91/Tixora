@@ -4,6 +4,7 @@ import { ITokenService } from "../../application/ports/ITokenServices";
 import { AppErrors } from "../../../../shared/errors/AppErrors";
 import { MESSAGES } from "../../../../shared/constants/messages";
 import { HttpStatusCode } from "../../../../shared/constants/httpStattusCode";
+import { AccountRole } from "../../domain/entities/Account";
 export class JwtTokenService implements ITokenService {
   private readonly accessTokenSecret: string;
   private readonly refreshTokenSecret: string;
@@ -19,6 +20,7 @@ export class JwtTokenService implements ITokenService {
   generateAccessToken(payload: {
     accountId: string;
     email: string;
+      role: AccountRole;
   }): string {
     return jwt.sign(payload, this.accessTokenSecret, {
       expiresIn: "15m",
@@ -32,11 +34,15 @@ export class JwtTokenService implements ITokenService {
       expiresIn: "7d",
     });
   }
-  verifyAccessToken(token: string): { accountId: string; email: string; } {
+  verifyAccessToken(token: string): { accountId: string; 
+    email: string;
+        role: AccountRole;
+ } {
       const decoded= jwt.verify(token,this.accessTokenSecret)
       return decoded as{
         accountId:string,
         email:string
+           role: AccountRole; 
       }
   }
   verifyRefreshToken(
@@ -51,6 +57,7 @@ export class JwtTokenService implements ITokenService {
 
     return decoded as {
       accountId: string;
+    
     };
 
   } catch (error) {

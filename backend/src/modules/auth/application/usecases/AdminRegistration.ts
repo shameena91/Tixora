@@ -17,7 +17,19 @@ export class AdminRegistration implements IAdminRegistration {
         HttpStatusCode.BAD_REQUEST,
       );
     }
-
+ const existingAccount =
+      await this.accountRepository.findByPhone(
+        dto.phoneNumber,
+      );
+        if (
+      existingAccount &&
+      existingAccount.id !== account.id
+    ) {
+      throw new AppErrors(
+        MESSAGES.PHONE_ALREADY_EXISTS,
+        HttpStatusCode.CONFLICT,
+      );
+    }
     await this.accountRepository.updateAdminDetails(
       account.id,
       dto.firstName,

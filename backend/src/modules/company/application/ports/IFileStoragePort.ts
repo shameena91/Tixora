@@ -10,4 +10,7 @@ export interface IFileStoragePort {
   }>;
 
   delete(key: string): Promise<void>;
+    getSignedUrl(key: string): Promise<string>;
+    getSignedDownloadUrl(key: string): Promise<string>;
 }
+

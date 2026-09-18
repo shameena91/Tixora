@@ -5,6 +5,7 @@ export interface CompanyRequestDetails {
 
   company: {
     companyName: string;
+    requestId:string;
     registrationNumber: string;
     companyEmail: string;
     phone: string;

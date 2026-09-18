@@ -1,4 +1,4 @@
-import { HttpStatusCode } from "../../../../shared/constants/httpStattusCode";
+
 import { MESSAGES } from "../../../../shared/constants/messages";
 import { AppErrors } from "../../../../shared/errors/AppErrors";
 import { ErrorCode } from "../../../../shared/errors/ErrorCode";
@@ -24,10 +24,16 @@ export class ResubmitCompanyRequest implements IResubmitCompanyRequest{
     }
 
 companyRequest.resubmit();
+console.log("STATUS AFTER RESUBMIT:", companyRequest.status);
 
     return this.companyRequestRepository.updateStatus(
       id,
-      companyRequest.status
+      companyRequest.status,
+       companyRequest.reviewedBy,
+  companyRequest.reviewedAt,
+  companyRequest.reviewRemarks,
+  companyRequest.rejectionReason
+   
     )
 
 }}

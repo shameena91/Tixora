@@ -2,6 +2,7 @@
 
 import { IBaseRepository } from "../../../../shared/repository/IBaseRepository";
 import { CompanyRequest, CompanyRequestStatus } from "../entities/CompanyRequest";
+import { CompanyLogoFile } from "../types/CompanyDocumentFile";
 import { UpdateCompanyRequestData } from "../types/UpdateCompanyRequesstData";
 import { CompanyDocument } from "../value-objects/CompanyDocuments";
 import { CompanyLocation } from "../value-objects/CompanyLocation";
@@ -9,13 +10,21 @@ import { CompanyLocation } from "../value-objects/CompanyLocation";
 
  export interface ICompanyRequestRepository extends IBaseRepository<CompanyRequest>{
 findByAccountId(accountId:string):Promise<CompanyRequest|null>
-  updateInfo(
+   findByPhone(phone: string): Promise<CompanyRequest | null>;
+     findByEmail(email: string): Promise<CompanyRequest | null>;
+
+updateInfo(
     id: string,
     data: UpdateCompanyRequestData
   ): Promise<CompanyRequest>;
  updateStatus(
-    id: string,
-    status: CompanyRequestStatus
+   id: string,
+  status: CompanyRequestStatus,
+  reviewedBy: string|null,
+  reviewedAt: Date |null,
+  reviewRemarks: string | null,
+  rejectionReason: string | null
+
   ): Promise<CompanyRequest>;
 updateLocation(
   id: string,

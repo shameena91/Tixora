@@ -49,7 +49,18 @@ export class AccountRepository implements IAccountRepository {
 
     return AccountMapper.toDomain(accountDocument);
   }
+async findByPhone(phone: string): Promise<Account | null> {
+  const accountDocument =
+    await AccountModel.findOne({
+      phone,
+    }).lean<AccountDocument>();
 
+  if (!accountDocument) {
+    return null;
+  }
+
+  return AccountMapper.toDomain(accountDocument);
+}
   async updateAdminDetails(
     id: string,
     firstName: string,

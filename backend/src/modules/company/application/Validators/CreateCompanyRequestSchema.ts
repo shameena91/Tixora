@@ -37,10 +37,7 @@ export const createCompanyRequestSchema = z.object({
     .url()
     .nullable(),
 
-  logo: z
-    .string()
-    .nullable(),
-
+  logo: z.string().nullable(),
   description: z
     .string()
     .nullable(),

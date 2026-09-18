@@ -24,6 +24,10 @@ import { NotificationRepository } from "../../notification/infrastructure/reposi
 import { NotificationCreateData, NotificationDocument } from "../../notification/application/mapper/NotificationMappers";
 import { NotificationModel } from "../../notification/infrastructure/models/NotifiationModel";
 import { GetAllCompanyRequests } from "../application/usecases/GetAllCompanyRequests";
+import { GetMyCompanyRequest } from "../application/usecases/GetMyCompanyRequest";
+import { UpdateCompanyLogo } from "../application/usecases/UpdateCompanyLogo";
+import { GetCompanyDocumentUrl } from "../application/usecases/GetCompanyDocumentUrl";
+import { UpdateCompanyDocumentStatusUseCase } from "../application/usecases/UpdateCompanyDocumentStatus";
 
 const baseCompanyRequestRepository =
   new BaseRepository(
@@ -40,12 +44,13 @@ const baseAccountRepository =
 
 const accountRepository =
   new AccountRepository(baseAccountRepository);
-
+ const fileStorage = new S3FileStorage();
   
 const createCompanyRequest =
   new CreateCompanyRequest(
     companyRequestRepository,
-    accountRepository
+    accountRepository,
+    fileStorage
   );
 
 
@@ -84,11 +89,7 @@ const updateCompanyLocation =
     accountRepository
   );
  
-  const getCompanyRequest =
-  new GetCompanyRequest(
-    companyRequestRepository,
-    accountRepository
-  );
+
   const baseNotificationRepository =
     new BaseRepository<
       NotificationDocument,
@@ -110,7 +111,19 @@ const notificationRepository =
 
   );
 
-  const fileStorage = new S3FileStorage();
+ 
+  const getCompanyRequest =
+  new GetCompanyRequest(
+    companyRequestRepository,
+    accountRepository,
+    fileStorage
+  );
+const updateCompanyLogo =
+  new UpdateCompanyLogo(
+    
+    fileStorage
+  );
+
   const updateCompanyDocuments =
   new UpdateCompanyDocuments(
     companyRequestRepository,
@@ -126,6 +139,19 @@ const notificationRepository =
     companyRequestRepository,
     accountRepository
   );
+  const getMyCompanyRequest=new GetMyCompanyRequest(
+    companyRequestRepository
+  )
+
+  const getCompanyDocumentUrl=new GetCompanyDocumentUrl(
+companyRequestRepository,
+    fileStorage
+
+  )
+
+  const updateCompanyDocumentStatus=new UpdateCompanyDocumentStatusUseCase(
+    companyRequestRepository
+  )
 export const companyRequestController =
   new CompanyRequestController(
     createCompanyRequest,
@@ -140,6 +166,10 @@ export const companyRequestController =
      getAllCompanyRequest,
     completeCompanyRegistration,
     submitCompanyDocuments,
+    getMyCompanyRequest,
+    updateCompanyLogo,
+    getCompanyDocumentUrl,
+    updateCompanyDocumentStatus
        
        
   );

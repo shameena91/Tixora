@@ -5,3 +5,9 @@ export interface CompanyDocumentFile {
   fileName: string;
   mimeType: string;
 }
+
+export interface CompanyLogoFile {
+  file: Buffer;
+  fileName: string;
+  mimeType: string;
+}

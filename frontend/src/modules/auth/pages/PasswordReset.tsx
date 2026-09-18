@@ -5,7 +5,6 @@ import toast from "react-hot-toast";
 import PasswordForm from "../components/PasswordForm";
 import { resetPassword } from "../services/authService";
 import Navbar from "../../../components/home/Navbar";
-import AuthSidebar from "../components/AuthSidebar";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -18,16 +17,16 @@ const ResetPassword = () => {
     navigate("/login");
   };
 
- return (
-  <div className="min-h-screen bg-slate-50">
-    <Navbar showRegister={false} showLogin={false} />
-
-    <div className="flex min-h-[calc(100vh-80px)]">
-      {/* Sidebar */}
-      <AuthSidebar />
+  return (
+    <div className="min-h-screen bg-slate-50">
+      {/* Navbar */}
+      <Navbar
+        showRegister={false}
+        showLogin={false}
+      />
 
       {/* Main */}
-      <main className="flex flex-1 items-center justify-center px-5 py-10">
+      <main className="mx-auto flex min-h-[calc(100vh-64px)] w-full max-w-7xl items-center justify-center px-5 py-10 sm:px-8 lg:px-12">
         <div className="w-full max-w-md">
 
           {/* Card */}
@@ -46,10 +45,12 @@ const ResetPassword = () => {
               Reset your password
             </h1>
 
+            {/* Description */}
             <p className="mt-2 text-sm leading-6 text-slate-500">
               Create a new password for your Tixora account.
             </p>
 
+            {/* Email */}
             {email && (
               <p className="mt-3 text-sm font-semibold text-[#5420a8]">
                 {email}
@@ -76,8 +77,8 @@ const ResetPassword = () => {
             ) : (
               <div className="mt-6">
                 <p className="text-sm text-red-500">
-                  Email not found. Please restart the
-                  password reset process.
+                  Email not found. Please restart the password reset
+                  process.
                 </p>
 
                 <button
@@ -109,8 +110,7 @@ const ResetPassword = () => {
         </div>
       </main>
     </div>
-  </div>
-);
+  );
 };
 
 export default ResetPassword;

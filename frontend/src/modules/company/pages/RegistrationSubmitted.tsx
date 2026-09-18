@@ -1,37 +1,35 @@
 
-import {  Info, Ticket } from "lucide-react";
+import {  Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../../../components/home/Navbar";
+import { useContext } from "react";
+import { AuthContext } from "../../auth/context/AuthContext";
 
 const RegistrationSubmitted = () => {
+  const auth = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleBackToHome = () => {
     navigate("/");
   };
-
- 
+const handleCheckStatus=()=>{
+  navigate("/Company-admin/check-status")
+}
+ const searchParams = new URLSearchParams(window.location.search);
+const isResubmit = searchParams.get("resubmit") === "true";
 
   return (
+    
+        
     <div className="min-h-screen bg-slate-50 px-4 py-5">
-      <div className="mx-auto min-h-[calc(100vh-40px)] max-w-[576px] overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+        <Navbar showRegister={false}  name={auth?.userName} showLogin={false}/>
+      <div className="mt-5 mx-auto min-h-[calc(100vh-40px)] max-w-[576px] overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
 
         {/* Header */}
         <div className="flex h-20 items-center justify-between border-b border-slate-100 px-6">
 
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#5420a8]">
-              <Ticket
-                size={18}
-                className="text-white"
-                fill="white"
-              />
-            </div>
-
-            <span className="text-xl font-semibold text-slate-900">
-              Tixora
-            </span>
-          </div>
+          
 
           {/* Back to Home */}
           
@@ -130,12 +128,19 @@ const RegistrationSubmitted = () => {
           </div>
 
           {/* Login Button */}
-          <button
+         {!isResubmit&&( <button
             type="button"
             onClick={handleBackToHome}
             className="mt-10 h-14 w-full max-w-[480px] rounded-lg bg-[#5420a8] text-[15px] font-semibold text-white shadow-lg shadow-purple-200 transition hover:bg-[#481a91]"
           >
            Back to Home
+          </button>)}
+          <button
+            type="submit"
+          onClick ={handleCheckStatus}
+            className="rounded-lg mt-5 bg-blue-600 px-7 py-2.5 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            CheckStatus
           </button>
 
         </div>

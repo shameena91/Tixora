@@ -1,21 +1,40 @@
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import SuperAdminNavbar from "../components/SuperAdminNavbar";
 import SuperAdminSidebar from "../components/SuperAdminSidebar";
+import SuperAdminNavbar from "../components/SuperAdminNavbar";
 
 function SuperAdminLayout() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  const handleToggleSidebar = () => {
+    setIsSidebarOpen((prev) => !prev);
+  };
+
   return (
-    <div className="min-h-screen bg-[#faf7ff]">
+    <div className="flex min-h-screen bg-slate-50">
 
-      <SuperAdminNavbar />
+      {/* Sidebar */}
+      <SuperAdminSidebar
+        isOpen={isSidebarOpen}
+        setIsOpen={setIsSidebarOpen}
+      />
 
-      <div className="flex">
-        <SuperAdminSidebar />
+      {/* Right Section */}
+      <div className="flex min-w-0 flex-1 flex-col">
 
-        <main className="flex-1">
-          <Outlet />
+        {/* Navbar */}
+        <SuperAdminNavbar
+          onMenuClick={handleToggleSidebar}
+        />
+
+        {/* Content */}
+        <main className="flex-1 overflow-y-auto">
+          <div className="p-6">
+            <Outlet />
+          </div>
         </main>
-      </div>
 
+      </div>
     </div>
   );
 }
