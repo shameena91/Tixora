@@ -8,8 +8,8 @@ import { IResetPassword } from "../abstractions/IResetPassword";
 import { IPasswordHasher } from "../ports/IPasswordHasher";
 
  export class ResetPassword implements IResetPassword {
-  constructor(private readonly accountRepository: IAccountRepository,
-      private readonly passwordHasher: IPasswordHasher
+  constructor(private readonly _accountRepository: IAccountRepository,
+      private readonly _passwordHasher: IPasswordHasher
   ) {}
 
   async execute(
@@ -24,14 +24,14 @@ import { IPasswordHasher } from "../ports/IPasswordHasher";
       );
     }
 
-    const account = await this.accountRepository.findByEmail(email);
+    const account = await this._accountRepository.findByEmail(email);
 
     if (!account) {
       throw new AppErrors(MESSAGES.ACCOUNT_NOT_FOUND, HttpStatusCode.NOT_FOUND);
     }
 
-    const hashedPassword = await this.passwordHasher.hash(password);
+    const hashedPassword = await this._passwordHasher.hash(password);
 
-    await this.accountRepository.updatePassword(account.id, hashedPassword);
+    await this._accountRepository.updatePassword(account.id, hashedPassword);
   }
 }

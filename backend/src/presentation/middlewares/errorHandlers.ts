@@ -35,7 +35,7 @@ export const errorHandler = (
   console.log("ZOD ISSUES:", error.issues);
     res.status(HttpStatusCode.BAD_REQUEST).json({
       success: false,
-      message: "Validation failed",
+      message:  error.issues[0]?.message || "Validation failed",
       errors: z.treeifyError(error),
     });
 

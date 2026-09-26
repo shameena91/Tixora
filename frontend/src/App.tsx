@@ -18,6 +18,11 @@ import CompanyRequestDetails from "./modules/superadmin/pages/CompanyrequestDeta
 import SuperAdminDashbord from "./modules/superadmin/pages/SuperAdminDashbord";
 import CheckStatus from "./modules/company/pages/CheckStatus";
 import RegistrationSubmitted from "./modules/company/pages/RegistrationSubmitted";
+import SubscriptionPlan from "./modules/superadmin/pages/SubscriptionPlan";
+import ViewPlanDetail from "./modules/superadmin/pages/ViewPlanDetail";
+import CompanySubscriptionPlan from "./modules/company/pages/CompanySubscriptionPlan";
+import CompanyAdminDashboard from "./modules/company/pages/CompanyAdminDashboard";
+
 
 const App = () => {
   return (
@@ -36,7 +41,7 @@ const App = () => {
           path="/register/company-register/:companyRequestId"
           element={<CompanyInformation />}
         />
-     
+
         <Route
           path="/register/company-register/:companyRequestId/location"
           element={<CompanyLocation />}
@@ -73,7 +78,24 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/Company-admin/select-subscription"
+          element={
+            <ProtectedRoute>
+              <CompanySubscriptionPlan />
+            </ProtectedRoute>
+          }
+        />
 
+
+<Route
+  path="/Company-admin/dashboard"
+  element={
+    <ProtectedRoute>
+      <CompanyAdminDashboard />
+    </ProtectedRoute>
+  }
+/>
         <Route
           path="/super-admin"
           element={
@@ -92,6 +114,9 @@ const App = () => {
           />
 
           <Route path="companies" element={<div>Companies</div>} />
+
+          <Route path="subscription-plan" element={<SubscriptionPlan />} />
+          <Route path="subscription-plan/:id" element={<ViewPlanDetail />} />
         </Route>
       </Routes>
     </BrowserRouter>

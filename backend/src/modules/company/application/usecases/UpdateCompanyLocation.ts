@@ -14,8 +14,8 @@ import { IUpdateCompanyLocation } from "../abstraction/IUpdateCompanyLocation";
 // After company Information ading location dadetails
 export class UpdateCompanyLocation implements IUpdateCompanyLocation{
   constructor(
-    private readonly companyRequestRepository: ICompanyRequestRepository,
-    private readonly accountRepository: IAccountRepository
+    private readonly _companyRequestRepository: ICompanyRequestRepository,
+    private readonly _accountRepository: IAccountRepository
   ) {}
 
   async execute(
@@ -23,7 +23,7 @@ export class UpdateCompanyLocation implements IUpdateCompanyLocation{
     location: CompanyLocation
   ) {
     const companyRequest =
-      await this.companyRequestRepository.findById(
+      await this._companyRequestRepository.findById(
         companyRequestId
       );
 console.log("COMPANY REQUEST:", companyRequest);
@@ -39,12 +39,12 @@ console.log("COMPANY REQUEST ID:", companyRequestId);
 console.log("LOCATION:", location);console.log("COMPANY REQUEST ID:", companyRequestId);
 console.log("LOCATION:", location);
     const updatedCompanyRequest =
-      await this.companyRequestRepository.updateLocation(
+      await this._companyRequestRepository.updateLocation(
         companyRequestId,
         location
       );
 // Company registration Step as company location
-    await this.accountRepository.updateRegistrationStep(
+    await this._accountRepository.updateRegistrationStep(
       companyRequest.accountId,
       RegistrationStep.COMPANY_LOCATION
     );

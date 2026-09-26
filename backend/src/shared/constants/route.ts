@@ -41,7 +41,16 @@ DOCUMENT_REJECTED:"/:companyRequestId/documents/:documentType/reject",
 
 
 export const SUBSCRIPTION_ROUTE_CONSTANTS={
-  CREATE:"/"
+  CREATE:"/",
+  GET_SUBSCRIPTION_PLAN_NAME:"/get-plan-names",
+  GET_ALL_PLANS:"/",
+  GET_PLAN_BY_ID:"/:id",
+  UPDTE_PLAN:"/:id",
+  UPDATE_STATUS:"/:id/status",
+  DELET_PLAN:"/:id",
+  SELECT_SUBSCRIPTION:"/select-plan",
+ MY_SUBSCRIPTION_STATUS: "/my-subscription-status"
+
 
 }
 

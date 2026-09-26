@@ -6,12 +6,12 @@ import { MESSAGES } from "../../../../shared/constants/messages";
 import { HttpStatusCode } from "../../../../shared/constants/httpStattusCode";
 import { AccountRole } from "../../domain/entities/Account";
 export class JwtTokenService implements ITokenService {
-  private readonly accessTokenSecret: string;
-  private readonly refreshTokenSecret: string;
+  private readonly _accessTokenSecret: string;
+  private readonly _refreshTokenSecret: string;
 
   constructor() {
-    this.accessTokenSecret = env.jwtAccessToken;
-  this.refreshTokenSecret = env.jwtRefreshToken;
+    this._accessTokenSecret = env.jwtAccessToken;
+  this._refreshTokenSecret = env.jwtRefreshToken;
 
 
   
@@ -22,7 +22,7 @@ export class JwtTokenService implements ITokenService {
     email: string;
       role: AccountRole;
   }): string {
-    return jwt.sign(payload, this.accessTokenSecret, {
+    return jwt.sign(payload, this._accessTokenSecret, {
       expiresIn: "15m",
     });
   }
@@ -30,7 +30,7 @@ export class JwtTokenService implements ITokenService {
   generateRefreshToken(payload: {
     accountId: string;
   }): string {
-    return jwt.sign(payload, this.refreshTokenSecret, {
+    return jwt.sign(payload, this._refreshTokenSecret, {
       expiresIn: "7d",
     });
   }
@@ -38,10 +38,10 @@ export class JwtTokenService implements ITokenService {
     email: string;
         role: AccountRole;
  } {
-      const decoded= jwt.verify(token,this.accessTokenSecret)
+      const decoded= jwt.verify(token,this._accessTokenSecret)
       return decoded as{
         accountId:string,
-        email:string
+        email:string,
            role: AccountRole; 
       }
   }
@@ -52,7 +52,7 @@ export class JwtTokenService implements ITokenService {
   try {
     const decoded = jwt.verify(
       token,
-      this.refreshTokenSecret
+      this._refreshTokenSecret
     );
 
     return decoded as {

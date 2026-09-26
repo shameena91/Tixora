@@ -10,14 +10,17 @@ import { AppErrors } from "../../../../shared/errors/AppErrors";
 import { MESSAGES } from "../../../../shared/constants/messages";
 import { HttpStatusCode } from "../../../../shared/constants/httpStattusCode";
 import { IFileStoragePort } from "../ports/IFileStoragePort";
+import { TimelineEntityType } from "../../../timeline/domain/entities/Timeline";
+import { ICreateTimeline } from "../../../timeline/application/abstraction/ICreateTimeline";
 
 
 // After register admin create company with company details
 export class CreateCompanyRequest implements ICreateCompanyRequest{
   constructor(
-    private readonly companyRequestRepository: ICompanyRequestRepository,
-    private readonly accountRepository:IAccountRepository,
-    private readonly s3Service:IFileStoragePort
+    private readonly _companyRequestRepository: ICompanyRequestRepository,
+    private readonly _accountRepository:IAccountRepository,
+   
+     private readonly _createTimeline: ICreateTimeline
   ) {}
 
 
@@ -26,7 +29,7 @@ async execute(
 ): Promise<CompanyRequest> {
 
   const existingCompanyRequest =
-    await this.companyRequestRepository.findByPhone(
+    await this._companyRequestRepository.findByPhone(
       data.phone,
     );
 
@@ -38,7 +41,7 @@ async execute(
   }
 
   const existingCompanyEmail =
-    await this.companyRequestRepository.findByEmail(
+    await this._companyRequestRepository.findByEmail(
       data.companyEmail
     );
 
@@ -92,11 +95,19 @@ async execute(
   );
 
   const createdCompanyRequest =
-    await this.companyRequestRepository.create(
+    await this._companyRequestRepository.create(
       companyRequest
     );
-
-  await this.accountRepository.updateRegistrationStep(
+await this._createTimeline.execute({
+  entityType: TimelineEntityType.COMPANY_REQUEST,
+  entityId: createdCompanyRequest.id,
+  action: "SUBMITTED",
+  description: "Company registration request submitted",
+  performedBy: data.accountId,
+  metadata: null,
+  createdAt: new Date(),
+});
+  await this._accountRepository.updateRegistrationStep(
     data.accountId,
     RegistrationStep.COMPANY_DETAILS
   );

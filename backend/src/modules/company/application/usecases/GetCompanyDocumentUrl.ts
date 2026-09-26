@@ -8,8 +8,8 @@ import { DocumentAccessType } from "../../domain/types/DocumentAccessType";
 
 export class GetCompanyDocumentUrl implements IGetCompanyDocumentUrl{
   constructor(
-    private readonly companyRequestRepository: ICompanyRequestRepository,
-    private readonly fileStorage: IFileStoragePort
+    private readonly _companyRequestRepository: ICompanyRequestRepository,
+    private readonly _fileStorage: IFileStoragePort
   ) {}
 
    async execute(
@@ -18,7 +18,7 @@ export class GetCompanyDocumentUrl implements IGetCompanyDocumentUrl{
     accessType: DocumentAccessType,
   ): Promise<string> {
     const companyRequest =
-      await this.companyRequestRepository.findById(companyRequestId);
+      await this._companyRequestRepository.findById(companyRequestId);
 
     if (!companyRequest) {
       throw new AppErrors(
@@ -39,9 +39,9 @@ export class GetCompanyDocumentUrl implements IGetCompanyDocumentUrl{
     }
 
     if (accessType === "view") {
-      return await this.fileStorage.getSignedUrl(document.fileKey);
+      return await this._fileStorage.getSignedUrl(document.fileKey);
     }
 
-    return await this.fileStorage.getSignedDownloadUrl(document.fileKey);
+    return await this._fileStorage.getSignedDownloadUrl(document.fileKey);
   }
 }

@@ -1,5 +1,7 @@
 import {
   Model,
+  QueryFilter,
+  
 } from "mongoose";
 
 import { IBaseRepository } from "../../shared/repository/IBaseRepository";
@@ -24,10 +26,12 @@ export class BaseRepository<T, CreateData = T>
       .exec();
   }
 
-  async findAll(): Promise<T[]> {
-    return await this.model
-      .find()
-      .lean<T[]>()
-      .exec();
-  }
+ async findAll(
+  filter: QueryFilter<T> = {}
+): Promise<T[]> {
+  return await this.model
+    .find(filter)
+    .lean<T[]>()
+    .exec();
+}
 }

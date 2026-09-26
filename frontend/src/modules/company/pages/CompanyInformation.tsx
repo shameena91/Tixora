@@ -1,9 +1,8 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { AuthContext } from "../../auth/context/AuthContext";
-
+// import { AuthContext } from "../../auth/context/AuthContext";
 
 import { companyRegistrationSchema } from "../schema/companyRegistrationSchema";
 import {
@@ -45,10 +44,8 @@ const CompanyInformation = () => {
 
   const [companyTypes, setCompanyTypes] = useState<string[]>([]);
   const [employeeRange, setEmployeeRange] = useState<string[]>([]);
-const [logoFile, setLogoFile] = useState<File | null>(null);
-  
 
-/*
+  /*
    * Fetch existing Company Request
    *
    * Used when editing/resubmitting an existing request.
@@ -60,8 +57,7 @@ const [logoFile, setLogoFile] = useState<File | null>(null);
 
     const fetchCompanyRequest = async () => {
       try {
-        const response =
-          await getMyCompanyRequestForEdit(companyRequestId);
+        const response = await getMyCompanyRequestForEdit(companyRequestId);
 
         const company = response.data.company;
 
@@ -89,7 +85,6 @@ const [logoFile, setLogoFile] = useState<File | null>(null);
     fetchCompanyRequest();
   }, [companyRequestId]);
 
- 
   useEffect(() => {
     const fetchCompanyTypes = async () => {
       try {
@@ -123,46 +118,39 @@ const [logoFile, setLogoFile] = useState<File | null>(null);
     fetchCompanyTypes();
   }, []);
 
-  
-const handleLogoChange = async (
-  event: React.ChangeEvent<HTMLInputElement>
-) => {
-  const file = event.target.files?.[0];
-console.log("image logochange:",);
-  if (!file) {
-    return;
-  }
+  const handleLogoChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    console.log("image logochange:");
+    if (!file) {
+      return;
+    }
 
-  try {
-    setLogoFile(file);
+    try {
+      const result = await uploadCompanyLogo(file);
 
-    const result = await uploadCompanyLogo(file);
+      console.log("Logo uploaded:", result.data.logo);
 
-    console.log("Logo uploaded:", result.data.logo);
+      setFormData((prev) => ({
+        ...prev,
+        logo: result.data.logo,
+      }));
 
-    setFormData((prev) => ({
-      ...prev,
-      logo: result.data.logo,
-    }));
-
-    toast.success("Logo uploaded successfully");
-  } catch (error) {
-    setLogoFile(null);
-
-    toast.error(
-      error instanceof Error
-        ? error.message
-        : "Failed to upload logo"
-    );
-  }
-};
+      toast.success("Logo uploaded successfully");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to upload logo",
+      );
+    }
+  };
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
-    console.log("change")
+    console.log("change");
 
     setFormData((prev) => ({
       ...prev,
@@ -174,24 +162,19 @@ console.log("image logochange:",);
     e.preventDefault();
 
     const result = companyRegistrationSchema.safeParse(formData);
-console.log(result)
+
     if (!result.success) {
-      const fieldErrors: Partial<
-        Record<keyof CompanyInfo, string>
-      > = {};
+      const fieldErrors: Partial<Record<keyof CompanyInfo, string>> = {};
 
-      const errors = result.error.flatten().fieldErrors;
+      result.error.issues.forEach((issue) => {
+        const fieldName = issue.path[0];
 
-      Object.keys(errors).forEach((key) => {
-        const field = key as keyof CompanyInfo;
-
-        if (errors[field]?.[0]) {
-          fieldErrors[field] = errors[field][0];
+        if (typeof fieldName === "string") {
+          fieldErrors[fieldName as keyof CompanyInfo] = issue.message;
         }
       });
 
       setErrors(fieldErrors);
-
       return;
     }
 
@@ -214,18 +197,13 @@ console.log(result)
        * RESUBMIT / UPDATE
        */
       if (companyRequestId) {
-        const response = await updateCompanyRequest(
-          companyRequestId,
-          payload
-        );
+        const response = await updateCompanyRequest(companyRequestId, payload);
 
         console.log("Company request updated:", response);
 
         toast.success("Company Info Updated");
 
-        navigate(
-          `/register/company-register/${companyRequestId}/location`
-        );
+        navigate(`/register/company-register/${companyRequestId}/location`);
 
         return;
       }
@@ -244,24 +222,22 @@ console.log(result)
         accountId,
         ...payload,
       };
-console.log("🔥 HANDLE NEXT CALLED");
+      console.log("🔥 HANDLE NEXT CALLED");
 
-console.log("Company Request ID:", companyRequestId);
+      console.log("Company Request ID:", companyRequestId);
 
-console.log("🔥 ABOUT TO CREATE COMPANY REQUEST");
+      console.log("🔥 ABOUT TO CREATE COMPANY REQUEST");
 
-const response = await createCompanyRequest(createPayload);
+      const response = await createCompanyRequest(createPayload);
 
-console.log("🔥 CREATE COMPANY REQUEST SUCCESS");
-console.log("CREATE RESPONSE:", response);
+      console.log("🔥 CREATE COMPANY REQUEST SUCCESS");
+      console.log("CREATE RESPONSE:", response);
       // const response = await createCompanyRequest(createPayload);
 
-    
-console.log("CREATE RESPONSE:", response);
-console.log("NEW COMPANY REQUEST ID:", response.data.id);
+      console.log("CREATE RESPONSE:", response);
+      console.log("NEW COMPANY REQUEST ID:", response.data.id);
 
-
-      const createCompanyRequestId=response.data.id
+      const createCompanyRequestId = response.data.id;
       // localStorage.setItem(
       //   "companyRequestId",
       //   response.data.id
@@ -269,9 +245,7 @@ console.log("NEW COMPANY REQUEST ID:", response.data.id);
 
       toast.success("Company Info Saved");
 
-     navigate(
-  `/register/company-register/${createCompanyRequestId}/location`
-);
+      navigate(`/register/company-register/${createCompanyRequestId}/location`);
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
@@ -295,10 +269,8 @@ console.log("NEW COMPANY REQUEST ID:", response.data.id);
       {/* Form Card */}
       <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
         <form onSubmit={handleNext} className="space-y-6">
-
           {/* Company Name + Registration Number */}
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-
             {/* Company Name */}
             <div>
               <label
@@ -397,9 +369,7 @@ console.log("NEW COMPANY REQUEST ID:", response.data.id);
               />
 
               {errors.phone && (
-                <p className="mt-1 text-sm text-red-500">
-                  {errors.phone}
-                </p>
+                <p className="mt-1 text-sm text-red-500">{errors.phone}</p>
               )}
             </div>
 
@@ -445,9 +415,7 @@ console.log("NEW COMPANY REQUEST ID:", response.data.id);
                 onChange={handleChange}
                 className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 outline-none focus:border-[#6D3CC9]"
               >
-                <option value="">
-                  Select company type
-                </option>
+                <option value="">Select company type</option>
 
                 {companyTypes.map((type) => (
                   <option key={type} value={type}>
@@ -479,9 +447,7 @@ console.log("NEW COMPANY REQUEST ID:", response.data.id);
                 onChange={handleChange}
                 className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 outline-none focus:border-[#6D3CC9]"
               >
-                <option value="">
-                  Select employee range
-                </option>
+                <option value="">Select employee range</option>
 
                 {employeeRange.map((range) => (
                   <option key={range} value={range}>
@@ -519,33 +485,33 @@ console.log("NEW COMPANY REQUEST ID:", response.data.id);
           </div>
 
           {/* Logo */}
-        {/* Logo */}
-<div>
-  <label
-    htmlFor="logo"
-    className="mb-2 block text-sm font-medium text-gray-700"
-  >
-    Company Logo
-  </label>
+          {/* Logo */}
+          <div>
+            <label
+              htmlFor="logo"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Company Logo
+            </label>
 
-  <input
-  id="logo"
-  type="file"
-  name="logo"
-  accept="image/png,image/jpeg,image/jpg,image/webp"
-  onChange={(event) => {
-    console.log("🔥 LOGO INPUT CHANGED");
-    console.log("📁 Selected file:", event.target.files?.[0]);
+            <input
+              id="logo"
+              type="file"
+              name="logo"
+              accept="image/png,image/jpeg,image/jpg,image/webp"
+              onChange={(event) => {
+                console.log("🔥 LOGO INPUT CHANGED");
+                console.log("📁 Selected file:", event.target.files?.[0]);
 
-    handleLogoChange(event);
-  }}
-  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:border-[#6D3CC9]"
-/>
+                handleLogoChange(event);
+              }}
+              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none focus:border-[#6D3CC9]"
+            />
 
-  <p className="mt-1 text-xs text-gray-500">
-    Optional. PNG, JPG, JPEG or WEBP.
-  </p>
-</div>
+            <p className="mt-1 text-xs text-gray-500">
+              Optional. PNG, JPG, JPEG or WEBP.
+            </p>
+          </div>
 
           {/* Description */}
           <div>
@@ -576,7 +542,6 @@ console.log("NEW COMPANY REQUEST ID:", response.data.id);
               Next →
             </button>
           </div>
-
         </form>
       </div>
     </RegistrationLayout>

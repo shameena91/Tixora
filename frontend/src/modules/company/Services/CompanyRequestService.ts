@@ -1,10 +1,11 @@
 import axiosInstance from "../../auth/api/axiosInstance";
+import { COMPANY_REQUEST_MESSAGES } from "../../../shared/constants/messages";
+import { COMPANY_REQUEST_ROUTES } from "../../../shared/constants/apiRoutes";
 import type { UpdateCompanyRequestData } from "../types/companyTypes";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Company Registration
-// 1.register comPany info
 
 export const createCompanyRequest = async (data: {
   accountId: string;
@@ -19,7 +20,7 @@ export const createCompanyRequest = async (data: {
   logo: string | null;
   description: string | null;
 }) => {
-  const response = await fetch(`${API_URL}/company-requests`, {
+  const response = await fetch(`${API_URL}${COMPANY_REQUEST_ROUTES.BASE}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -30,12 +31,14 @@ export const createCompanyRequest = async (data: {
   const result = await response.json();
 
   if (!response.ok) {
-    throw new Error(result.message || "Failed to create company request");
+    throw new Error(result.message || COMPANY_REQUEST_MESSAGES.CREATE_FAILED);
   }
 
   return result;
 };
-// 2.Update Location
+
+// Company Location
+
 export const updateCompanyLocation = async (
   id: string,
   data: {
@@ -46,57 +49,43 @@ export const updateCompanyLocation = async (
     postalCode: string;
   },
 ) => {
-  const res = await fetch(`${API_URL}/company-requests/${id}/location`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
+  const response = await fetch(
+    `${API_URL}${COMPANY_REQUEST_ROUTES.LOCATION(id)}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
     },
-    body: JSON.stringify(data),
-  });
+  );
 
-  const result = await res.json();
+  const result = await response.json();
 
-  if (!res.ok) {
-    throw new Error(result.message || "Failed to update location");
+  if (!response.ok) {
+    throw new Error(
+      result.message || COMPANY_REQUEST_MESSAGES.LOCATION_UPDATE_FAILED,
+    );
   }
 
   return result;
 };
 
-// export const updateCompanyRequest = async (id: string, data: object) => {
-//   const res = await fetch(
-//     `${API_URL}/company-requests/${id}`,
-
-//     {
-//       method: "PATCH",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify(data),
-//     },
-//   );
-//   const result = await res.json();
-//   if (!res.ok) {
-//     throw new Error(result.message || "Failed to update Location Data");
-//   }
-//   return result;
-// };
-
-
+// Update Company Request
 
 export const updateCompanyRequest = async (
   id: string,
-  data: UpdateCompanyRequestData 
+  data: UpdateCompanyRequestData,
 ) => {
   const response = await axiosInstance.patch(
-    `/company-requests/${id}`,
-    data
+    COMPANY_REQUEST_ROUTES.BY_ID(id),
+    data,
   );
 
   return response.data;
 };
 
-
+// Company Documents
 
 export const uploadCompanyDocument = async (
   id: string,
@@ -108,91 +97,115 @@ export const uploadCompanyDocument = async (
   formData.append("document", file);
   formData.append("documentType", documentType);
 
-  const res = await fetch(`${API_URL}/company-requests/${id}/documents`, {
-    method: "PATCH",
-    body: formData,
-  });
-
-  const result = await res.json();
-
-  if (!res.ok) {
-    throw new Error(result.message || "Failed to upload document");
-  }
-
-  return result;
-};
-
-
-export const uploadCompanyLogo = async (
-  file: File,
-) => {
-  const formData = new FormData();
- console.log("🔥 uploadCompanyLogo CALLED");
-  console.log("📁 File received:", file);
-  formData.append("logo", file);
-console.log("🔥 LOGO REQUEST URL:");
-console.log(`${API_URL}/company-requests/logo`);
-  const res = await fetch(
-    `${API_URL}/company-requests/logo`,
+  const response = await fetch(
+    `${API_URL}${COMPANY_REQUEST_ROUTES.DOCUMENTS(id)}`,
     {
       method: "PATCH",
       body: formData,
     },
   );
-console.log("🔥 AFTER FETCH");
-console.log("STATUS:", res.status);
-  const result = await res.json();
-console.log("🔥 LOGO BACKEND RESPONSE:", result);
-  if (!res.ok) {
+
+  const result = await response.json();
+
+  if (!response.ok) {
     throw new Error(
-      result.message || "Failed to upload company logo",
+      result.message || COMPANY_REQUEST_MESSAGES.DOCUMENT_UPLOAD_FAILED,
     );
   }
 
   return result;
 };
-export const getCompanyRequest = async (id: string) => {
-  const res = await fetch(`${API_URL}/company-requests/registration/${id}`);
-  const result = await res.json();
 
-  if (!res.ok) {
-    throw new Error(result.message || "Failed to fetch company request");
+// Company Logo
+
+export const uploadCompanyLogo = async (file: File) => {
+  const formData = new FormData();
+
+  formData.append("logo", file);
+
+  const response = await fetch(`${API_URL}${COMPANY_REQUEST_ROUTES.LOGO}`, {
+    method: "PATCH",
+    body: formData,
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      result.message || COMPANY_REQUEST_MESSAGES.LOGO_UPLOAD_FAILED,
+    );
   }
+
   return result;
 };
+
+// Get Company Request
+
+export const getCompanyRequest = async (id: string) => {
+  const response = await fetch(
+    `${API_URL}${COMPANY_REQUEST_ROUTES.REGISTRATION_BY_ID(id)}`,
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || COMPANY_REQUEST_MESSAGES.FETCH_FAILED);
+  }
+
+  return result;
+};
+
+// Get Company Request For Edit
+
 export const getMyCompanyRequestForEdit = async (id: string) => {
   const response = await axiosInstance.get(
-    `/company-requests/registration/${id}`
+    COMPANY_REQUEST_ROUTES.REGISTRATION_BY_ID(id),
   );
 
   return response.data;
 };
 
+// Get Company Types
+
 export const getCompanyTypes = async () => {
-  const response = await fetch(`${API_URL}/company-requests/company-types`);
+  const response = await fetch(
+    `${API_URL}${COMPANY_REQUEST_ROUTES.COMPANY_TYPES}`,
+  );
 
   const result = await response.json();
 
   if (!response.ok) {
-    throw new Error(result.message || "Failed to fetch company types");
+    throw new Error(
+      result.message || COMPANY_REQUEST_MESSAGES.COMPANY_TYPES_FETCH_FAILED,
+    );
   }
 
   return result;
 };
+
+// Get Employee Range
 
 export const getEmployRange = async () => {
-  const response = await fetch(`${API_URL}/company-requests/employee-range`);
+  const response = await fetch(
+    `${API_URL}${COMPANY_REQUEST_ROUTES.EMPLOYEE_RANGE}`,
+  );
 
   const result = await response.json();
+
   if (!response.ok) {
-    throw new Error(result.message || "Failed to fetch emplyee ranges");
+    throw new Error(
+      result.message || COMPANY_REQUEST_MESSAGES.EMPLOYEE_RANGE_FETCH_FAILED,
+    );
   }
+
   return result;
 };
 
+// Submit Company Documents
+
 export const submitCompanyDocuments = async (companyRequestId: string) => {
-  const res = await fetch(
-    `${API_URL}/company-requests/${companyRequestId}/documents/submit`,
+  const response = await fetch(
+    `${API_URL}${COMPANY_REQUEST_ROUTES.SUBMIT_DOCUMENTS(companyRequestId)}`,
     {
       method: "PATCH",
       headers: {
@@ -201,47 +214,60 @@ export const submitCompanyDocuments = async (companyRequestId: string) => {
     },
   );
 
-  const result = await res.json();
+  const result = await response.json();
 
-  if (!res.ok) {
-    throw new Error(result.message || "Failed to submit company documents");
+  if (!response.ok) {
+    throw new Error(
+      result.message || COMPANY_REQUEST_MESSAGES.DOCUMENT_SUBMIT_FAILED,
+    );
   }
 
   return result;
 };
 
-export const submitCompanyRegistration = async (accountId: string, companyRequestId: string) => {
-  const response = await fetch(`${API_URL}/company-requests/${companyRequestId}/submit`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
+// Submit Company Registration
+
+export const submitCompanyRegistration = async (
+  accountId: string,
+  companyRequestId: string,
+) => {
+  const response = await fetch(
+    `${API_URL}${COMPANY_REQUEST_ROUTES.SUBMIT(companyRequestId)}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        accountId,
+      }),
     },
-    body: JSON.stringify({
-      accountId,
-    }),
-  });
+  );
 
   const result = await response.json();
 
   if (!response.ok) {
-    throw new Error(result.message || "Failed to submit company registration");
+    throw new Error(
+      result.message || COMPANY_REQUEST_MESSAGES.REGISTRATION_SUBMIT_FAILED,
+    );
   }
 
   return result;
 };
 
+// Get My Company Request
 
 export const getMyCompanyRequest = async () => {
-  const response = await axiosInstance.get(
-    "/company-requests/my-request"
-  );
-
+  const response = await axiosInstance.get(COMPANY_REQUEST_ROUTES.MY_REQUEST);
+console.log("hhhhhhhh",response.data)
   return response.data;
 };
 
-export const resubmitCompanyRequest  = async (  companyRequestId: string) => {
+// Resubmit Company Request
+
+export const resubmitCompanyRequest = async (companyRequestId: string) => {
   const response = await axiosInstance.patch(
-     `/company-requests/${companyRequestId}/resubmit`
+    COMPANY_REQUEST_ROUTES.RESUBMIT(companyRequestId),
   );
 
   return response.data;

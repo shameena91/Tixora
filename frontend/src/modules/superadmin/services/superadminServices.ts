@@ -1,41 +1,51 @@
-import axiosInstance from "../../auth/api/axiosInstance";
 
+import axiosInstance from "../../auth/api/axiosInstance";
+import { COMPANY_REQUEST_ROUTES } from "../../../shared/constants/apiRoutes";
 
 export const getAllCompanyRequests = async () => {
-  const res = await axiosInstance.get("/company-requests");
-
-  console.log("alllll", res);
-
-  return res.data;
-};
-export const getCompanyRequestById = async (companyRequestId: string) => {
   const response = await axiosInstance.get(
-    `/company-requests/super-admin/${companyRequestId}`,
+    COMPANY_REQUEST_ROUTES.BASE
   );
-  
+
   return response.data;
 };
 
+export const getCompanyRequestById = async (
+  companyRequestId: string
+) => {
+  const response = await axiosInstance.get(
+    COMPANY_REQUEST_ROUTES.SUPER_ADMIN_BY_ID(companyRequestId)
+  );
 
-export const approveCompanyRequest = async (companyRequestId: string) => {
+  return response.data;
+};
+
+export const approveCompanyRequest = async (
+  companyRequestId: string
+) => {
   const response = await axiosInstance.patch(
-    `/company-requests/${companyRequestId}/approve`,
+    COMPANY_REQUEST_ROUTES.APPROVE(companyRequestId)
   );
-  console.log("aprove",response)
+
   return response.data;
 };
 
+export const rejectCompanyRequest = async (
+  companyRequestId: string
+) => {
+  const response = await axiosInstance.patch(
+    COMPANY_REQUEST_ROUTES.REJECT(companyRequestId)
+  );
 
-export const rejectCompanyRequest=async(companyRequestId:string)=>{
-  const response=await axiosInstance.patch(`/company-requests/${companyRequestId}/reject`)
   return response.data;
-}
+};
+
 export const moreInfoCompanyRequest = async (
   companyRequestId: string,
   remarks: string
 ) => {
   const response = await axiosInstance.patch(
-    `/company-requests/${companyRequestId}/more-info`,
+    COMPANY_REQUEST_ROUTES.MORE_INFO(companyRequestId),
     {
       remarks,
     }
@@ -44,45 +54,70 @@ export const moreInfoCompanyRequest = async (
   return response.data;
 };
 
-
 export const getCompanyDocumentViewUrl = async (
   companyRequestId: string,
-  documentType: string,
+  documentType: string
 ) => {
   const response = await axiosInstance.get(
-    `/company-requests/${companyRequestId}/documents/${documentType}/view`,
+    COMPANY_REQUEST_ROUTES.DOCUMENT_VIEW(
+      companyRequestId,
+      documentType
+    )
   );
 
   return response.data;
 };
-export const getCompanyDocumentDownloadUrl =async (
+
+export const getCompanyDocumentDownloadUrl = async (
   companyRequestId: string,
-  documentType: string,
+  documentType: string
 ) => {
-  const response=await axiosInstance.get(
-    `/company-requests/${companyRequestId}/documents/${documentType}/download`,
+  const response = await axiosInstance.get(
+    COMPANY_REQUEST_ROUTES.DOCUMENT_DOWNLOAD(
+      companyRequestId,
+      documentType
+    )
   );
-  return response.data
-};
-export const verifyCompanyDocument = async(
-  companyRequestId: string,
-  documentType: string,
-) => {
-  const response=await axiosInstance.patch(
-    `/company-requests/${companyRequestId}/documents/${documentType}/verify`,
- 
- 
-  );
-  return response.data
+
+  return response.data;
 };
 
-export const rejectCompanyDocument =async (
+export const verifyCompanyDocument = async (
   companyRequestId: string,
-  documentType: string,
+  documentType: string
 ) => {
- const response=await axiosInstance.patch(
-    `/company-requests/${companyRequestId}/documents/${documentType}/reject`,
+  const response = await axiosInstance.patch(
+    COMPANY_REQUEST_ROUTES.DOCUMENT_VERIFY(
+      companyRequestId,
+      documentType
+    )
   );
-  
-  return response.data
+
+  return response.data;
+};
+
+export const rejectCompanyDocument = async (
+  companyRequestId: string,
+  documentType: string
+) => {
+  const response = await axiosInstance.patch(
+    COMPANY_REQUEST_ROUTES.DOCUMENT_REJECT(
+      companyRequestId,
+      documentType
+    )
+  );
+
+  return response.data;
+};
+
+
+
+export const getCompanyRequestTimeline = async (
+  companyRequestId: string
+) => {
+  const response = await axiosInstance.get(
+    `/company-requests/${companyRequestId}/timeline`
+  );
+
+  return response.data;
 };

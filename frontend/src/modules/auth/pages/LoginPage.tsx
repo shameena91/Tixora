@@ -1,5 +1,4 @@
-
-import { Eye, EyeOff, Ticket } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -7,7 +6,9 @@ import { login } from "../services/authService";
 import { loginSchema } from "../validators/loginSchema";
 import { AuthContext } from "../context/AuthContext";
 import { storeAccessToken } from "../api/tokenStorage";
-
+import Navbar from "../../../components/home/Navbar";
+import { getMySubscriptionStatus } from "../../superadmin/services/subscriptionPlanServices";
+import { getMyCompanyRequest } from "../../company/Services/CompanyRequestService";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -19,19 +20,17 @@ const LoginPage = () => {
     password: "",
   });
 
-  const [error,setErrors]=useState<{email?:string;
-    password?:string;}>({})
+  const [error, setErrors] = useState<{ email?: string; password?: string }>(
+    {},
+  );
 
   const auth = useContext(AuthContext);
 
+  if (!auth) {
+    throw new Error("AuthContext must be used inside AuthProvider");
+  }
 
-if (!auth) {
-  throw new Error("AuthContext must be used inside AuthProvider");
-}
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
     setFormData((prev) => ({
@@ -42,75 +41,76 @@ if (!auth) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrors({})
-      const result = loginSchema.safeParse(formData);
+    setErrors({});
+    const result = loginSchema.safeParse(formData);
 
-  if (!result.success) {
-    const newErrors: {
-      email?: string;
-      password?: string;
-    } = {};
+    if (!result.success) {
+      const newErrors: {
+        email?: string;
+        password?: string;
+      } = {};
 
- result.error.issues.forEach((issue) => {
-      const field = issue.path[0];
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0];
 
-      if (field === "email" || field === "password") {
-        newErrors[field] = issue.message;
-      }
-    });
+        if (field === "email" || field === "password") {
+          newErrors[field] = issue.message;
+        }
+      });
 
-    setErrors(newErrors);
-    return;
-  }
-    try {
-
-      
-    console.log("Login data:", formData);
-      const response= await login(formData.email,formData.password)
-
-      console.log("LoginResponse",response)
-       console.log("LoginResponse",response.data.name)
-
-
-auth.setAccessToken(response.data.accessToken)
-storeAccessToken(response.data.accessToken);
-auth.setUserName(response.data.name)
-auth.setRole(response.data.role)
-// localStorage.setItem("userName",response.data.name)
-
-
-if(response.data.role==="COMPANY_ADMIN")
-{
-navigate("/Company-admin/check-status")
-}
-
-if(response.data.role==="SUPER_ADMIN")
-{
-navigate("/super-admin/dashbord")
-}
-
-
- 
-
-    } catch (error) {
-       console.error("Login error:", error);
-
-       if(error instanceof Error)
-       {
-toast.error(error.message)
-       }
-       
+      setErrors(newErrors);
+      return;
     }
+    try {
+      console.log("Login data:", formData);
+      const response = await login(formData.email, formData.password);
 
+      console.log("LoginResponse", response);
+      console.log("LoginResponse", response.data.name);
+
+      auth.setAccessToken(response.data.accessToken);
+      storeAccessToken(response.data.accessToken);
+      auth.setUserName(response.data.name);
+      auth.setRole(response.data.role);
+
+      if (response.data.role === "SUPER_ADMIN") {
+        navigate("/super-admin/dashbord");
+        return;
+      }
+
+      if (response.data.role === "COMPANY_ADMIN") {
+        const companyRequest = await getMyCompanyRequest();
+        console.log("Fromlogin", companyRequest);
+
+        if (companyRequest.data.status !== "APPROVED") {
+          navigate("/Company-admin/check-status");
+          return;
+        }
+
+        const subscription = await getMySubscriptionStatus();
+        console.log("Fromlogins", subscription);
+        if (subscription?.data?.status === "ACTIVE") {
+          navigate("/Company-admin/dashboard");
+          return;
+        }
+
+        navigate("/Company-admin/select-subscription");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
+    }
 
     // Backend login API will be connected here later.
   };
 
   return (
     <div className="min-h-screen bg-slate-50">
-
       {/* Header */}
-      <header className="flex h-20 items-center border-b border-slate-200 bg-white px-6 lg:px-12">
+      {/* <header className="flex h-20 items-center border-b border-slate-200 bg-white px-6 lg:px-12">
 
         <div className="flex items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#5420a8]">
@@ -126,16 +126,15 @@ toast.error(error.message)
           </span>
         </div>
 
-      </header>
+      </header> */}
+
+      <Navbar showLogin={false} showRegister={false} name={auth?.userName} />
 
       {/* Main */}
       <main className="flex min-h-[calc(100vh-80px)] items-center justify-center px-5 py-10">
-
         <div className="w-full max-w-md">
-
           {/* Heading */}
           <div className="mb-8 text-center">
-
             <h1 className="text-3xl font-bold tracking-tight text-slate-900">
               Welcome back
             </h1>
@@ -143,14 +142,11 @@ toast.error(error.message)
             <p className="mt-2 text-sm text-slate-500">
               Login to your Tixora account
             </p>
-
           </div>
 
           {/* Login Card */}
           <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-
             <form onSubmit={handleSubmit}>
-
               {/* Email */}
               <div>
                 <label
@@ -168,34 +164,25 @@ toast.error(error.message)
                   onChange={handleChange}
                   placeholder="Enter your email"
                   autoComplete="email"
-                  
                   className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#5420a8] focus:ring-2 focus:ring-[#5420a8]/10"
                 />
                 {error.email && (
-  <p className="text-red-500 text-sm mt-1">
-    {error.email}
-  </p>
-)}
+                  <p className="text-red-500 text-sm mt-1">{error.email}</p>
+                )}
               </div>
 
               {/* Password */}
               <div className="mt-5">
-
                 <div className="mb-2 flex items-center justify-between">
-
                   <label
                     htmlFor="password"
                     className="block text-sm font-medium text-slate-700"
                   >
                     Password
                   </label>
-
-                
-
                 </div>
 
                 <div className="relative">
-
                   <input
                     id="password"
                     name="password"
@@ -204,47 +191,36 @@ toast.error(error.message)
                     onChange={handleChange}
                     placeholder="Enter your password"
                     autoComplete="current-password"
-                    
                     className="w-full rounded-lg border border-slate-300 px-4 py-3 pr-12 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#5420a8] focus:ring-2 focus:ring-[#5420a8]/10"
                   />
                   {error.password && (
-  <p className="text-red-500 text-sm mt-1">
-    {error.password}
-  </p>
-)}
+                    <p className="text-red-500 text-sm mt-1">
+                      {error.password}
+                    </p>
+                  )}
 
                   {/* Show / Hide Password */}
                   <button
                     type="button"
-                    onClick={() =>
-                      setShowPassword((prev) => !prev)
-                    }
+                    onClick={() => setShowPassword((prev) => !prev)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition hover:text-slate-600"
                     aria-label={
-                      showPassword
-                        ? "Hide password"
-                        : "Show password"
+                      showPassword ? "Hide password" : "Show password"
                     }
                   >
-                    {showPassword ? (
-                      <EyeOff size={19} />
-                    ) : (
-                      <Eye size={19} />
-                    )}
+                    {showPassword ? <EyeOff size={19} /> : <Eye size={19} />}
                   </button>
-
                 </div>
-
               </div>
 
               {/* forgot password  */}
-               <button
-                    type="button"
-                    onClick={() => navigate("/forgot-password")}
-                    className="text-sm font-medium text-[#5420a8] transition hover:text-[#481a91] mt-4"
-                  >
-                    Forgot password?
-                  </button>
+              <button
+                type="button"
+                onClick={() => navigate("/forgot-password")}
+                className="text-sm font-medium text-[#5420a8] transition hover:text-[#481a91] mt-4"
+              >
+                Forgot password?
+              </button>
               {/* Login Button */}
               <button
                 type="submit"
@@ -252,42 +228,30 @@ toast.error(error.message)
               >
                 Login
               </button>
-
             </form>
 
             {/* Register */}
             <div className="mt-7 border-t border-slate-100 pt-6 text-center">
-
-              <p className="text-sm text-slate-500">
-                Don't have an account?
-              </p>
+              <p className="text-sm text-slate-500">Don't have an account?</p>
 
               <button
                 type="button"
-                onClick={() =>
-                  navigate("/register/company-register")
-                }
+                onClick={() => navigate("/register/company-register")}
                 className="mt-1 text-sm font-semibold text-[#5420a8] transition hover:text-[#481a91]"
               >
                 Register your company
               </button>
-
             </div>
-
           </div>
 
           {/* Footer */}
           <p className="mt-6 text-center text-xs text-slate-400">
             © 2026 Tixora. All rights reserved.
           </p>
-
         </div>
-
       </main>
-
     </div>
   );
 };
 
 export default LoginPage;
-

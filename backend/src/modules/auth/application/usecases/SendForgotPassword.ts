@@ -7,12 +7,12 @@ import { IOtpService } from "../ports/IOtpService";
 
 export class SendForgotPasswordOtp implements ISendForgotPasswordOtp {
   constructor(
-    private readonly otpService: IOtpService,
-    private readonly accountRepository: IAccountRepository,
+    private readonly _otpService: IOtpService,
+    private readonly _accountRepository: IAccountRepository,
   ) {}
 
   async execute(email: string): Promise<void> {
-    const account = await this.accountRepository.findByEmail(email);
+    const account = await this._accountRepository.findByEmail(email);
 
     if (!account) {
       throw new AppErrors(
@@ -21,6 +21,6 @@ export class SendForgotPasswordOtp implements ISendForgotPasswordOtp {
       );
     }
 
-    await this.otpService.sendOtp(email, "forgot-password");
+    await this._otpService.sendOtp(email, "forgot-password");
   }
 }

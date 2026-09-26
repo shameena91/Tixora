@@ -12,14 +12,14 @@ import { IUpdateCompanyRequest } from "../abstraction/IUpdateCompanyRequest";
 
 export class UpdateCompanyRequest implements IUpdateCompanyRequest{
     constructor(
-        private readonly companyRequestRepository:ICompanyRequestRepository
+        private readonly _companyRequestRepository:ICompanyRequestRepository
     ){}
 
 async execute(
     id:string,
     data:UpdateCompanyRequestData
 ){
-    const companyRequest=await this.companyRequestRepository.findById(id)
+    const companyRequest=await this._companyRequestRepository.findById(id)
    if (!companyRequest) {
   throw new AppErrors(
     MESSAGES.COMPANY_REQUEST_NOT_FOUND,
@@ -36,7 +36,7 @@ async execute(
   ErrorCode.COMPANY_REQUEST_CANNOT_BE_UPDATED
 );
     }
- return this.companyRequestRepository.updateInfo(
+ return this._companyRequestRepository.updateInfo(
       id,
       data
     );

@@ -15,7 +15,7 @@ import { IBaseRepository } from "../../../../../shared/repository/IBaseRepositor
 
 export class AccountRepository implements IAccountRepository {
   constructor(
-    private readonly baseRepository: IBaseRepository<
+    private readonly _baseRepository: IBaseRepository<
       AccountDocument,
       AccountCreateData
     >,
@@ -23,7 +23,7 @@ export class AccountRepository implements IAccountRepository {
   async create(account: Account): Promise<Account> {
     const persistenceData = AccountMapper.toPersistence(account);
 
-    const accountDocument = await this.baseRepository.create(persistenceData);
+    const accountDocument = await this._baseRepository.create(persistenceData);
 
     return AccountMapper.toDomain(accountDocument);
   }
@@ -41,7 +41,7 @@ export class AccountRepository implements IAccountRepository {
   }
 
   async findById(id: string): Promise<Account | null> {
-    const accountDocument = await this.baseRepository.findById(id);
+    const accountDocument = await this._baseRepository.findById(id);
 
     if (!accountDocument) {
       return null;

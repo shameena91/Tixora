@@ -10,14 +10,14 @@ import { IFileStoragePort } from "../ports/IFileStoragePort";
 // Review before final submission
 export class GetCompanyRequest implements IGetCompanyRequest {
   constructor(
-    private readonly companyRequestRepository: ICompanyRequestRepository,
-    private readonly accountRepository: IAccountRepository,
-      private readonly s3Service: IFileStoragePort
+    private readonly _companyRequestRepository: ICompanyRequestRepository,
+    private readonly _accountRepository: IAccountRepository,
+      private readonly _s3Service: IFileStoragePort
   ) {}
 
   async execute(id: string): Promise<CompanyRequestDetails> { 
     const companyRequest =
-      await this.companyRequestRepository.findById(id);
+      await this._companyRequestRepository.findById(id);
 
     if (!companyRequest) {
       throw new AppErrors(
@@ -26,11 +26,11 @@ export class GetCompanyRequest implements IGetCompanyRequest {
       );
     }
  const account =
-    await this.accountRepository.findById(
+    await this._accountRepository.findById(
       companyRequest.accountId
     );
 const logoUrl = companyRequest.logo
-  ? await this.s3Service.getSignedUrl(companyRequest.logo)
+  ? await this._s3Service.getSignedUrl(companyRequest.logo)
   : null;
   console.log("Accountttttttt:", companyRequest);
     return {

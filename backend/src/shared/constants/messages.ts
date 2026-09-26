@@ -41,5 +41,12 @@ DOCUMENT_REJECTED:"Document Rejected",
   DOCUMENT_FILE_REQUIRED: "Document file is required",
 
   DOCUMENT_TYPE_REQUIRED: "Document type is required",
-  PLAN_CREATED:"SubScription plan created"
+  PLAN_CREATED:"SubScription plan created",
+  SUBSCRIPTION_PLAN_NOT_FOUND:"SubScription plan not found",
+  PLAN_FETCHED_SUCCESSFULLY:"SubScription plan fetched successfully",
+  PLAN_NOT_FOUND:"plan not found",
+   SUBSCRIPTION_PLAN_UPDATED:"SubScription plan status updated successfully",
+   INVALID_PLAN:"Invalid Plan",
+  ALL_REDY_SUBSCRIBED: "Company already has a subscription"
+
 };

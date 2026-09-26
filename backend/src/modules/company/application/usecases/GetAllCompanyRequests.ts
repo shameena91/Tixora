@@ -6,21 +6,21 @@ export class GetAllCompanyRequests
   implements IGetAllCompanyRequest
 {
   constructor(
-    private readonly companyRequestRepository: ICompanyRequestRepository,
-     private readonly accountRepository: IAccountRepository
+    private readonly _companyRequestRepository: ICompanyRequestRepository,
+     private readonly _accountRepository: IAccountRepository
 
 
 ) {}
 
    async execute() {
     const companyRequests =
-      await this.companyRequestRepository.findAll();
+      await this._companyRequestRepository.findAll();
 
     const companyRequestsWithAdmin =
       await Promise.all(
         companyRequests.map(async (companyRequest) => {
           const account =
-            await this.accountRepository.findById(
+            await this._accountRepository.findById(
               companyRequest.accountId
             );
 

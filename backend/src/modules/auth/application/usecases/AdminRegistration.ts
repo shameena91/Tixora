@@ -3,13 +3,14 @@ import { MESSAGES } from "../../../../shared/constants/messages";
 import { AppErrors } from "../../../../shared/errors/AppErrors";
 import { IAccountRepository } from "../../domain/repositories/IAccountRepository";
 import { IAdminRegistration } from "../abstractions/IAdminRegistration";
-import { AdminRegistrationRequestDto } from "../validators/AdminRegistrationValidator";
+import { AdminRegistrationRequestDto } from "../dto/AdminregistrationRequestDto";
+
 
 export class AdminRegistration implements IAdminRegistration {
-  constructor(private readonly accountRepository: IAccountRepository) {}
+  constructor(private readonly _accountRepository: IAccountRepository) {}
 
   async execute(dto: AdminRegistrationRequestDto) {
-    const account = await this.accountRepository.findByEmail(dto.email);
+    const account = await this._accountRepository.findByEmail(dto.email);
 
     if (!account) {
       throw new AppErrors(
@@ -18,7 +19,7 @@ export class AdminRegistration implements IAdminRegistration {
       );
     }
  const existingAccount =
-      await this.accountRepository.findByPhone(
+      await this._accountRepository.findByPhone(
         dto.phoneNumber,
       );
         if (
@@ -30,7 +31,7 @@ export class AdminRegistration implements IAdminRegistration {
         HttpStatusCode.CONFLICT,
       );
     }
-    await this.accountRepository.updateAdminDetails(
+    await this._accountRepository.updateAdminDetails(
       account.id,
       dto.firstName,
       dto.lastName,

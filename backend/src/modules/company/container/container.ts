@@ -24,15 +24,23 @@ import { NotificationRepository } from "../../notification/infrastructure/reposi
 import { NotificationCreateData, NotificationDocument } from "../../notification/application/mapper/NotificationMappers";
 import { NotificationModel } from "../../notification/infrastructure/models/NotifiationModel";
 import { GetAllCompanyRequests } from "../application/usecases/GetAllCompanyRequests";
-import { GetMyCompanyRequest } from "../application/usecases/GetMyCompanyRequest";
+
 import { UpdateCompanyLogo } from "../application/usecases/UpdateCompanyLogo";
 import { GetCompanyDocumentUrl } from "../application/usecases/GetCompanyDocumentUrl";
 import { UpdateCompanyDocumentStatusUseCase } from "../application/usecases/UpdateCompanyDocumentStatus";
+import { CreateCompany } from "../application/usecases/CreateCompany";
+import { CompanyRepository } from "../Infrastructure/database/repositories/CompanyRepository";
+import { CompanyDocument, CompanyModel } from "../Infrastructure/database/models/CompanyModel";
+import { CompanyCreateData } from "../application/mappers/CompanyMapper";
+import { GetMyCompanyRequestStatus } from "../application/usecases/GetMyCompanyRequestStatus";
+import { CreateTimeline } from "../../timeline/application/usecases/CreateTimeline";
+import { createTimeline, timelineRepository } from "../../timeline/containers/container";
 
 const baseCompanyRequestRepository =
   new BaseRepository(
     CompanyRequestModel
   );
+  
 const companyRequestRepository =
   new CompanyRequestRepository(baseCompanyRequestRepository);
 
@@ -50,31 +58,42 @@ const createCompanyRequest =
   new CreateCompanyRequest(
     companyRequestRepository,
     accountRepository,
-    fileStorage
+    fileStorage,
+    createTimeline
   );
 
-
+const baseCompanyrepository=new BaseRepository<
+CompanyDocument,
+    CompanyCreateData>(CompanyModel)
+  const comapnyRepository=new CompanyRepository(baseCompanyrepository)
+const createCompany=new CreateCompany(comapnyRepository)
 const approveCompanyRequest =
   new ApproveCompanyRequest(
-    companyRequestRepository
+    companyRequestRepository,
+    createCompany,
+    createTimeline
+
   );
 
 
 const rejectCompanyRequest =
   new RejectCompanyRequest(
-    companyRequestRepository
+    companyRequestRepository,
+    createTimeline
   );
 
 
 const requestMoreInfo =
   new MoreInfoCompanyrequest(
-    companyRequestRepository
+    companyRequestRepository,
+    createTimeline
   );
 
 
 const resubmitCompanyRequest =
   new ResubmitCompanyRequest(
-    companyRequestRepository
+    companyRequestRepository,
+    createTimeline
   );
 
 
@@ -139,7 +158,7 @@ const updateCompanyLogo =
     companyRequestRepository,
     accountRepository
   );
-  const getMyCompanyRequest=new GetMyCompanyRequest(
+  const getMyCompanyRequest=new GetMyCompanyRequestStatus(
     companyRequestRepository
   )
 
@@ -150,7 +169,8 @@ companyRequestRepository,
   )
 
   const updateCompanyDocumentStatus=new UpdateCompanyDocumentStatusUseCase(
-    companyRequestRepository
+    companyRequestRepository,
+    createTimeline
   )
 export const companyRequestController =
   new CompanyRequestController(

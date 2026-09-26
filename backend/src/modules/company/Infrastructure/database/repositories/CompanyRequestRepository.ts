@@ -53,6 +53,8 @@ constructor(
       companyRequestDocument
     );
   }
+
+  
 async findByPhone(phone: string): Promise<CompanyRequest | null> {
   const companyRequestDocument=
     await CompanyRequestModel.findOne({

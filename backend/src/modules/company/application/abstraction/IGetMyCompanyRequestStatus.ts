@@ -2,6 +2,7 @@
 import { MyCompanyRequestStatus } from "../../domain/types/MyCompanyRequest";
 
 
-export interface IGetMyCompanyRequest{
+export interface IGetMyCompanyRequestStatus
+{
     execute(accountid:string):Promise<MyCompanyRequestStatus>
 }

@@ -1,5 +1,4 @@
 import { z } from "zod";
-
 import {
   SubscriptionPlanName,
 } from "../../domain/entities/SubscriptionPlan";
@@ -23,33 +22,32 @@ export const createSubscriptionPlanSchema = z.object({
 
   memberLimit: z
     .number()
-    .int()
-    .positive()
+    .int("Member limit must be a whole number")
+    .positive("Member limit must be greater than 0")
     .nullable(),
 
   companyAdminLimit: z
     .number()
-    .int()
-    .positive()
+    .int("Company admin limit must be a whole number")
+    .positive("Company admin limit must be greater than 0")
     .nullable(),
 
   departmentLimit: z
     .number()
-    .int()
-    .positive()
+    .int("Department limit must be a whole number")
+    .positive("Department limit must be greater than 0")
     .nullable(),
 
   ticketLimit: z
     .number()
-    .int()
-    .positive()
+    .int("Ticket limit must be a whole number")
+    .positive("Ticket limit must be greater than 0")
     .nullable(),
 
   automaticTicketAssignment: z.boolean(),
 
   slaManagement: z.boolean(),
 });
-
 
 export type CreateSubscriptionPlanDTO = z.infer<
   typeof createSubscriptionPlanSchema

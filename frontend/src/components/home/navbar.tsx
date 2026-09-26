@@ -57,7 +57,7 @@ navigate("/login");
        
 
         {/* Navigation */}
-        <div className="hidden bg-red-50 items-center gap-8 text-sm text-slate-600 md:flex">
+        <div className="hidden items-center gap-8 text-sm text-slate-600 md:flex">
           <Link to="/" className="transition hover:text-indigo-600">
             Home
           </Link>

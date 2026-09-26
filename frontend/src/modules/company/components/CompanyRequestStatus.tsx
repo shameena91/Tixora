@@ -76,7 +76,7 @@ export function CompanyRequestStatus({
   const config = statusConfig[status];
 const navigate=useNavigate()
 
-console.log("from staatus [page",companyRequestId)
+console.log("from staatus page",companyRequestId)
   return (
   
     <div className="min-h-screen bg-[#faf7ff] text-[#182238]">
@@ -192,7 +192,7 @@ console.log("from staatus [page",companyRequestId)
       }
 
       if (status === "APPROVED") {
-        navigate("/select-subscription");
+        navigate("/Company-admin/select-subscription");
       }
     }}
     className="mt-6 rounded-lg bg-[#7146b8] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#6039a0]"

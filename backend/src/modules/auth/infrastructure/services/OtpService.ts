@@ -4,8 +4,8 @@ import { IOtpStore } from "../../application/ports/IOtpStore";
 
 export class OtpService implements IOtpService {
   constructor(
-    private readonly otpStore: IOtpStore,
-    private readonly emailService: IEmailService
+    private readonly _otpStore: IOtpStore,
+    private readonly _emailService: IEmailService
   ) {}
 
   async sendOtp(
@@ -16,14 +16,14 @@ export class OtpService implements IOtpService {
       100000 + Math.random() * 900000
     ).toString();
 
-    await this.otpStore.save(
+    await this._otpStore.save(
       email,
       otp,
       300,
       purpose
     );
 
-    await this.emailService.sendOtp(
+    await this._emailService.sendOtp(
       email,
       otp
     );

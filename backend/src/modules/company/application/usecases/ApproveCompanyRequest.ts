@@ -1,38 +1,134 @@
-import { ICompanyRequestRepository } from "../../domain/repositories/ICompanyRequestRepository";
-import { CompanyRequest, CompanyRequestStatus } from "../../domain/entities/CompanyRequest";
+import {
+  ICompanyRequestRepository,
+} from "../../domain/repositories/ICompanyRequestRepository";
+
+import {
+  ICreateCompany,
+} from "../abstraction/ICreateCompany";
+
+import {
+  CompanyRequest,
+  CompanyRequestStatus,
+} from "../../domain/entities/CompanyRequest";
+
 import { MESSAGES } from "../../../../shared/constants/messages";
 import { AppErrors } from "../../../../shared/errors/AppErrors";
 import { ErrorCode } from "../../../../shared/errors/ErrorCode";
-import { IApproveCompanyRequest } from "../abstraction/IApproveCompanyrequest";
-// Change status to approve
-export class ApproveCompanyRequest implements IApproveCompanyRequest {
+
+import {
+  IApproveCompanyRequest,
+} from "../abstraction/IApproveCompanyrequest";
+
+import { CompanyStatus } from "../../domain/entities/Company";
+
+import {
+  ICreateTimeline,
+} from "../../../timeline/application/abstraction/ICreateTimeline";
+
+import {
+  TimelineEntityType,
+} from "../../../timeline/domain/entities/Timeline";
+
+export class ApproveCompanyRequest
+  implements IApproveCompanyRequest
+{
   constructor(
-    private readonly companyRequestRepository: ICompanyRequestRepository
+    private readonly _companyRequestRepository:
+      ICompanyRequestRepository,
+
+    private readonly _createCompany:
+      ICreateCompany,
+
+    private readonly _createTimeline:
+      ICreateTimeline,
   ) {}
 
   async execute(
     id: string,
-    reviewedBy: string
+    reviewedBy: string,
   ): Promise<CompanyRequest> {
+
     const companyRequest =
-      await this.companyRequestRepository.findById(id);
+      await this._companyRequestRepository.findById(id);
 
     if (!companyRequest) {
       throw new AppErrors(
         MESSAGES.COMPANY_REQUEST_NOT_FOUND,
-        ErrorCode.COMPANY_REQUEST_NOT_FOUND
+        ErrorCode.COMPANY_REQUEST_NOT_FOUND,
       );
     }
 
     companyRequest.approve();
 
-    return await this.companyRequestRepository.updateStatus(
-      id,
-      CompanyRequestStatus.APPROVED,
-      reviewedBy,
-      new Date(),
-      null,
-      null
-    );
+    await this._createCompany.execute({
+      accountId: companyRequest.accountId,
+
+      companyName:
+        companyRequest.companyName,
+
+      registrationNumber:
+        companyRequest.registrationNumber,
+
+      companyEmail:
+        companyRequest.companyEmail,
+
+      phone:
+        companyRequest.phone,
+
+      yearEstablished:
+        companyRequest.yearEstablished,
+
+      companyType:
+        companyRequest.companyType,
+
+      numberOfEmployees:
+        companyRequest.numberOfEmployees,
+
+      website:
+        companyRequest.website,
+
+      logo:
+        companyRequest.logo,
+
+      description:
+        companyRequest.description,
+
+      location:
+        companyRequest.location,
+
+      status: CompanyStatus.ACTIVE,
+    });
+
+    const updatedCompanyRequest =
+      await this._companyRequestRepository.updateStatus(
+        id,
+        CompanyRequestStatus.APPROVED,
+        reviewedBy,
+        new Date(),
+        null,
+        null,
+      );
+
+    await this._createTimeline.execute({
+      entityType:
+        TimelineEntityType.COMPANY_REQUEST,
+
+      entityId:
+        companyRequest.id,
+
+      action: "APPROVED",
+
+      description:
+        "Company request approved",
+
+      performedBy:
+        reviewedBy,
+
+      metadata: null,
+
+      createdAt: new Date(),
+    });
+
+    return updatedCompanyRequest;
   }
 }

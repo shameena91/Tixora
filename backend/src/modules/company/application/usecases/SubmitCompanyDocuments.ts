@@ -10,13 +10,13 @@ import { ISubmitCompanyDocuments,  } from "../abstraction/ISubmitCompanyDocument
 // Aftre uploading each document submit the documents
 export class SubmitCompanyDocuments implements ISubmitCompanyDocuments {
   constructor(
-    private readonly companyRequestRepository: ICompanyRequestRepository,
-    private readonly accountRepository: IAccountRepository
+    private readonly _companyRequestRepository: ICompanyRequestRepository,
+    private readonly _accountRepository: IAccountRepository
   ) {}
 
   async execute(companyRequestId: string) {
     const companyRequest =
-      await this.companyRequestRepository.findById(
+      await this._companyRequestRepository.findById(
         companyRequestId
       );
 
@@ -62,7 +62,7 @@ if (!allDocumentsUploaded) {
 }
 
 // now registrattion step as Documents uploaded
-await this.accountRepository.updateRegistrationStep(
+await this._accountRepository.updateRegistrationStep(
       companyRequest.accountId,
       RegistrationStep.DOCUMENTS
     );

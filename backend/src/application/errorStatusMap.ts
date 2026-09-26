@@ -11,4 +11,5 @@ export const errorStatusMap: Record<string, number> = {
   HttpStatusCode.BAD_REQUEST,
   [ErrorCode.DOCUMENT_FILE_REQUIRED]:
   HttpStatusCode.BAD_REQUEST,
+  
 };

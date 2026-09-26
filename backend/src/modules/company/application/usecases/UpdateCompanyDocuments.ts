@@ -10,8 +10,8 @@ import { IFileStoragePort } from "../ports/IFileStoragePort";
 // Adding company Documents only adding each documents not submitting at this step
 export class UpdateCompanyDocuments implements IUpdateCompanyDocuments{
   constructor(
-    private readonly companyRequestRepository: ICompanyRequestRepository,
-    private readonly fileStorage: IFileStoragePort,
+    private readonly _companyRequestRepository: ICompanyRequestRepository,
+    private readonly _fileStorage: IFileStoragePort,
   ) {}
 
   async execute(
@@ -19,7 +19,7 @@ export class UpdateCompanyDocuments implements IUpdateCompanyDocuments{
     document: CompanyDocumentFile
   ) {
     const companyRequest =
-      await this.companyRequestRepository.findById(companyRequestId);
+      await this._companyRequestRepository.findById(companyRequestId);
 
     if (!companyRequest) {
         throw new AppErrors(
@@ -32,7 +32,7 @@ export class UpdateCompanyDocuments implements IUpdateCompanyDocuments{
     const documentPath =
       `company-requests/${companyRequestId}/documents`;
 
-    const uploadedFile = await this.fileStorage.upload(
+    const uploadedFile = await this._fileStorage.upload(
       document.file,
       document.fileName,
       document.mimeType,
@@ -60,7 +60,7 @@ export class UpdateCompanyDocuments implements IUpdateCompanyDocuments{
 
    try {
   const updatedCompanyRequest =
-    await this.companyRequestRepository.updateDocuments(
+    await this._companyRequestRepository.updateDocuments(
       companyRequestId,
       updatedDocuments
     );
@@ -68,7 +68,7 @@ export class UpdateCompanyDocuments implements IUpdateCompanyDocuments{
   return updatedCompanyRequest;
 } catch (error) {
  try {
-    await this.fileStorage.delete(uploadedFile.key);
+    await this._fileStorage.delete(uploadedFile.key);
   } catch (deleteError) {
     console.error(
       "Failed to cleanup S3 file:",

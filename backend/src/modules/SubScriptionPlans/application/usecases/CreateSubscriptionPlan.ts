@@ -1,10 +1,10 @@
 import { randomUUID } from "crypto";
 import {
-  SubscriptionPlan,
-  SubscriptionPlanStatus,
+    SubscriptionPlan,
+    SubscriptionPlanStatus,
 } from "../../domain/entities/SubscriptionPlan";
 
-import { ISubscriptionPlanRepository } from "../../domain/repositories/ISubscriptionPlan";
+import { ISubscriptionPlanRepository } from "../../domain/repositories/ISubscriptionPlanRepository";
 
 import { ICreateSubscriptionPlan } from "../abstraction/ICreateSubscriptionPlan";
 
@@ -14,7 +14,7 @@ export class CreateSubscriptionPlan
   implements ICreateSubscriptionPlan
 {
   constructor(
-    private readonly subscriptionPlanRepository: ISubscriptionPlanRepository
+    private readonly _subscriptionPlanRepository: ISubscriptionPlanRepository
   ) {}
 
   async execute(
@@ -45,7 +45,7 @@ export class CreateSubscriptionPlan
   new Date(),
 );
   
-      return await this.subscriptionPlanRepository.create(subscriptionPlan);
+      return await this._subscriptionPlanRepository.create(subscriptionPlan);
 
   
   }

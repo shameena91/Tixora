@@ -2,7 +2,7 @@
 
 import { CompanyRequestStatus, RegistrationType } from "../../domain/entities/CompanyRequest";
 
-export interface CompanyRequestListItem {
+export interface CompanyRequestListItemDto {
   id: string;
 
   requestId: string;

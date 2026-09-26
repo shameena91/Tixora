@@ -1,29 +1,38 @@
 import { BaseRepository } from "../../../../../infrastructure/repositories/Baserepository";
-import { SubscriptionPlanCreateData, SubscriptionPlanDocument, SubscriptionPlanMapper } from "../../../application/mappers/SubscriptionPlanMapper";
-import { SubscriptionPlan } from "../../../domain/entities/SubscriptionPlan";
-import { ISubscriptionPlanRepository } from "../../../domain/repositories/ISubscriptionPlan";
-
+import { MESSAGES } from "../../../../../shared/constants/messages";
+import { AppErrors } from "../../../../../shared/errors/AppErrors";
+import { ErrorCode } from "../../../../../shared/errors/ErrorCode";
+import {
+  SubscriptionPlanCreateData,
+  SubscriptionPlanDocument,
+  SubscriptionPlanMapper,
+} from "../../../application/mappers/SubscriptionPlanMapper";
+import { CreateSubscriptionPlanDTO } from "../../../application/validator/CreateSubscriptionPlanValidator";
+import {
+  SubscriptionPlan,
+  SubscriptionPlanStatus,
+} from "../../../domain/entities/SubscriptionPlan";
+import { ISubscriptionPlanRepository } from "../../../domain/repositories/ISubscriptionPlanRepository";
 import { SubscriptionPlanModel } from "../models/SubscriptionPlanModel";
 
-export class SubscriptionPlanRepository
-  implements ISubscriptionPlanRepository
-{
-constructor( private readonly baseRepository:BaseRepository<
-    SubscriptionPlanDocument,
-    SubscriptionPlanCreateData>)
-   {
-    this.baseRepository=baseRepository
-   }
+export class SubscriptionPlanRepository implements ISubscriptionPlanRepository {
+  constructor(
+    private readonly _baseRepository: BaseRepository<
+      SubscriptionPlanDocument,
+      SubscriptionPlanCreateData
+    >,
+  ) {
+    this._baseRepository = _baseRepository;
+  }
   async create(data: SubscriptionPlanCreateData): Promise<SubscriptionPlan> {
-  //  const persistenceData=SubscriptionPlanMapper.toPersistence(data)
-const subscriptionPlanDocument =
-      await this.baseRepository.create(data);
+    //  const persistenceData=SubscriptionPlanMapper.toPersistence(data)
+    const subscriptionPlanDocument = await this._baseRepository.create(data);
 
     return SubscriptionPlanMapper.toDomain(subscriptionPlanDocument);
   }
 
   async findById(id: string): Promise<SubscriptionPlan | null> {
-    const document = await SubscriptionPlanModel.findById(id);
+    const document = await this._baseRepository.findById(id);
 
     if (!document) {
       return null;
@@ -32,42 +41,84 @@ const subscriptionPlanDocument =
     return SubscriptionPlanMapper.toDomain(document);
   }
 
-  async findAll(): Promise<SubscriptionPlan[]> {
-    const documents = await SubscriptionPlanModel.find();
+ async findAllByStatus(
+  status?: SubscriptionPlanStatus
+): Promise<SubscriptionPlan[]> {
 
-    return documents.map((document) =>
-      SubscriptionPlanMapper.toDomain(document),
-    );
+  const filter = status
+    ? {
+        subscriptionPlanStatus: status,
+      }
+    : {};
+
+  const documents =
+    await this._baseRepository.findAll(filter);
+
+  return documents.map((document) =>
+    SubscriptionPlanMapper.toDomain(document)
+  );
+}
+async findAll(): Promise<SubscriptionPlan[]> {
+  const documents =
+    await this._baseRepository.findAll();
+
+  return documents.map((document) =>
+    SubscriptionPlanMapper.toDomain(document)
+  );
+}
+  async update(
+    id: string,
+    data: CreateSubscriptionPlanDTO,
+  ): Promise<SubscriptionPlan> {
+    const subscriptionPlanDocument =
+      await SubscriptionPlanModel.findByIdAndUpdate(
+        id,
+
+        { $set: data, updatedAt: new Date() },
+        {
+          new: true,
+        },
+      ).lean<SubscriptionPlanDocument>();
+
+    if (!subscriptionPlanDocument) {
+      throw new AppErrors(MESSAGES.PLAN_NOT_FOUND, ErrorCode.ACCOUNT_NOT_FOUND);
+    }
+
+    return SubscriptionPlanMapper.toDomain(subscriptionPlanDocument);
   }
-  
-//  async update(
-//     id: string,
-//     data: SubscriptionPlanCreateData
-//   ): Promise<SubscriptionPlan | null> {
-//     const subscriptionPlanDocument =
-//       await this.baseRepository.update(id, data);
+  async updateStatus(
+    id: string,
+    status: SubscriptionPlanStatus,
+  ): Promise<void> {
+    const subscriptionPlanDocument =
+      await SubscriptionPlanModel.findByIdAndUpdate(
+        id,
+        {
+          $set: {
+            subscriptionPlanStatus: status,
+          },
+        },
+        {
+          runValidators: true,
+        },
+      ).exec();
 
-//     if (!subscriptionPlanDocument) {
-//       return null;
-//     }
+    if (!subscriptionPlanDocument) {
+      throw new AppErrors(
+        MESSAGES.SUBSCRIPTION_PLAN_NOT_FOUND,
+        ErrorCode.SUBSCRIPTION_PLAN_NOT_FOUND,
+      );
+    }
+  }
+  async delete(id: string): Promise<void> {
+    const subscriptionPlanDocument =
+      await SubscriptionPlanModel.findByIdAndDelete(id).exec();
 
-//     return SubscriptionPlanMapper.toDomain(
-//       subscriptionPlanDocument
-//     );
-//   }
-
-//   async delete(
-//     id: string
-//   ): Promise<void> {
-//     const subscriptionPlanDocument =
-//       await this.baseRepository.delete(id);
-
-//     if (!subscriptionPlanDocument) {
-//       return null;
-//     }
-
-//     return SubscriptionPlanMapper.toDomain(
-//       subscriptionPlanDocument
-//     );
-//   }
+    if (!subscriptionPlanDocument) {
+      throw new AppErrors(
+        MESSAGES.SUBSCRIPTION_PLAN_NOT_FOUND,
+        ErrorCode.SUBSCRIPTION_PLAN_NOT_FOUND,
+      );
+    }
+  }
 }

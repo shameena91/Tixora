@@ -1,6 +1,6 @@
 import { CompanyRequest } from "../../domain/entities/CompanyRequest";
-import { CompanyRequestListItem } from "../dto/CompanyRequestListItem";
+import { CompanyRequestListItemDto } from "../dto/CompanyRequestListItemDto";
 
 export interface IGetAllCompanyRequest {
-  execute(): Promise<CompanyRequestListItem[]>;
+  execute(): Promise<CompanyRequestListItemDto[]>;
 }

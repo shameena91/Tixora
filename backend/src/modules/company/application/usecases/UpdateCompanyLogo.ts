@@ -4,7 +4,7 @@ import { IFileStoragePort } from "../ports/IFileStoragePort";
 
 export class UpdateCompanyLogo implements IUpdateCompanyLogo {
   constructor(
-    private readonly fileStorage: IFileStoragePort,
+    private readonly _fileStorage: IFileStoragePort,
   ) {}
 
   async execute(
@@ -16,7 +16,7 @@ export class UpdateCompanyLogo implements IUpdateCompanyLogo {
     const logoPath =
       `company-requests/logo`;
 
-    const uploadedFile = await this.fileStorage.upload(
+    const uploadedFile = await this._fileStorage.upload(
       logo.file,
       logo.fileName,
       logo.mimeType,

@@ -30,5 +30,3 @@ export const adminRegistrationSchema = z.object({
     .max(100, "Designation must not exceed 100 characters"),
 });
 
-export type AdminRegistrationRequestDto =
-  z.infer<typeof adminRegistrationSchema>;

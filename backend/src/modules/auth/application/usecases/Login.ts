@@ -10,13 +10,13 @@ import { ITokenService } from "../ports/ITokenServices";
 
 export class Login implements ILogin {
   constructor(
-    private readonly accountRepository: IAccountRepository,
-    private readonly passwordHasher: IPasswordHasher,
-    private readonly tokenService: ITokenService,
+    private readonly _accountRepository: IAccountRepository,
+    private readonly _passwordHasher: IPasswordHasher,
+    private readonly _tokenService: ITokenService,
   ) {}
 
   async execute(data: LoginRequestDto) {
-    const account = await this.accountRepository.findByEmail(data.email);
+    const account = await this._accountRepository.findByEmail(data.email);
 
     if (!account) {
       throw new AppErrors(
@@ -31,8 +31,8 @@ export class Login implements ILogin {
         HttpStatusCode.UNAUTHORIZED,
       );
     }
-
-    const isPasswordValid = await this.passwordHasher.compare(
+console.log("ACCOUNT ROLE:login", account.role);
+    const isPasswordValid = await this._passwordHasher.compare(
       data.password,
       account.passwordHash,
     );
@@ -44,13 +44,13 @@ export class Login implements ILogin {
       );
     }
 
-    const accessToken = await this.tokenService.generateAccessToken({
+    const accessToken = await this._tokenService.generateAccessToken({
       accountId: account.id,
       email: account.email,
       role:account.role
     });
 
-    const refreshToken = this.tokenService.generateRefreshToken({
+    const refreshToken = this._tokenService.generateRefreshToken({
       accountId: account.id,
     });
 

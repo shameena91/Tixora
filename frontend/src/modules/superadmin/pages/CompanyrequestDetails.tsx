@@ -8,7 +8,13 @@ import {
   rejectCompanyRequestThunk,
 } from "../../../redux/slices/companyrequestSlice";
 import RequestMoreInfoModal from "../components/RemarksModal";
-import { getCompanyDocumentDownloadUrl, getCompanyDocumentViewUrl, rejectCompanyDocument, verifyCompanyDocument } from "../services/superadminServices";
+import {
+  getCompanyDocumentDownloadUrl,
+  getCompanyDocumentViewUrl,
+  rejectCompanyDocument,
+  verifyCompanyDocument,
+} from "../services/superadminServices";
+import CompanyRequestTimeline from "../components/CompanyrequestTimeline";
 
 type Tab = "company" | "documents" | "timeline";
 
@@ -23,86 +29,75 @@ function CompanyRequestDetails() {
     (state) => state.companyRequest,
   );
   console.log("detail", companyRequest);
-  
+
   const [activeTab, setActiveTab] = useState<Tab>("company");
-const handleViewDocument = async (
-  companyRequestId: string,
-  documentType: string,
-) => {
-  try {
-    const response = await getCompanyDocumentViewUrl(
-      companyRequestId,
-      documentType,
-    );
+  const handleViewDocument = async (
+    companyRequestId: string,
+    documentType: string,
+  ) => {
+    try {
+      const response = await getCompanyDocumentViewUrl(
+        companyRequestId,
+        documentType,
+      );
 
-    const url = response.data.url;
+      const url = response.data.url;
 
-    window.open(url, "_blank");
-  } catch (error) {
-    console.error("Failed to view document:", error);
-  }
-};
+      window.open(url, "_blank");
+    } catch (error) {
+      console.error("Failed to view document:", error);
+    }
+  };
 
-const handleDownloadDocument = async (
-  companyRequestId: string,
-  documentType: string,
-) => {
-  try {
-    const response = await getCompanyDocumentDownloadUrl(
-      companyRequestId,
-      documentType,
-    );
+  const handleDownloadDocument = async (
+    companyRequestId: string,
+    documentType: string,
+  ) => {
+    try {
+      const response = await getCompanyDocumentDownloadUrl(
+        companyRequestId,
+        documentType,
+      );
 
-    const url = response.data.url;
+      const url = response.data.url;
 
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "";
-    // link.target = "_blank";
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "";
+      // link.target = "_blank";
 
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  } catch (error) {
-    console.error("Failed to download document:", error);
-  }
-};
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Failed to download document:", error);
+    }
+  };
 
-const handleVerify = async (
-  companyRequestId: string,
-  documentType: string,
-) => {
-  try {
-    await verifyCompanyDocument(
-      companyRequestId,
-      documentType,
-    );
+  const handleVerify = async (
+    companyRequestId: string,
+    documentType: string,
+  ) => {
+    try {
+      await verifyCompanyDocument(companyRequestId, documentType);
 
-   await dispatch(
-      fetchCompanyRequestById(companyRequestId),
-    );
-  } catch (error) {
-        console.error("Failed to reject document:", error);
-  }
-};
+      await dispatch(fetchCompanyRequestById(companyRequestId));
+    } catch (error) {
+      console.error("Failed to reject document:", error);
+    }
+  };
 
-const handleReject = async (
-  companyRequestId: string,
-  documentType: string,
-) => {
-  try {
-    await rejectCompanyDocument(
-      companyRequestId,
-      documentType,
-    );
-   await dispatch(
-      fetchCompanyRequestById(companyRequestId),
-    );    // refresh company request
-  } catch (error) {
-        console.error("Failed to reject document:", error);
-
-  }
-};
+  const handleReject = async (
+    companyRequestId: string,
+    documentType: string,
+  ) => {
+    try {
+      await rejectCompanyDocument(companyRequestId, documentType);
+      await dispatch(fetchCompanyRequestById(companyRequestId)); // refresh company request
+    } catch (error) {
+      console.error("Failed to reject document:", error);
+    }
+  };
 
   useEffect(() => {
     if (companyRequestId) {
@@ -137,7 +132,9 @@ const handleReject = async (
       {/* Header */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Request {companyRequest.company.requestId}</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Request {companyRequest.company.requestId}
+          </h1>
 
           <p className="mt-1 text-sm text-gray-500">
             Review and verify the company registration request.
@@ -146,33 +143,30 @@ const handleReject = async (
 
         <div className="flex flex-wrap items-center gap-3">
           {/* Status */}
-         
-<span
-  className={`rounded-full px-4 py-2 text-sm font-medium ${
-    companyRequest.status === "PENDING"
-      ? "bg-yellow-50 text-yellow-700"
-      : companyRequest.status === "APPROVED"
-        ? "bg-green-50 text-green-700"
-        : companyRequest.status === "REJECTED"
-          ? "bg-red-50 text-red-700"
-          : "bg-blue-50 text-blue-700"
-  }`}
->
-  {companyRequest.status === "PENDING"
-    ? "Pending Review"
-    : companyRequest.status === "MORE_INFO_REQUIRED"
-      ? "On Hold"
-      : companyRequest.status}
-</span>
 
+          <span
+            className={`rounded-full px-4 py-2 text-sm font-medium ${
+              companyRequest.status === "PENDING"
+                ? "bg-yellow-50 text-yellow-700"
+                : companyRequest.status === "APPROVED"
+                  ? "bg-green-50 text-green-700"
+                  : companyRequest.status === "REJECTED"
+                    ? "bg-red-50 text-red-700"
+                    : "bg-blue-50 text-blue-700"
+            }`}
+          >
+            {companyRequest.status === "PENDING"
+              ? "Pending Review"
+              : companyRequest.status === "MORE_INFO_REQUIRED"
+                ? "On Hold"
+                : companyRequest.status}
+          </span>
 
-
-         
           {/* Request More Information */}
-          {(companyRequest.status === "PENDING" ) && (
+          {companyRequest.status === "PENDING" && (
             <button
               type="button"
-              onClick={()=>setShowMoreInfoModal(true)}
+              onClick={() => setShowMoreInfoModal(true)}
               className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
             >
               Request More Information
@@ -219,7 +213,7 @@ const handleReject = async (
           <p className="mt-1 font-semibold text-gray-900">
             {companyRequest.company.requestId}
           </p>
-  {companyRequest.company.logo ? (
+          {/* {companyRequest.company.logo ? (
   <img
     src={companyRequest.company.logo}
     alt="Company Logo"
@@ -227,7 +221,7 @@ const handleReject = async (
   />
 ) : (
   <span>No logo</span>
-)}
+)} */}
         </div>
 
         <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
@@ -298,6 +292,18 @@ const handleReject = async (
             </h2>
 
             <div className="mt-5 space-y-4">
+              {/* <div className="flex items-center justify-between">
+                <p className="w-48 text-sm text-gray-500">  {companyRequest.company.logo ? (
+  <img
+    src={companyRequest.company.logo}
+    alt="Company Logo"
+    className="w-20 h-20 object-contain"
+  />
+) : (
+  <span>No logo</span>
+)}</p>
+              
+              </div> */}
               <div className="flex items-center justify-between">
                 <p className="w-48 text-sm text-gray-500">Company Name</p>
                 <p className="font-medium text-gray-900">
@@ -500,35 +506,35 @@ const handleReject = async (
 
                     {/* Preview */}
                     <td className="px-4 py-4">
-  <button
-  type="button"
-  onClick={() =>
-    handleViewDocument(
-      companyRequest.id,
-      document.documentType,
-    )
-  }
-  className="font-medium text-[#7C3AED] hover:underline"
->
-  View
-</button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleViewDocument(
+                            companyRequest.id,
+                            document.documentType,
+                          )
+                        }
+                        className="font-medium text-[#7C3AED] hover:underline"
+                      >
+                        View
+                      </button>
                     </td>
 
                     {/* Download */}
-                  <td className="px-4 py-4">
-  <button
-    type="button"
-    onClick={() =>
-      handleDownloadDocument(
-        companyRequest.id,
-        document.documentType,
-      )
-    }
-    className="font-medium text-gray-700 hover:underline"
-  >
-    Download
-  </button>
-</td>
+                    <td className="px-4 py-4">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleDownloadDocument(
+                            companyRequest.id,
+                            document.documentType,
+                          )
+                        }
+                        className="font-medium text-gray-700 hover:underline"
+                      >
+                        Download
+                      </button>
+                    </td>
                     {/* Verification Status */}
                     {/* Verification Status */}
                     <td className="px-4 py-4">
@@ -550,12 +556,12 @@ const handleReject = async (
                       {document.verificationStatus === "PENDING" && (
                         <div className="flex gap-2">
                           <button
-                           onClick={() =>
-    handleVerify(
-     companyRequest.id,
-      document.documentType,
-    )
-  }
+                            onClick={() =>
+                              handleVerify(
+                                companyRequest.id,
+                                document.documentType,
+                              )
+                            }
                             type="button"
                             className="rounded-md bg-green-50 px-3 py-1.5 text-xs font-medium text-green-700 hover:bg-green-100"
                           >
@@ -564,12 +570,12 @@ const handleReject = async (
 
                           <button
                             type="button"
-                             onClick={() =>
-    handleReject(
-      companyRequest.id,
-      document.documentType,
-    )
-  }
+                            onClick={() =>
+                              handleReject(
+                                companyRequest.id,
+                                document.documentType,
+                              )
+                            }
                             className="rounded-md bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100"
                           >
                             Reject
@@ -577,9 +583,8 @@ const handleReject = async (
                         </div>
                       )}
 
-            
-
-                      {(document.verificationStatus === "VERIFIED" || document.verificationStatus === "REJECTED")&& (
+                      {(document.verificationStatus === "VERIFIED" ||
+                        document.verificationStatus === "REJECTED") && (
                         <span className="text-xs text-gray-400">No action</span>
                       )}
                     </td>
@@ -594,173 +599,32 @@ const handleReject = async (
       {/* Timeline Tab */}
       {/* Timeline Tab */}
       {activeTab === "timeline" && (
-        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-          {/* Header */}
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900">
-              Request Timeline
-            </h2>
+  <CompanyRequestTimeline
+    companyRequestId={companyRequest.id}
+  />
+)}
 
-            <p className="mt-1 text-sm text-gray-500">
-              Track the activity and status changes of this company request.
-            </p>
-          </div>
+      <RequestMoreInfoModal
+        isOpen={showMoreInfoModal}
+        onClose={() => setShowMoreInfoModal(false)}
+        onSubmit={async (remarks) => {
+          if (!companyRequestId) {
+            return;
+          }
 
-          {/* Timeline */}
-          <div className="mt-8">
-            {/* Timeline Item */}
-            <div className="relative flex gap-4">
-              {/* Line */}
-              <div className="absolute left-[11px] top-6 h-full w-px bg-gray-200" />
-
-              {/* Dot */}
-              <div className="relative z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-100">
-                <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
-              </div>
-
-              {/* Content */}
-              <div className="pb-8">
-                <h3 className="font-medium text-gray-900">Request Created</h3>
-
-                <p className="mt-1 text-sm text-gray-500">
-                  Company registration request was created.
-                </p>
-
-                <p className="mt-2 text-xs text-gray-400">
-                  {new Date(companyRequest.createdAt).toLocaleString()}
-                </p>
-              </div>
-            </div>
-
-            {/* Timeline Item */}
-            <div className="relative flex gap-4">
-              {/* Line */}
-              <div className="absolute left-[11px] top-6 h-full w-px bg-gray-200" />
-
-              {/* Dot */}
-              <div className="relative z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-100">
-                <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
-              </div>
-
-              {/* Content */}
-              <div className="pb-8">
-                <h3 className="font-medium text-gray-900">
-                  Company Details Submitted
-                </h3>
-
-                <p className="mt-1 text-sm text-gray-500">
-                  Company information was added to the registration request.
-                </p>
-
-                <p className="mt-2 text-xs text-gray-400">
-                  Company details completed
-                </p>
-              </div>
-            </div>
-
-            {/* Timeline Item */}
-            <div className="relative flex gap-4">
-              {/* Line */}
-              <div className="absolute left-[11px] top-6 h-full w-px bg-gray-200" />
-
-              {/* Dot */}
-              <div className="relative z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-100">
-                <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
-              </div>
-
-              {/* Content */}
-              <div className="pb-8">
-                <h3 className="font-medium text-gray-900">
-                  Documents Uploaded
-                </h3>
-
-                <p className="mt-1 text-sm text-gray-500">
-                  Required company documents were uploaded.
-                </p>
-
-                <p className="mt-2 text-xs text-gray-400">
-                  {companyRequest.documents.length} document(s) uploaded
-                </p>
-              </div>
-            </div>
-
-            {/* Timeline Item */}
-            <div className="relative flex gap-4">
-              {/* Line */}
-              <div className="absolute left-[11px] top-6 h-full w-px bg-gray-200" />
-
-              {/* Dot */}
-              <div className="relative z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-yellow-100">
-                <div className="h-2.5 w-2.5 rounded-full bg-yellow-500" />
-              </div>
-
-              {/* Content */}
-              <div className="pb-8">
-                <h3 className="font-medium text-gray-900">Pending Review</h3>
-
-                <p className="mt-1 text-sm text-gray-500">
-                  The request is waiting for Super Admin review.
-                </p>
-
-                <p className="mt-2 text-xs text-gray-400">
-                  Current status: {companyRequest.status}
-                </p>
-              </div>
-            </div>
-
-            {/* Current Status */}
-            <div className="relative flex gap-4">
-              {/* Dot */}
-              <div className="relative z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-100">
-                <div className="h-2.5 w-2.5 rounded-full bg-blue-500" />
-              </div>
-
-              {/* Content */}
-              <div>
-                <h3 className="font-medium text-gray-900">Current Status</h3>
-
-                <p className="mt-1 text-sm text-gray-500">
-                  Current request status is{" "}
-                  <span className="font-medium text-gray-700">
-                    {companyRequest.status}
-                  </span>
-                  .
-                </p>
-
-                <p className="mt-2 text-xs text-gray-400">
-                  Last updated:{" "}
-                  {new Date(companyRequest.updatedAt).toLocaleString()}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-<RequestMoreInfoModal
-  isOpen={showMoreInfoModal}
-  onClose={() => setShowMoreInfoModal(false)}
-  onSubmit={async(remarks) => {
-    if (!companyRequestId) {
-      return;
-    }
-
-    console.log("Remarks:", remarks);
-      const result = await dispatch(
-      moreInfoCompanyRequestThunk({
-        companyRequestId,
-        remarks,
-      })
-    )
-      if (moreInfoCompanyRequestThunk.fulfilled.match(result)) {
-      setShowMoreInfoModal(false);
-
-   
-  }}
-}
-  loading={loading}
-/>
-
+          console.log("Remarks:", remarks);
+          const result = await dispatch(
+            moreInfoCompanyRequestThunk({
+              companyRequestId,
+              remarks,
+            }),
+          );
+          if (moreInfoCompanyRequestThunk.fulfilled.match(result)) {
+            setShowMoreInfoModal(false);
+          }
+        }}
+        loading={loading}
+      />
     </div>
   );
 }

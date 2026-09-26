@@ -12,7 +12,7 @@ import { IPasswordHasher } from "../ports/IPasswordHasher";
 
 export class CreatePassword implements ICreatePassword {
   constructor(private readonly accountRepository: IAccountRepository,
-     private readonly passwordHasher: IPasswordHasher
+     private readonly _passwordHasher: IPasswordHasher
   ) {}
 
   async execute(passwordDto: CreatePasswordRequestDto): Promise<void> {
@@ -23,7 +23,7 @@ export class CreatePassword implements ICreatePassword {
       );
     }
 
-    const hashedPassword = await this.passwordHasher.hash(
+    const hashedPassword = await this._passwordHasher.hash(
   passwordDto.password
 );
 
