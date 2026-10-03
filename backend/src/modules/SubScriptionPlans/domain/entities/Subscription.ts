@@ -17,7 +17,8 @@ export class Subscription {
     public readonly companyId: string,
     public readonly planId: string,
 
-    public billingCycle: BillingCycle,
+    public readonly razorpayOrderId: string | null,
+        public billingCycle: BillingCycle,
 
     public status: SubscriptionStatus,
 

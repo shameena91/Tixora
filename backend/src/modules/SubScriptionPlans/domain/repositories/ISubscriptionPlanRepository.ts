@@ -7,16 +7,20 @@ import {
 
 import { CreateSubscriptionPlanDTO } from "../../application/validator/CreateSubscriptionPlanValidator";
 
-import {
-  SubscriptionPlanCreateData,
-} from "../../application/mappers/SubscriptionPlanMapper";
+
 
 export interface ISubscriptionPlanRepository
-  extends IBaseRepository<
-    SubscriptionPlan,
-    SubscriptionPlanCreateData
-  > {
+  {
 
+  create(
+    subscriptionPlan: SubscriptionPlan
+  ): Promise<SubscriptionPlan>;
+
+  findById(
+    id: string
+  ): Promise<SubscriptionPlan | null>;
+
+  findAll(): Promise<SubscriptionPlan[]>;
   findAllByStatus(
     status?: SubscriptionPlanStatus
   ): Promise<SubscriptionPlan[]>;

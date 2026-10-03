@@ -6,15 +6,15 @@ import { MESSAGES } from "../../../../shared/constants/messages";
 import { AppErrors } from "../../../../shared/errors/AppErrors";
 import { ErrorCode } from "../../../../shared/errors/ErrorCode";
 
-import { ICreateSubscriptionPlan } from "../../application/abstraction/ICreateSubscriptionPlan";
-import { IGetAllSubscriptions } from "../../application/abstraction/IGetAllSubscriptions";
-import { IGetSubscriptionPlanById } from "../../application/abstraction/IGetSubscriptionPlanById";
-import { IUpdateSubscriptionPlan } from "../../application/abstraction/IUpdateSubscriptionPlan";
-import { IUpdatePlanStatus } from "../../application/abstraction/IUpdatePlanStatus";
-import { IDeletePlan } from "../../application/abstraction/IDeletePlan";
+import { IDeletePlan } from "../../application/abstraction/subscription-plan/IDeletePlan";
+import { IGetAllSubscriptions } from "../../application/abstraction/subscription-plan/IGetAllSubscriptions";
+import { IGetSubscriptionPlanById } from "../../application/abstraction/subscription-plan/IGetSubscriptionPlanById";
+import { IUpdatePlanStatus } from "../../application/abstraction/subscription-plan/IUpdatePlanStatus";
+import { IUpdateSubscriptionPlan } from "../../application/abstraction/subscription-plan/IUpdateSubscriptionPlan";
 
 import { createSubscriptionPlanSchema } from "../../application/validator/CreateSubscriptionPlanValidator";
 import { SubscriptionPlanName } from "../../domain/entities/SubscriptionPlan";
+import { ICreateSubscriptionPlan } from "../../application/abstraction/subscription-plan/ICreateSubscriptionPlan";
 
 export class SubscriptionPlanController {
   constructor(

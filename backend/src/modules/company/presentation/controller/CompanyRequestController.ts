@@ -5,26 +5,26 @@ import { HttpStatusCode } from "../../../../shared/constants/httpStattusCode";
 import { MESSAGES } from "../../../../shared/constants/messages";
 import { AppErrors } from "../../../../shared/errors/AppErrors";
 import { ErrorCode } from "../../../../shared/errors/ErrorCode";
-import { UpdateCompanyDocumentStatusUseCase } from "../../application/usecases/UpdateCompanyDocumentStatus";
+import { UpdateCompanyDocumentStatusUseCase } from "../../application/usecases/companyRequests/UpdateCompanyDocumentStatus";
 
 import { updateCompanyLocationSchema } from "../../application/Validators/UpdateCompanyLocationSchema";
 import { updateCompanyRequestSchema } from "../../application/Validators/UpdateCompanyRequestSchema";
 
 import {
-  CompanyType,
-  EmployeeCountRange,
+    CompanyType,
+    EmployeeCountRange,
 } from "../../domain/entities/CompanyRequest";
 
 import {
-  CompanyDocumentFile,
-  CompanyLogoFile,
+    CompanyDocumentFile,
+    CompanyLogoFile,
 } from "../../domain/types/CompanyDocumentFile";
 
 import { UpdateCompanyRequestData } from "../../domain/types/UpdateCompanyRequesstData";
 
 import {
-  CompanyDocumentType,
-  DocumentVerificationStatus,
+    CompanyDocumentType,
+    DocumentVerificationStatus,
 } from "../../domain/value-objects/CompanyDocuments";
 
 import { IApproveCompanyRequest } from "../../application/abstraction/IApproveCompanyrequest";
@@ -34,6 +34,7 @@ import { IGetAllCompanyRequest } from "../../application/abstraction/IGetAllComp
 import { IGetCompanyDocumentUrl } from "../../application/abstraction/IGetCompanyDocumentUrl";
 import { IGetCompanyRequest } from "../../application/abstraction/IGetCompanyRequest";
 
+import { IGetMyCompanyRequestStatus } from "../../application/abstraction/IGetMyCompanyRequestStatus";
 import { IMoreInfoCompanyRequest } from "../../application/abstraction/IMoreInfoCompanyRequest";
 import { IRejectCompanyRequest } from "../../application/abstraction/IRejectCompanyRequest";
 import { IResubmitCompanyRequest } from "../../application/abstraction/IResubmitCompanyRequest";
@@ -42,7 +43,6 @@ import { IUpdateCompanyDocuments } from "../../application/abstraction/IUpdateCo
 import { IUpdateCompanyLocation } from "../../application/abstraction/IUpdateCompanyLocation";
 import { IUpdateCompanyLogo } from "../../application/abstraction/IUpdateCompanyLogo";
 import { IUpdateCompanyRequest } from "../../application/abstraction/IUpdateCompanyRequest";
-import { IGetMyCompanyRequestStatus } from "../../application/abstraction/IGetMyCompanyRequestStatus";
 
 export class CompanyRequestController {
   constructor(

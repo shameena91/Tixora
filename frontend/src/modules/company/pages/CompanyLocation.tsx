@@ -56,11 +56,11 @@ console.log(companyRequestId)
         console.log("Location:", location);
 
         setFormData({
-          address: location.address || "",
-          city: location.city || "",
-          state: location.state || "",
-          country: location.country || "",
-          postalCode: location.postalCode || "",
+          address: location?.address || "",
+          city: location?.city || "",
+          state: location?.state || "",
+          country: location?.country || "",
+          postalCode: location?.postalCode || "",
         });
       } catch (error) {
         if (error instanceof Error) {

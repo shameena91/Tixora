@@ -49,7 +49,7 @@ const baseAccountRepository =
     AccountModel
   );
 
-const accountRepository =
+export const accountRepository =
   new AccountRepository(baseAccountRepository);
 
 const otpService = new OtpService(

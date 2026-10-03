@@ -1,9 +1,13 @@
-import mongoose, { Schema, Types } from "mongoose";
-import { BillingCycle, SubscriptionStatus } from "../../../domain/entities/Subscription";
-import { SubscriptionDocument } from "../../../application/mappers/SubscriptionMapper";
+import mongoose, { Schema } from "mongoose";
 
+import {
+  BillingCycle,
+  SubscriptionStatus,
+} from "../../../domain/entities/Subscription";
 
-
+import {
+  SubscriptionDocument,
+} from "../../../application/mappers/SubscriptionMapper";
 
 const subscriptionSchema =
   new Schema<SubscriptionDocument>(
@@ -17,6 +21,12 @@ const subscriptionSchema =
         type: String,
         required: true,
       },
+
+     razorpayOrderId: {
+  type: String,
+  default: null,
+  trim: true,
+},
 
       billingCycle: {
         type: String,
@@ -47,6 +57,10 @@ const subscriptionSchema =
 
 subscriptionSchema.index({
   companyId: 1,
+});
+
+subscriptionSchema.index({
+  razorpayOrderId: 1,
 });
 
 export const SubscriptionModel =

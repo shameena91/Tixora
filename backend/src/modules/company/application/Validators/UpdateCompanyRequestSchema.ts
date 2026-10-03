@@ -42,5 +42,3 @@ export const updateCompanyRequestSchema = z.object({
     })).optional(),
 });
 
-export type UpdateCompanyRequestDto =
-  z.infer<typeof updateCompanyRequestSchema>;

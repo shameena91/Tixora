@@ -47,6 +47,9 @@ DOCUMENT_REJECTED:"Document Rejected",
   PLAN_NOT_FOUND:"plan not found",
    SUBSCRIPTION_PLAN_UPDATED:"SubScription plan status updated successfully",
    INVALID_PLAN:"Invalid Plan",
-  ALL_REDY_SUBSCRIBED: "Company already has a subscription"
+  ALL_REDY_SUBSCRIBED: "Company already has a subscription",
+  COMPANY_NOT_FOUND:"Company not found",
+  SUBSCRIPTION_PLAN_NOT_ACTIVE:"Subscription plan Not Active",
+  INVALID_PAYMENT_SIGNATURE:"Invalid Payment Signature"
 
 };

@@ -43,5 +43,3 @@ export const createCompanyRequestSchema = z.object({
     .nullable(),
 });
 
-export type CreateCompanyRequestDto =
-  z.infer<typeof createCompanyRequestSchema>;

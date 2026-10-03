@@ -13,5 +13,3 @@ export const updateCompanyDocumentsSchema = z.object({
     .min(1, "At least one document is required"),
 });
 
-export type UpdateCompanyDocumentsDto =
-  z.infer<typeof updateCompanyDocumentsSchema>;

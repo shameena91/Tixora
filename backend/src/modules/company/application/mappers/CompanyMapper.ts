@@ -4,6 +4,31 @@ import { Company } from "../../domain/entities/Company";
 import { CompanyDocument } from "../../Infrastructure/database/models/CompanyModel";
 
 
+export interface CompanyDocumentData {
+  _id: Types.ObjectId;
+  accountId: string;
+
+  companyName: string;
+  registrationNumber: string;
+  companyEmail: string;
+  phone: string;
+
+  yearEstablished: number | null;
+
+  companyType: Company["companyType"];
+  numberOfEmployees: Company["numberOfEmployees"];
+
+  website: string | null;
+  logo: string | null;
+  description: string | null;
+
+  location: Company["location"];
+
+  status: Company["status"];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 
 export interface CompanyCreateData {
   accountId: string;

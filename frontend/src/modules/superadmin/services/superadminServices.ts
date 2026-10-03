@@ -1,6 +1,6 @@
 
 import axiosInstance from "../../auth/api/axiosInstance";
-import { COMPANY_REQUEST_ROUTES } from "../../../shared/constants/apiRoutes";
+import { COMPANY_REQUEST_ROUTES, COMPANY_ROUTE } from "../../../shared/constants/apiRoutes";
 
 export const getAllCompanyRequests = async () => {
   const response = await axiosInstance.get(
@@ -120,4 +120,53 @@ export const getCompanyRequestTimeline = async (
   );
 
   return response.data;
+};
+
+export const getAllCompaniesList = async (
+  search?: string,
+) => {
+
+  const response = await axiosInstance.get(
+    "/companies",
+    {
+      params: {
+        search,
+      },
+    },
+  );
+
+  return response.data;
+};
+
+export const getCompany = async (
+  companyId:string
+) => {
+console.log("service",companyId)
+  const response = await axiosInstance.get(
+`/companies/${companyId}`,
+    
+  );
+
+  return response.data;
+};
+
+export const getCompanySubscription = async (id: string) => {
+ 
+
+  const url = COMPANY_ROUTE.GET_COMPANY_SUBSCRIPTION(id);
+
+
+
+  try {
+    const response = await axiosInstance.get(url);
+
+  
+
+    return response.data;
+  } catch (error) {
+    console.log(" SERVICE ERROR:", error);
+    throw error;
+  }
+
+  
 };

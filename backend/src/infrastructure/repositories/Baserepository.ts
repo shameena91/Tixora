@@ -34,4 +34,12 @@ export class BaseRepository<T, CreateData = T>
     .lean<T[]>()
     .exec();
 }
+async findOne(
+  filter: QueryFilter<T>
+): Promise<T | null> {
+  return await this.model
+    .findOne(filter)
+    .lean<T>()
+    .exec();
+}
 }

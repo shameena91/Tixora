@@ -1,3 +1,4 @@
+import { QueryFilter } from "mongoose";
 import { BaseRepository } from "../../../../../infrastructure/repositories/Baserepository";
 import { CompanyCreateData, CompanyMapper } from "../../../application/mappers/CompanyMapper";
 import { Company } from "../../../domain/entities/Company";
@@ -57,10 +58,30 @@ export class CompanyRepository
   // ------------------------------------
   // Find All Companies
   // ------------------------------------
-  async findAll(): Promise<Company[]> {
+  async findAll(search?:string): Promise<Company[]> {
+
+
+   const filter: QueryFilter<CompanyDocument> = search
+    ? {
+        $or: [
+          {
+            companyName: {
+              $regex: search,
+              $options: "i",
+            },
+          },
+          {
+            companyEmail: {
+              $regex: search,
+              $options: "i",
+            },
+          },
+        ],
+      }
+    : {};
 
     const documents =
-      await this.baseRepository.findAll();
+      await this.baseRepository.findAll(filter);
 
     return documents.map((document) =>
       CompanyMapper.toDomain(document)

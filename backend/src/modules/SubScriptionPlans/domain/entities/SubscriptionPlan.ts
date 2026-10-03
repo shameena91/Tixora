@@ -18,6 +18,8 @@ export class SubscriptionPlan {
     public monthlyPrice: number,
     public yearlyPrice: number,
 
+
+
     public memberLimit: number | null,
     public companyAdminLimit: number | null,
     public departmentLimit: number | null,

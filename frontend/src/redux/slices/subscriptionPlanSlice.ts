@@ -5,35 +5,18 @@ import {
   deletePlan,
 fetchAllSubscriptionPlans,
   fetchSubscriptionPlan,
-  getMySubscriptionStatus,
+  
   getPlanNames,
   planStatusUpdate,
-  selectSubscriptionPlan,
+ 
   updateSubscriptionPlan,
+  
 
 } from "../../modules/superadmin/services/subscriptionPlanServices";
+import { selectSubscriptionPlanThunk } from "./companySubscription/companySubscriptionThunk";
 
 
 
-export type MySubscription = {
-  id: string;
-  companyId: string;
-  planId: string;
-  billingCycle: "MONTHLY" | "YEARLY";
-  status:
-    | "PENDING"
-    | "ACTIVE"
-    | "CANCELLED"
-    | "EXPIRED";
-  startDate: string;
-  endDate: string | null;
-  createdAt: string;
-  updatedAt: string;
-};
-export type SelectSubscriptionPlanData = {
-  planId: string;
-  billingCycle: "MONTHLY" | "YEARLY";
-};
 
 export interface UpdatePlanStatusPayload {
 
@@ -273,60 +256,6 @@ string,
   }
 );
 
-export const selectSubscriptionPlanThunk =
-  createAsyncThunk<
-    void,
-    SelectSubscriptionPlanData,
-    { rejectValue: string }
-  >(
-    "subscriptionPlan/selectSubscriptionPlan",
-    async (data, { rejectWithValue }) => {
-      try {
-        await selectSubscriptionPlan(data);
-
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          return rejectWithValue(
-            error.response?.data?.message ||
-              "Failed to select subscription plan"
-          );
-        }
-
-        return rejectWithValue(
-          "Failed to select subscription plan"
-        );
-      }
-    }
-  );
-
-export const getMySubscriptionStatusThunk =
-  createAsyncThunk<
-    MySubscription | null,
-    void,
-    { rejectValue: string }
-  >(
-    "subscriptionPlan/getMySubscriptionStatus",
-    async (_, { rejectWithValue }) => {
-      try {
-        const response =
-          await getMySubscriptionStatus();
-
-        return response.data;
-
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          return rejectWithValue(
-            error.response?.data?.message ||
-              "Failed to get subscription status"
-          );
-        }
-
-        return rejectWithValue(
-          "Failed to get subscription status"
-        );
-      }
-    }
-  );
 
 interface SubscriptionPlanState {
   planNames: string[];

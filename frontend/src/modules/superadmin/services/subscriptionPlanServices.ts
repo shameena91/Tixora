@@ -1,10 +1,14 @@
 import type {
-  SelectSubscriptionPlanData,
+ 
   UpdatePlanStatusPayload,
 } from "../../../redux/slices/subscriptionPlanSlice";
 import axiosInstance from "../../auth/api/axiosInstance";
-import type { CreateSubscriptionPlanFormData } from "../components/CreateSubscriptionPlanModal";
-import { SUBSCRIPTION_PLAN_ROUTES } from "../../../shared/constants/apiRoutes";
+// import type { CreateSubscriptionPlanFormData } from "../components/CreateSubscriptionPlanModal";
+import {  SUBSCRIPTION_PLAN_ROUTES } from "../../../shared/constants/apiRoutes";
+import type { VerifyPaymentData } from "../types/PaymentType";
+import type { CreateSubscriptionPlanFormData } from "../components/subscription/CreateSubscriptionPlanModal";
+import type { SelectSubscriptionPlanData } from "../../../redux/slices/companySubscription/companySubscriptionTypes";
+
 
 export const getPlanNames = async () => {
   const response = await axiosInstance.get(
@@ -80,7 +84,7 @@ export const selectSubscriptionPlan = async (
     SUBSCRIPTION_PLAN_ROUTES.SELECT_PLAN,
     data
   );
-
+console.log("Slsected sub:",response.data)
   return response.data;
 };
 
@@ -91,3 +95,11 @@ export const getMySubscriptionStatus = async () => {
 
   return response.data;
 };
+
+export const verifyPayment=async(data:VerifyPaymentData)=>{
+  const response=await axiosInstance.post(
+    SUBSCRIPTION_PLAN_ROUTES.VERIFY_PAYMENT,data)
+
+  return response.data
+}
+

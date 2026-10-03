@@ -39,7 +39,12 @@ DOCUMENT_REJECTED:"/:companyRequestId/documents/:documentType/reject",
   RESUBMIT: "/:id/resubmit",
 };
 
-
+export const COMAPANY_ROUTES={
+ GET_ALL:"/",
+ GET_BY_ID:"/:id",
+ GET_SUBSCRIPTION:"/:id/subscription",
+DEACTIVATE_SUBSCRIPTION:"/:id/subscription/:subscriptionId/deactivate"
+}
 export const SUBSCRIPTION_ROUTE_CONSTANTS={
   CREATE:"/",
   GET_SUBSCRIPTION_PLAN_NAME:"/get-plan-names",
@@ -49,7 +54,8 @@ export const SUBSCRIPTION_ROUTE_CONSTANTS={
   UPDATE_STATUS:"/:id/status",
   DELET_PLAN:"/:id",
   SELECT_SUBSCRIPTION:"/select-plan",
- MY_SUBSCRIPTION_STATUS: "/my-subscription-status"
+ MY_SUBSCRIPTION_STATUS: "/my-subscription-status",
+ VERIFY_PAYMENT:"/verify-payment"
 
 
 }

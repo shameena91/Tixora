@@ -96,7 +96,21 @@ export const SUBSCRIPTION_PLAN_ROUTES = {
 
   SELECT_PLAN: "/subscriptions/select-plan",
 
-   SUBSCRIPTION_STATUS:"/subscriptions/my-subscription-status"
+   SUBSCRIPTION_STATUS:"/subscriptions/my-subscription-status",
+   VERIFY_PAYMENT:"/subscriptions/verify-payment",
+  
+
 
 } as const;
 
+
+export const COMPANY_ROUTE={
+   GET_COMPANY_SUBSCRIPTION: (id:string)=>`/companies/${id}/subscription`,
+
+
+    DEACTIVATE_SUBSCRIPTION: (
+    companyId: string,
+    subscriptionId: string,
+  ) =>
+    `/companies/${companyId}/subscription/${subscriptionId}/deactivate`,
+} as const

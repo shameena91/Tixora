@@ -1,8 +1,12 @@
 import { BaseRepository } from "../../../../../infrastructure/repositories/Baserepository";
+import { MESSAGES } from "../../../../../shared/constants/messages";
+import { AppErrors } from "../../../../../shared/errors/AppErrors";
+import { ErrorCode } from "../../../../../shared/errors/ErrorCode";
 import { SubscriptionCreateData, SubscriptionDocument, SubscriptionMapper } from "../../../application/mappers/SubscriptionMapper";
-import { Subscription } from "../../../domain/entities/Subscription";
+import { Subscription, SubscriptionStatus } from "../../../domain/entities/Subscription";
 import { ISubscriptionRepository } from "../../../domain/repositories/ISubscriptionRepository";
 import { SubscriptionModel } from "../models/SubscriptionModel";
+
 
 
 export class SubscriptionRepository
@@ -62,22 +66,88 @@ export class SubscriptionRepository
   // ------------------------------------
   // Find Subscription By Company ID
   // ------------------------------------
-  async findByCompanyId(
-    companyId: string
-  ): Promise<Subscription | null> {
-    const document =
-      await SubscriptionModel.findOne({
-        companyId,
-      })
-        .lean<SubscriptionDocument>()
-        .exec();
+async findByCompanyId(
+  companyId: string
+): Promise<Subscription | null> {
+  const document =
+    await this._baseRepository.findOne({
+      companyId,
+    });
 
-    if (!document) {
-      return null;
-    }
+  if (!document) {
+    return null;
+  }
 
-    return SubscriptionMapper.toDomain(
-      document
+  return SubscriptionMapper.toDomain(
+    document
+  );
+}
+
+
+
+// ------------------------------------
+// Find All Subscriptions By Company ID
+// ------------------------------------
+async findAllByCompanyId(
+  companyId: string,
+): Promise<Subscription[]> {
+  const documents =
+    await this._baseRepository.findAll({
+      companyId,
+    });
+
+  return documents.map((document) =>
+    SubscriptionMapper.toDomain(document),
+  );
+}
+async findByRazorpayOrderId(
+  razorpayOrderId: string
+): Promise<Subscription | null> {
+  const document =
+    await this._baseRepository.findOne({
+      razorpayOrderId,
+    });
+
+  if (!document) {
+    return null;
+  }
+
+  return SubscriptionMapper.toDomain(
+    document
+  );
+}
+async update(
+  id: string,
+  data: {
+   status?: SubscriptionStatus;
+    startDate?: Date;
+    endDate?: Date | null;
+  }
+): Promise<Subscription> {
+  const document =
+    await SubscriptionModel.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+             ...data,
+          updatedAt: new Date(),
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    )
+      .lean<SubscriptionDocument>()
+      .exec();
+
+  if (!document) {
+    throw new AppErrors(
+      MESSAGES.SUBSCRIPTION_PLAN_NOT_FOUND,
+      ErrorCode.SUBSCRIPTION_PLAN_NOT_FOUND
     );
   }
+
+  return SubscriptionMapper.toDomain(document);
+}
 }

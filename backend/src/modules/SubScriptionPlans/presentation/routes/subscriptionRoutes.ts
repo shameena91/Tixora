@@ -9,8 +9,10 @@ import {
 } from "../../container/Container";
 
 import {
+  COMAPANY_ROUTES,
   SUBSCRIPTION_ROUTE_CONSTANTS,
 } from "../../../../shared/constants/route";
+import { GetCompanySubscription } from "../../application/usecases/company-subscription/getCompanySubscription";
 
 const router = Router();
 
@@ -20,7 +22,7 @@ router.use(
 router.post(
   SUBSCRIPTION_ROUTE_CONSTANTS.SELECT_SUBSCRIPTION,
   authorizeRoles(AccountRole.COMPANY_ADMIN),
-  createSubScriptionController.createSubscriptionPlan.bind(
+  createSubScriptionController.createSubscription.bind(
     createSubScriptionController
   )
 );
@@ -31,7 +33,11 @@ router.get(
     createSubScriptionController
   )
 );
+router.post(
+  SUBSCRIPTION_ROUTE_CONSTANTS.VERIFY_PAYMENT,
+  authorizeRoles(AccountRole.COMPANY_ADMIN),
+  createSubScriptionController.verifyPayment.bind(
+    createSubScriptionController
+  )
+);
 
-
-
-export default router;

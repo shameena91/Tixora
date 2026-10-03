@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import SuperAdminSidebar from "../components/SuperAdminSidebar";
-import SuperAdminNavbar from "../components/SuperAdminNavbar";
+import SuperAdminSidebar from "../components/commonComponenets/SuperAdminSidebar";
+import SuperAdminNavbar from "../components/commonComponenets/SuperAdminNavbar";
+
 
 function SuperAdminLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);

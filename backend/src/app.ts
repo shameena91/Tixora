@@ -7,11 +7,10 @@ import subcsriptionPlanRoutes from "./modules/subScriptionPlans/presentation/rou
 import { errorHandler } from "./presentation/middlewares/errorHandlers";
 import { notFoundHandler } from "./presentation/middlewares/notFoundHandler";
 
-import subscriptionRoutes from "./modules/subScriptionPlans/presentation/routes/subscriptionRoutes"
+import subscriptionRoutes from "./modules/subScriptionPlans/presentation/routes/subcsriptionPlanRoutes"
 import timelineRoute from "./modules/timeline/presentation/route/timelineRoute";
 
-
-
+import companyRoute from "./modules/company/presentation/routes/companyRoute"
 
 const app = express();
 
@@ -43,6 +42,12 @@ app.use(
    "/api/company-requests",
  timelineRoute
 );
+
+app.use(
+   "/api/companies",
+companyRoute
+);
+
 app.get("/health", (_req, res) => {
   res.status(200).json({
     success: true,

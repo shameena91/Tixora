@@ -11,5 +11,8 @@ export const errorStatusMap: Record<string, number> = {
   HttpStatusCode.BAD_REQUEST,
   [ErrorCode.DOCUMENT_FILE_REQUIRED]:
   HttpStatusCode.BAD_REQUEST,
+  [ErrorCode.COMPY_NOT_FOUND]: HttpStatusCode.NOT_FOUND,
+  [ErrorCode.SUBSCRIPTION_PLAN_NOT_ACTIVE]:HttpStatusCode.CONFLICT,
+  [ErrorCode.INVALID_PAYMENT_SIGNATURE]:HttpStatusCode.BAD_REQUEST
   
 };

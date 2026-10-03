@@ -107,3 +107,4 @@ export interface CompanyRequestStatusProps {
   status: CompanyRequestStatus;
   reviewRemarks: string | null;
 }
+

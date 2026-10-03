@@ -6,6 +6,9 @@ export interface IBaseRepository<T, CreateData = T> {
     findAll(
     filter?: QueryFilter<T>
   ): Promise<T[]>;
+  findOne(
+  filter: QueryFilter<T>
+): Promise<T | null>;
 
 }
 

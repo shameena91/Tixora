@@ -15,6 +15,8 @@ export interface SubscriptionPlanDocument {
   monthlyPrice: number;
   yearlyPrice: number;
 
+
+
   memberLimit: number | null;
   companyAdminLimit: number | null;
   departmentLimit: number | null;
@@ -47,6 +49,8 @@ export class SubscriptionPlanMapper {
       doc.monthlyPrice,
       doc.yearlyPrice,
 
+    
+
       doc.memberLimit,
       doc.companyAdminLimit,
       doc.departmentLimit,
@@ -72,15 +76,21 @@ export class SubscriptionPlanMapper {
       monthlyPrice: subscriptionPlan.monthlyPrice,
       yearlyPrice: subscriptionPlan.yearlyPrice,
 
+   
+
       memberLimit: subscriptionPlan.memberLimit,
-      companyAdminLimit: subscriptionPlan.companyAdminLimit,
-      departmentLimit: subscriptionPlan.departmentLimit,
-      ticketLimit: subscriptionPlan.ticketLimit,
+      companyAdminLimit:
+        subscriptionPlan.companyAdminLimit,
+      departmentLimit:
+        subscriptionPlan.departmentLimit,
+      ticketLimit:
+        subscriptionPlan.ticketLimit,
 
       automaticTicketAssignment:
         subscriptionPlan.automaticTicketAssignment,
 
-      slaManagement: subscriptionPlan.slaManagement,
+      slaManagement:
+        subscriptionPlan.slaManagement,
 
       subscriptionPlanStatus:
         subscriptionPlan.subscriptionPlanStatus,

@@ -1,8 +1,8 @@
-import { Company } from "../../domain/entities/Company";
-import { CompanyCreateData } from "../mappers/CompanyMapper";
+import { CreateCompanyRequestDto, CreateCompanyResponseDto } from "../dto/CreateCompanyDto";
+
 
 export interface ICreateCompany {
   execute(
-    data: CompanyCreateData
-  ): Promise<Company>;
+    data: CreateCompanyRequestDto
+  ): Promise<CreateCompanyResponseDto>;
 }
