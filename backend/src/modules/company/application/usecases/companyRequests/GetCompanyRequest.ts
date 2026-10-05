@@ -6,66 +6,61 @@ import { ICompanyRequestRepository } from "../../../domain/repositories/ICompany
 import { IGetCompanyRequest } from "../../abstraction/IGetCompanyRequest";
 import { CompanyRequestDetails } from "../../dto/CompanyrequestDetailsDto";
 import { IFileStoragePort } from "../../ports/IFileStoragePort";
-// Review before final submission
+
 export class GetCompanyRequest implements IGetCompanyRequest {
   constructor(
     private readonly _companyRequestRepository: ICompanyRequestRepository,
     private readonly _accountRepository: IAccountRepository,
-      private readonly _s3Service: IFileStoragePort
+    private readonly _s3Service: IFileStoragePort,
   ) {}
 
-  async execute(id: string): Promise<CompanyRequestDetails> { 
-    const companyRequest =
-      await this._companyRequestRepository.findById(id);
+  async execute(id: string): Promise<CompanyRequestDetails> {
+    const companyRequest = await this._companyRequestRepository.findById(id);
 
     if (!companyRequest) {
       throw new AppErrors(
         MESSAGES.COMPANY_REQUEST_NOT_FOUND,
-        ErrorCode.COMPANY_REQUEST_NOT_FOUND
+        ErrorCode.COMPANY_REQUEST_NOT_FOUND,
       );
     }
- const account =
-    await this._accountRepository.findById(
-      companyRequest.accountId
+    const account = await this._accountRepository.findById(
+      companyRequest.accountId,
     );
-const logoUrl = companyRequest.logo
-  ? await this._s3Service.getSignedUrl(companyRequest.logo)
-  : null;
-  console.log("Accountttttttt:", companyRequest);
+    const logoUrl = companyRequest.logo
+      ? await this._s3Service.getSignedUrl(companyRequest.logo)
+      : null;
+    console.log("Accountttttttt:", companyRequest);
     return {
-  id: companyRequest.id,
+      id: companyRequest.id,
 
-  company: {
-    companyName: companyRequest.companyName,
-    requestId:companyRequest.requestId,
-    registrationNumber: companyRequest.registrationNumber,
-    companyEmail: companyRequest.companyEmail,
-    phone: companyRequest.phone,
-    yearEstablished: companyRequest.yearEstablished,
-    companyType: companyRequest.companyType,
-    numberOfEmployees: companyRequest.numberOfEmployees,
-    website: companyRequest.website,
-    logo: logoUrl,
-    description: companyRequest.description,
-  },
+      company: {
+        companyName: companyRequest.companyName,
+        requestId: companyRequest.requestId,
+        registrationNumber: companyRequest.registrationNumber,
+        companyEmail: companyRequest.companyEmail,
+        phone: companyRequest.phone,
+        yearEstablished: companyRequest.yearEstablished,
+        companyType: companyRequest.companyType,
+        numberOfEmployees: companyRequest.numberOfEmployees,
+        website: companyRequest.website,
+        logo: logoUrl,
+        description: companyRequest.description,
+      },
 
-  admin: {
-    name: account
-      ? `${account.firstName} ${account.lastName}`
-      : "Unknown",
-    email: account?.email ?? "Unknown",
-    phone: account?.phone ?? "Unknown",
-    designation: account?.designation ?? "Unknown",
-  },
+      admin: {
+        name: account ? `${account.firstName} ${account.lastName}` : "Unknown",
+        email: account?.email ?? "Unknown",
+        phone: account?.phone ?? "Unknown",
+        designation: account?.designation ?? "Unknown",
+      },
 
-  status: companyRequest.status,
+      status: companyRequest.status,
 
-  location: companyRequest.location,
-  documents: companyRequest.documents,
+      location: companyRequest.location,
+      documents: companyRequest.documents,
 
-  createdAt: companyRequest.createdAt,
-  updatedAt: companyRequest.updatedAt,
-};
-  
-}
+      createdAt: companyRequest.createdAt,
+      updatedAt: companyRequest.updatedAt,
+    };
+  }
 }

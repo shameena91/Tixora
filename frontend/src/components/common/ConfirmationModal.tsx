@@ -1,19 +1,27 @@
 import React from "react";
 
-interface DeactivateSubscriptionModalProps {
+export interface ConfirmationModalData {
+  title: string;
+  message: string;
+  confirmText: string;
+  loadingText: string;
+}
+interface ConfirmationModalProps {
   open: boolean;
   loading: boolean;
   onClose: () => void;
   onConfirm: () => void;
+  modalData: ConfirmationModalData;
 }
 
 const DeactivateSubscriptionModal: React.FC<
-  DeactivateSubscriptionModalProps
+  ConfirmationModalProps
 > = ({
   open,
   loading,
   onClose,
   onConfirm,
+    modalData,
 }) => {
   if (!open) {
     return null;
@@ -23,12 +31,11 @@ const DeactivateSubscriptionModal: React.FC<
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
         <h2 className="text-lg font-semibold text-gray-900">
-          Deactivate Subscription?
+          {modalData.title}
         </h2>
 
         <p className="mt-2 text-sm text-gray-500">
-          Are you sure you want to deactivate this subscription?
-          The subscription status will be changed to CANCELLED.
+ {modalData.message}          
         </p>
 
         <div className="mt-6 flex justify-end gap-3">
@@ -47,7 +54,9 @@ const DeactivateSubscriptionModal: React.FC<
             disabled={loading}
             className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {loading ? "Deactivating..." : "Deactivate"}
+             {loading
+              ? modalData.loadingText
+              : modalData.confirmText}
           </button>
         </div>
       </div>

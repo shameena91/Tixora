@@ -1,6 +1,7 @@
-import { SubscriptionPlan } from "../../domain/entities/SubscriptionPlan";
-import { CreateSubscriptionPlanDTO } from "../validator/CreateSubscriptionPlanValidator";
+import { SubscriptionPlan } from "../../../domain/entities/SubscriptionPlan";
+import { CreateSubscriptionPlanDTO } from "../../../presentation/validator/CreateSubscriptionPlanValidator";
 
-export interface ICreateSubscriptionPlan{
-    execute(data:CreateSubscriptionPlanDTO):Promise<SubscriptionPlan>
+
+export interface ICreateSubscriptionPlan {
+  execute(data: CreateSubscriptionPlanDTO): Promise<SubscriptionPlan>;
 }

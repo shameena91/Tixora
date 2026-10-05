@@ -1,5 +1,8 @@
 import { Schema } from "mongoose";
-import { CompanyDocumentType, DocumentVerificationStatus } from "../../../domain/value-objects/CompanyDocuments";
+import {
+  CompanyDocumentType,
+  DocumentVerificationStatus,
+} from "../../../domain/value-objects/CompanyDocuments";
 
 export const companyDocumentSchema = new Schema(
   {
@@ -37,6 +40,5 @@ export const companyDocumentSchema = new Schema(
       default: DocumentVerificationStatus.PENDING,
     },
   },
-  { _id: false }
+  { _id: false },
 );
-

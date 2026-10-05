@@ -20,238 +20,192 @@ import { CompanyLocation } from "../../../domain/value-objects/CompanyLocation";
 
 import { CompanyRequestModel } from "../models/CompanyRequestModel";
 
-export class CompanyRequestRepository
-  implements ICompanyRequestRepository
-{
+export class CompanyRequestRepository implements ICompanyRequestRepository {
   private readonly baseRepository: BaseRepository<
-  CompanyRequestDocument,
-  CompanyRequestCreateData>;
-
-constructor(
-  baseRepository: BaseRepository<
     CompanyRequestDocument,
     CompanyRequestCreateData
-  >
-) {
+  >;
+
+  constructor(
+    baseRepository: BaseRepository<
+      CompanyRequestDocument,
+      CompanyRequestCreateData
+    >,
+  ) {
     this.baseRepository = baseRepository;
   }
 
-  async create(
-    companyRequest: CompanyRequest
-  ): Promise<CompanyRequest> {
+  async create(companyRequest: CompanyRequest): Promise<CompanyRequest> {
+    const persistenceData = CompanyRequestMapper.toPersistence(companyRequest);
 
-    // Domain → Persistence
-    const persistenceData =
-      CompanyRequestMapper.toPersistence(companyRequest);
-
-    // Save in database through BaseRepository
     const companyRequestDocument =
       await this.baseRepository.create(persistenceData);
 
-    // Persistence → Domain
-    return CompanyRequestMapper.toDomain(
-      companyRequestDocument
-    );
+    return CompanyRequestMapper.toDomain(companyRequestDocument);
   }
 
-  
-async findByPhone(phone: string): Promise<CompanyRequest | null> {
-  const companyRequestDocument=
-    await CompanyRequestModel.findOne({
+  async findByPhone(phone: string): Promise<CompanyRequest | null> {
+    const companyRequestDocument = await CompanyRequestModel.findOne({
       phone,
     }).lean<CompanyRequestDocument>();
 
-  if (!companyRequestDocument) {
-    return null;
+    if (!companyRequestDocument) {
+      return null;
+    }
+
+    return CompanyRequestMapper.toDomain(companyRequestDocument);
   }
 
-  return CompanyRequestMapper.toDomain (companyRequestDocument);
-}
+  async findByEmail(email: string): Promise<CompanyRequest | null> {
+    const companyRequestDocument = await CompanyRequestModel.findOne({
+      companyEmail: email,
+    }).lean<CompanyRequestDocument>();
+    if (!companyRequestDocument) {
+      return null;
+    }
 
-
-async findByEmail(email: string): Promise<CompanyRequest|null> {
-    const companyRequestDocument=await CompanyRequestModel.findOne({
-      companyEmail:email
-    }).lean<CompanyRequestDocument>()
-  if (!companyRequestDocument) {
-    return null;
+    return CompanyRequestMapper.toDomain(companyRequestDocument);
   }
 
-  return CompanyRequestMapper.toDomain (companyRequestDocument);
-}
-
-
-  async findById(
-    id: string
-  ): Promise<CompanyRequest | null> {
-
-    const companyRequestDocument =
-      await this.baseRepository.findById(id);
+  async findById(id: string): Promise<CompanyRequest | null> {
+    const companyRequestDocument = await this.baseRepository.findById(id);
 
     if (!companyRequestDocument) {
       return null;
     }
 
-    return CompanyRequestMapper.toDomain(
-      companyRequestDocument
-    );
+    return CompanyRequestMapper.toDomain(companyRequestDocument);
   }
 
   async findAll(): Promise<CompanyRequest[]> {
+    const companyRequestDocuments = await this.baseRepository.findAll();
 
-    const companyRequestDocuments =
-      await this.baseRepository.findAll();
-
-    return companyRequestDocuments.map(
-      CompanyRequestMapper.toDomain
-    );
+    return companyRequestDocuments.map(CompanyRequestMapper.toDomain);
   }
 
-  async findByAccountId(
-    accountId: string
-  ): Promise<CompanyRequest | null> {
-
-    const companyRequestDocument =
-      await CompanyRequestModel
-        .findOne({ accountId })
-        .lean<CompanyRequestDocument>();
+  async findByAccountId(accountId: string): Promise<CompanyRequest | null> {
+    const companyRequestDocument = await CompanyRequestModel.findOne({
+      accountId,
+    }).lean<CompanyRequestDocument>();
 
     if (!companyRequestDocument) {
       return null;
     }
 
-    return CompanyRequestMapper.toDomain(
-      companyRequestDocument
-    );
+    return CompanyRequestMapper.toDomain(companyRequestDocument);
   }
 
-async updateStatus(
-  id: string,
-  status: CompanyRequestStatus,
-  reviewedBy: string|null,
+  async updateStatus(
+    id: string,
+    status: CompanyRequestStatus,
+    reviewedBy: string | null,
     reviewedAt: Date | null,
-  reviewRemarks: string | null,
-  rejectionReason: string | null
-): Promise<CompanyRequest> {
-
-    const companyRequestDocument =
-      await CompanyRequestModel.findByIdAndUpdate(
-        id,
-        {
-          $set: {
-  status,
-  reviewedBy,
-  reviewedAt,
-  reviewRemarks,
-  rejectionReason,
-  updatedAt: new Date(),
-}
+    reviewRemarks: string | null,
+    rejectionReason: string | null,
+  ): Promise<CompanyRequest> {
+    const companyRequestDocument = await CompanyRequestModel.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          status,
+          reviewedBy,
+          reviewedAt,
+          reviewRemarks,
+          rejectionReason,
+          updatedAt: new Date(),
         },
-        {
-          new: true,
-        }
-      ).lean<CompanyRequestDocument>();
+      },
+      {
+        new: true,
+      },
+    ).lean<CompanyRequestDocument>();
 
     if (!companyRequestDocument) {
       throw new AppErrors(
         MESSAGES.COMPANY_REQUEST_NOT_FOUND,
-        ErrorCode.COMPANY_REQUEST_NOT_FOUND
+        ErrorCode.COMPANY_REQUEST_NOT_FOUND,
       );
     }
 
-    return CompanyRequestMapper.toDomain(
-      companyRequestDocument
-    );
+    return CompanyRequestMapper.toDomain(companyRequestDocument);
   }
 
   async updateInfo(
     id: string,
-    data: UpdateCompanyRequestData
+    data: UpdateCompanyRequestData,
   ): Promise<CompanyRequest> {
-
-    const companyRequestDocument =
-      await CompanyRequestModel.findByIdAndUpdate(
-        id,
-        {
-          $set: data,
-          updatedAt: new Date(),
-        },
-        {
-          new: true,
-        }
-      ).lean<CompanyRequestDocument>();
+    const companyRequestDocument = await CompanyRequestModel.findByIdAndUpdate(
+      id,
+      {
+        $set: data,
+        updatedAt: new Date(),
+      },
+      {
+        new: true,
+      },
+    ).lean<CompanyRequestDocument>();
 
     if (!companyRequestDocument) {
       throw new AppErrors(
         MESSAGES.COMPANY_REQUEST_NOT_FOUND,
-        ErrorCode.COMPANY_REQUEST_NOT_FOUND
+        ErrorCode.COMPANY_REQUEST_NOT_FOUND,
       );
     }
 
-    return CompanyRequestMapper.toDomain(
-      companyRequestDocument
-    );
+    return CompanyRequestMapper.toDomain(companyRequestDocument);
   }
 
   async updateLocation(
     id: string,
-    location: CompanyLocation
+    location: CompanyLocation,
   ): Promise<CompanyRequest> {
-
-    const companyRequestDocument =
-      await CompanyRequestModel.findByIdAndUpdate(
-        id,
-        {
-          $set: {
-            location,
-            updatedAt: new Date(),
-          },
+    const companyRequestDocument = await CompanyRequestModel.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          location,
+          updatedAt: new Date(),
         },
-        {
-          new: true,
-        }
-      ).lean<CompanyRequestDocument>();
+      },
+      {
+        new: true,
+      },
+    ).lean<CompanyRequestDocument>();
 
     if (!companyRequestDocument) {
       throw new AppErrors(
         MESSAGES.COMPANY_REQUEST_NOT_FOUND,
-        ErrorCode.COMPANY_REQUEST_NOT_FOUND
+        ErrorCode.COMPANY_REQUEST_NOT_FOUND,
       );
     }
 
-    return CompanyRequestMapper.toDomain(
-      companyRequestDocument
-    );
+    return CompanyRequestMapper.toDomain(companyRequestDocument);
   }
 
   async updateDocuments(
     id: string,
-    documents: CompanyDocument[]
+    documents: CompanyDocument[],
   ): Promise<CompanyRequest> {
-
-    const companyRequestDocument =
-      await CompanyRequestModel.findByIdAndUpdate(
-        id,
-        {
-          $set: {
-            documents,
-            updatedAt: new Date(),
-          },
+    const companyRequestDocument = await CompanyRequestModel.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          documents,
+          updatedAt: new Date(),
         },
-        {
-          new: true,
-        }
-      ).lean<CompanyRequestDocument>();
+      },
+      {
+        new: true,
+      },
+    ).lean<CompanyRequestDocument>();
 
     if (!companyRequestDocument) {
       throw new AppErrors(
         MESSAGES.COMPANY_REQUEST_NOT_FOUND,
-        ErrorCode.COMPANY_REQUEST_NOT_FOUND
+        ErrorCode.COMPANY_REQUEST_NOT_FOUND,
       );
     }
 
-    return CompanyRequestMapper.toDomain(
-      companyRequestDocument
-    );
+    return CompanyRequestMapper.toDomain(companyRequestDocument);
   }
 }

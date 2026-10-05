@@ -1,6 +1,8 @@
 import { MESSAGES } from "../../../../../shared/constants/messages";
 import { AppErrors } from "../../../../../shared/errors/AppErrors";
 import { ErrorCode } from "../../../../../shared/errors/ErrorCode";
+import { AccountStatus } from "../../../../auth/domain/entities/Account";
+import { IAccountRepository } from "../../../../auth/domain/repositories/IAccountRepository";
 import { ICreateTimeline } from "../../../../timeline/application/abstraction/ICreateTimeline";
 import { TimelineEntityType } from "../../../../timeline/domain/entities/Timeline";
 import { CompanyRequest } from "../../../domain/entities/CompanyRequest";
@@ -9,29 +11,18 @@ import { ICompanyRequestRepository } from "../../../domain/repositories/ICompany
 import { IApproveCompanyRequest } from "../../abstraction/IApproveCompanyrequest";
 import { ICreateCompany } from "../../abstraction/ICreateCompany";
 
-
-
-export class ApproveCompanyRequest
-  implements IApproveCompanyRequest
-{
+export class ApproveCompanyRequest implements IApproveCompanyRequest {
   constructor(
-    private readonly _companyRequestRepository:
-      ICompanyRequestRepository,
+    private readonly _companyRequestRepository: ICompanyRequestRepository,
 
-    private readonly _createCompany:
-      ICreateCompany,
+    private readonly _createCompany: ICreateCompany,
 
-    private readonly _createTimeline:
-      ICreateTimeline,
+    private readonly _createTimeline: ICreateTimeline,
+    private readonly _accountRepository: IAccountRepository,
   ) {}
 
-  async execute(
-    id: string,
-    reviewedBy: string,
-  ): Promise<CompanyRequest> {
-
-    const companyRequest =
-      await this._companyRequestRepository.findById(id);
+  async execute(id: string, reviewedBy: string): Promise<CompanyRequest> {
+    const companyRequest = await this._companyRequestRepository.findById(id);
 
     if (!companyRequest) {
       throw new AppErrors(
@@ -42,42 +33,35 @@ export class ApproveCompanyRequest
 
     companyRequest.approve();
 
-  await this._createCompany.execute({
-  accountId: companyRequest.accountId,
+    await this._createCompany.execute({
+      accountId: companyRequest.accountId,
 
-  companyName: companyRequest.companyName,
+      companyName: companyRequest.companyName,
 
-  registrationNumber:
-    companyRequest.registrationNumber,
+      registrationNumber: companyRequest.registrationNumber,
 
-  companyEmail:
-    companyRequest.companyEmail,
+      companyEmail: companyRequest.companyEmail,
 
-  phone:
-    companyRequest.phone,
+      phone: companyRequest.phone,
 
-  yearEstablished:
-    companyRequest.yearEstablished,
+      yearEstablished: companyRequest.yearEstablished,
 
-  companyType:
-    companyRequest.companyType,
+      companyType: companyRequest.companyType,
 
-  numberOfEmployees:
-    companyRequest.numberOfEmployees,
+      numberOfEmployees: companyRequest.numberOfEmployees,
 
-  website:
-    companyRequest.website,
+      website: companyRequest.website,
 
-  logo:
-    companyRequest.logo,
+      logo: companyRequest.logo,
 
-  description:
-    companyRequest.description,
+      description: companyRequest.description,
 
-  location:
-    companyRequest.location,
-});
-
+      location: companyRequest.location,
+    });
+    await this._accountRepository.updateStatus(
+      companyRequest.accountId,
+      AccountStatus.ACTIVE,
+    );
     const updatedCompanyRequest =
       await this._companyRequestRepository.updateStatus(
         id,
@@ -89,19 +73,15 @@ export class ApproveCompanyRequest
       );
 
     await this._createTimeline.execute({
-      entityType:
-        TimelineEntityType.COMPANY_REQUEST,
+      entityType: TimelineEntityType.COMPANY_REQUEST,
 
-      entityId:
-        companyRequest.id,
+      entityId: companyRequest.id,
 
       action: "APPROVED",
 
-      description:
-        "Company request approved",
+      description: "Company request approved",
 
-      performedBy:
-        reviewedBy,
+      performedBy: reviewedBy,
 
       metadata: null,
 
@@ -111,6 +91,3 @@ export class ApproveCompanyRequest
     return updatedCompanyRequest;
   }
 }
-
-
-                                                                                       

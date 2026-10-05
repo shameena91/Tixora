@@ -31,12 +31,7 @@ export type SubscriptionCreateData = Omit<
 >;
 
 export class SubscriptionMapper {
-  // ------------------------------------
-  // Persistence → Domain
-  // ------------------------------------
-  static toDomain(
-    document: SubscriptionDocument
-  ): Subscription {
+  static toDomain(document: SubscriptionDocument): Subscription {
     return new Subscription(
       document._id.toString(),
 
@@ -60,29 +55,20 @@ export class SubscriptionMapper {
     );
   }
 
-  // --|----------------------------------
-  // Domain → Persistence
-  // ------------------------------------
-  static toPersistence(
-    subscription: Subscription
-  ): SubscriptionCreateData {
+  static toPersistence(subscription: Subscription): SubscriptionCreateData {
     return {
       companyId: subscription.companyId,
 
       planId: subscription.planId,
 
       razorpayOrderId: subscription.razorpayOrderId,
-      billingCycle:
-        subscription.billingCycle,
+      billingCycle: subscription.billingCycle,
 
-      status:
-        subscription.status,
+      status: subscription.status,
 
-      startDate:
-        subscription.startDate,
+      startDate: subscription.startDate,
 
-      endDate:
-        subscription.endDate,
+      endDate: subscription.endDate,
     };
   }
 }

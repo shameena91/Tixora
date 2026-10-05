@@ -4,63 +4,58 @@ import { AccountRole } from "../../../auth/domain/entities/Account";
 import { authMiddleware } from "../../../auth/container/container";
 import { createSubscriptionPlanController } from "../../container/Container";
 import { SUBSCRIPTION_ROUTE_CONSTANTS } from "../../../../shared/constants/route";
-const router=Router()
+const router = Router();
 
-
-
-router.use(
-  authMiddleware.authenticate.bind(authMiddleware)
+router.use(authMiddleware.authenticate.bind(authMiddleware));
+router.get(
+  SUBSCRIPTION_ROUTE_CONSTANTS.GET_SUBSCRIPTION_PLAN_NAME,
+  createSubscriptionPlanController.getPlanNames.bind(
+    createSubscriptionPlanController,
+  ),
 );
-router.get(SUBSCRIPTION_ROUTE_CONSTANTS.GET_SUBSCRIPTION_PLAN_NAME,
-   createSubscriptionPlanController.getPlanNames.bind(
-    createSubscriptionPlanController)
-
-)
 router.post(
-
   SUBSCRIPTION_ROUTE_CONSTANTS.CREATE,
- 
+
   authorizeRoles(AccountRole.SUPER_ADMIN),
   createSubscriptionPlanController.createPlan.bind(
-    createSubscriptionPlanController
-  )
+    createSubscriptionPlanController,
+  ),
 );
 router.get(
-
   SUBSCRIPTION_ROUTE_CONSTANTS.GET_ALL_PLANS,
- 
-  authorizeRoles(AccountRole.SUPER_ADMIN,AccountRole.COMPANY_ADMIN),
+
+  authorizeRoles(AccountRole.SUPER_ADMIN, AccountRole.COMPANY_ADMIN),
   createSubscriptionPlanController.getAllPlans.bind(
-    createSubscriptionPlanController
-  )
+    createSubscriptionPlanController,
+  ),
 );
-router.get(SUBSCRIPTION_ROUTE_CONSTANTS.GET_PLAN_BY_ID,
+router.get(
+  SUBSCRIPTION_ROUTE_CONSTANTS.GET_PLAN_BY_ID,
   authorizeRoles(AccountRole.SUPER_ADMIN),
-    createSubscriptionPlanController.getPlanById.bind(
-    createSubscriptionPlanController
-  )
- 
-)
- router.patch(SUBSCRIPTION_ROUTE_CONSTANTS.UPDTE_PLAN,
+  createSubscriptionPlanController.getPlanById.bind(
+    createSubscriptionPlanController,
+  ),
+);
+router.patch(
+  SUBSCRIPTION_ROUTE_CONSTANTS.UPDTE_PLAN,
   authorizeRoles(AccountRole.SUPER_ADMIN),
-    createSubscriptionPlanController.update.bind(
-    createSubscriptionPlanController
-  )
-)
- router.patch(SUBSCRIPTION_ROUTE_CONSTANTS.UPDATE_STATUS,
+  createSubscriptionPlanController.update.bind(
+    createSubscriptionPlanController,
+  ),
+);
+router.patch(
+  SUBSCRIPTION_ROUTE_CONSTANTS.UPDATE_STATUS,
   authorizeRoles(AccountRole.SUPER_ADMIN),
-    createSubscriptionPlanController.updateStatus.bind(
-    createSubscriptionPlanController
-  )
-)
- router.delete(SUBSCRIPTION_ROUTE_CONSTANTS.DELET_PLAN,
+  createSubscriptionPlanController.updateStatus.bind(
+    createSubscriptionPlanController,
+  ),
+);
+router.delete(
+  SUBSCRIPTION_ROUTE_CONSTANTS.DELET_PLAN,
   authorizeRoles(AccountRole.SUPER_ADMIN),
-    createSubscriptionPlanController.deletePlan.bind(
-    createSubscriptionPlanController
-  )
-)
+  createSubscriptionPlanController.deletePlan.bind(
+    createSubscriptionPlanController,
+  ),
+);
 
-
-
-
-export default router
+export default router;

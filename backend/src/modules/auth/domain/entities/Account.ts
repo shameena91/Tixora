@@ -1,6 +1,7 @@
 export enum AccountStatus {
   PENDING = "PENDING",
   ACTIVE = "ACTIVE",
+    INACTIVE = "INACTIVE",
 }
 export enum AccountRole {
   SUPER_ADMIN = "SUPER_ADMIN",

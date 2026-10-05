@@ -37,7 +37,22 @@ router.get(
   
 );
 
+router.get(
+  COMAPANY_ROUTES.GET_COMPANY_ADMIN,
+  authorizeRoles(AccountRole.SUPER_ADMIN),
+  companyController.getCompanyAdmin.bind(
+    companyController,
+  ),
+  
+);
 
+router.patch(
+ COMAPANY_ROUTES.UPDATE_STATUS,
+   authorizeRoles(AccountRole.SUPER_ADMIN),
+  companyController.updateCompanyStatus.bind(
+    companyController,
+  ),
+);
 
 
 export default router;

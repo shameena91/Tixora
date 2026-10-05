@@ -28,9 +28,7 @@ import { CompanyRequestModel } from "../Infrastructure/database/models/CompanyRe
 import { S3FileStorage } from "../Infrastructure/storageservices/S3FileStorage";
 import { CompanyRequestController } from "../presentation/controller/CompanyRequestController";
 
-import {
-  createTimeline
-} from "../../timeline/containers/container";
+import { createTimeline } from "../../timeline/containers/container";
 import { CompanyCreateData } from "../application/mappers/CompanyMapper";
 import { GetCompanies } from "../application/usecases/company/GetCompanies";
 import { GetCompanyDocumentUrl } from "../application/usecases/companyRequests/GetCompanyDocumentUrl";
@@ -48,7 +46,12 @@ import {
 import { CompanyRepository } from "../Infrastructure/database/repositories/CompanyRepository";
 import { CompanyController } from "../presentation/controller/CompanyController";
 import { GetCompanyDetails } from "../application/usecases/company/GetCompanyDetails";
-import { subscriptionPlanRepository, subscriptionRepository } from "../../subScriptionPlans/container/Container";
+import {
+  subscriptionPlanRepository,
+  subscriptionRepository,
+} from "../../subScriptionPlans/container/Container";
+import { GetCompanyAdmins } from "../application/usecases/company/GetCompanyAdmins";
+import { UpdateCompanyStatus } from "../application/usecases/company/UpdateCompanyStatus";
 
 const baseCompanyRequestRepository = new BaseRepository(CompanyRequestModel);
 
@@ -79,6 +82,7 @@ const approveCompanyRequest = new ApproveCompanyRequest(
   companyRequestRepository,
   createCompany,
   createTimeline,
+  accountRepository,
 );
 
 const rejectCompanyRequest = new RejectCompanyRequest(
@@ -153,17 +157,22 @@ const updateCompanyDocumentStatus = new UpdateCompanyDocumentStatusUseCase(
   companyRequestRepository,
   createTimeline,
 );
-
 const companyreopsitory = new CompanyRepository(baseCompanyrepository);
-const getCompanies = new GetCompanies(companyreopsitory, fileStorage,);
-const getCompanyDetails=new GetCompanyDetails(companyreopsitory,
+
+const getCompanyAdmin = new GetCompanyAdmins(
+  companyreopsitory,
+  accountRepository,
+);
+const getCompanies = new GetCompanies(companyreopsitory, fileStorage);
+const getCompanyDetails = new GetCompanyDetails(
+  companyreopsitory,
 
   fileStorage,
   subscriptionRepository,
-subscriptionPlanRepository,
-accountRepository
-
-)
+  subscriptionPlanRepository,
+  accountRepository,
+);
+export const updateCompanyStatus = new UpdateCompanyStatus(companyreopsitory);
 export const companyRequestController = new CompanyRequestController(
   createCompanyRequest,
   approveCompanyRequest,
@@ -185,4 +194,7 @@ export const companyRequestController = new CompanyRequestController(
 
 export const companyController = new CompanyController(
   getCompanies,
-  getCompanyDetails);
+  getCompanyDetails,
+  getCompanyAdmin,
+  updateCompanyStatus,
+);

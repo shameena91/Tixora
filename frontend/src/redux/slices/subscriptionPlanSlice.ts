@@ -53,6 +53,7 @@ export interface SubscriptionPlanDetails {
   ticketLimit: number | null;
   automaticTicketAssignment: boolean;
   slaManagement: boolean;
+
   createdAt: string;
   updatedAt: string;
 }
@@ -81,7 +82,7 @@ export interface SubScriptionListItems {
   companyAdminLimit: number | null;
   departmentLimit: number | null;
   ticketLimit: number | null;
-
+planStatus: "ACTIVE" | "INACTIVE";
   automaticTicketAssignment: boolean;
   slaManagement: boolean;
 }

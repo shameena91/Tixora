@@ -16,8 +16,9 @@ DOCUMENT_REJECTED:"Document Rejected",
   DOCUMENT_VERIFIED: "DocumentVarified",
   UNAUTHORIZED: "Unauthorized",
   DOCUMENT_NOT_FOUND: "Document Not found",
+  COMPANY_DETAILS_FETCHED:"Companydetails fetched",
   COMPANY_REQUEST_APPROVED: "Company request approved successfully",
-
+COMPANY_LIST_FETCHED:"companylist fetched",
   COMPANY_REQUEST_REJECTED: "Company request rejected successfully",
 
   MORE_INFORMATION_REQUESTED: "More information requested successfully",
@@ -50,6 +51,11 @@ DOCUMENT_REJECTED:"Document Rejected",
   ALL_REDY_SUBSCRIBED: "Company already has a subscription",
   COMPANY_NOT_FOUND:"Company not found",
   SUBSCRIPTION_PLAN_NOT_ACTIVE:"Subscription plan Not Active",
-  INVALID_PAYMENT_SIGNATURE:"Invalid Payment Signature"
+  INVALID_PAYMENT_SIGNATURE:"Invalid Payment Signature",
+  PAYMENT_NOT_FOUND:"Payment not found",
+  COMPANY_ADMIN_NOT_FOUND:"Company admin not found",
+  COMPANY_ADMIN_FETCHED:"Company Admin fetched",
+  PAYMENT_HISTORY_FETCHED_SUCCESSFULLY:"Payment history fetched successfully",
+  SUBSCRIPTION_PLAN_ALREADY_EXISTS:"SubscriptionPlan Allready Exist"
 
 };

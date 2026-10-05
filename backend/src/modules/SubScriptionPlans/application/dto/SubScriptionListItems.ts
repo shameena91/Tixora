@@ -14,6 +14,7 @@ export interface SubScriptionListItems {
 
   automaticTicketAssignment: boolean;
   slaManagement: boolean;
+  planStatus: SubscriptionPlanStatus;
 }
 export interface ViewSubScriptionPlanDetails {
   id: string;
@@ -29,7 +30,7 @@ export interface ViewSubScriptionPlanDetails {
 
   automaticTicketAssignment: boolean;
   slaManagement: boolean;
-  status:SubscriptionPlanStatus,
- createdAt: Date,
-   updatedAt: Date,
+  status: SubscriptionPlanStatus;
+  createdAt: Date;
+  updatedAt: Date;
 }

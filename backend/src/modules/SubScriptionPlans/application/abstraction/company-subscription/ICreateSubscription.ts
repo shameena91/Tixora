@@ -5,6 +5,6 @@ export interface ICreateSubscription {
   execute(
     accountId: string,
     planId: string,
-    billingCycle: BillingCycle
+    billingCycle: BillingCycle,
   ): Promise<CreateSubscriptionResponseDto>;
 }

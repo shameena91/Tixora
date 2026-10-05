@@ -13,29 +13,28 @@ export class GetSubscriptionPlanById implements IGetSubscriptionPlanById {
   async execute(id: string): Promise<ViewSubScriptionPlanDetails> {
     const subscriptionPlan = await this._subcriptionPlanRepository.findById(id);
 
-    if(!subscriptionPlan)
-    {
-        throw new AppErrors(
-             MESSAGES.SUBSCRIPTION_PLAN_NOT_FOUND,
-                  ErrorCode.ACCOUNT_NOT_FOUND      )
+    if (!subscriptionPlan) {
+      throw new AppErrors(
+        MESSAGES.SUBSCRIPTION_PLAN_NOT_FOUND,
+        ErrorCode.ACCOUNT_NOT_FOUND,
+      );
     }
 
     return {
-        id: subscriptionPlan.id,
-         name: subscriptionPlan.name,
-         description: subscriptionPlan.description, 
-         monthlyPrice: subscriptionPlan.monthlyPrice, 
-         yearlyPrice: subscriptionPlan.yearlyPrice, 
-         memberLimit: subscriptionPlan.memberLimit, 
-         companyAdminLimit: subscriptionPlan.companyAdminLimit,
-          departmentLimit: subscriptionPlan.departmentLimit, 
-          ticketLimit: subscriptionPlan.ticketLimit,
-           automaticTicketAssignment: subscriptionPlan.automaticTicketAssignment,
-            slaManagement: subscriptionPlan.slaManagement,
-            status:subscriptionPlan.subscriptionPlanStatus,
-             createdAt: subscriptionPlan.createdAt,
-  updatedAt: subscriptionPlan.updatedAt,
-    
+      id: subscriptionPlan.id,
+      name: subscriptionPlan.name,
+      description: subscriptionPlan.description,
+      monthlyPrice: subscriptionPlan.monthlyPrice,
+      yearlyPrice: subscriptionPlan.yearlyPrice,
+      memberLimit: subscriptionPlan.memberLimit,
+      companyAdminLimit: subscriptionPlan.companyAdminLimit,
+      departmentLimit: subscriptionPlan.departmentLimit,
+      ticketLimit: subscriptionPlan.ticketLimit,
+      automaticTicketAssignment: subscriptionPlan.automaticTicketAssignment,
+      slaManagement: subscriptionPlan.slaManagement,
+      status: subscriptionPlan.subscriptionPlanStatus,
+      createdAt: subscriptionPlan.createdAt,
+      updatedAt: subscriptionPlan.updatedAt,
+    };
   }
-}
 }

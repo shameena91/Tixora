@@ -1,8 +1,11 @@
-import { VerifySubscriptionPaymentResponseDto } from "../dto/VerifySubscriptionPaymentResponseDto";
+import { VerifySubscriptionPaymentResponseDto } from "../../dto/VerifySubscriptionPaymentResponseDto";
 
-export interface IVerifySubscriptionPayment{
-    execute( accountId: string,
+
+export interface IVerifySubscriptionPayment {
+  execute(
+    accountId: string,
     orderId: string,
     paymentId: string,
-    signature: string):Promise<VerifySubscriptionPaymentResponseDto>
+    signature: string,
+  ): Promise<VerifySubscriptionPaymentResponseDto>;
 }

@@ -14,16 +14,13 @@ import { MESSAGES } from "../../../../../shared/constants/messages";
 import { HttpStatusCode } from "../../../../../shared/constants/httpStattusCode";
 import { CreateCompanyRequestDto } from "../../dto/CreateCompanyRequestDto";
 
-// After register admin create company with company details
 export class CreateCompanyRequest implements ICreateCompanyRequest {
   constructor(
     private readonly _companyRequestRepository: ICompanyRequestRepository,
     private readonly _accountRepository: IAccountRepository,
   ) {}
 
-  async execute(
-    data: CreateCompanyRequestDto
-  ): Promise<CompanyRequest> {
+  async execute(data: CreateCompanyRequestDto): Promise<CompanyRequest> {
     const existingCompanyRequest =
       await this._companyRequestRepository.findByPhone(data.phone);
 
@@ -35,9 +32,7 @@ export class CreateCompanyRequest implements ICreateCompanyRequest {
     }
 
     const existingCompanyEmail =
-      await this._companyRequestRepository.findByEmail(
-        data.companyEmail
-      );
+      await this._companyRequestRepository.findByEmail(data.companyEmail);
 
     if (existingCompanyEmail) {
       throw new AppErrors(
@@ -83,17 +78,15 @@ export class CreateCompanyRequest implements ICreateCompanyRequest {
       null,
 
       new Date(),
-      new Date()
+      new Date(),
     );
 
     const createdCompanyRequest =
-      await this._companyRequestRepository.create(
-        companyRequest
-      );
+      await this._companyRequestRepository.create(companyRequest);
 
     await this._accountRepository.updateRegistrationStep(
       data.accountId,
-      RegistrationStep.COMPANY_DETAILS
+      RegistrationStep.COMPANY_DETAILS,
     );
 
     return createdCompanyRequest;

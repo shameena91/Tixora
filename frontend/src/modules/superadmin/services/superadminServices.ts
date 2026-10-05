@@ -170,3 +170,28 @@ export const getCompanySubscription = async (id: string) => {
 
   
 };
+export const getCompanyAdmins=async (companyId:string)=>{
+
+  const url = COMPANY_ROUTE.GET_COMPANY_ADMINS(companyId);
+  console.log(url)
+    const response = await axiosInstance.get(url);
+
+  return response.data
+}
+export const getBillingHistory=async(companyId:string)=>{
+  const url=COMPANY_ROUTE.GET_BILLING_HISTORY(companyId)
+
+  const response=await axiosInstance.get(url)
+  return response.data
+}
+export const updateCompanyStatus=async (companyId:string,
+   status: "ACTIVE" | "INACTIVE",)=>{
+
+  const url = COMPANY_ROUTE.UPDATE_COMPANY_STATUS(companyId);
+  console.log(url)
+    const response = await axiosInstance.patch(url,{
+      status
+    });
+
+  return response.data
+}

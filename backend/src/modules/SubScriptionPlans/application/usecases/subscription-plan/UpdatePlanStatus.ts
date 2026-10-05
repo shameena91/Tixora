@@ -8,39 +8,20 @@ import {
 import { ISubscriptionPlanRepository } from "../../../domain/repositories/ISubscriptionPlanRepository";
 import { IUpdatePlanStatus } from "../../abstraction/subscription-plan/IUpdatePlanStatus";
 
-
-
-
-export class UpdatePlanStatus
-  implements IUpdatePlanStatus
-{
+export class UpdatePlanStatus implements IUpdatePlanStatus {
   constructor(
-    private readonly _subscriptionPlanRepository: ISubscriptionPlanRepository
+    private readonly _subscriptionPlanRepository: ISubscriptionPlanRepository,
   ) {}
 
-  async execute(
-    id: string,
-    status: SubscriptionPlanStatus
-  ): Promise<void> {
+  async execute(id: string, status: SubscriptionPlanStatus): Promise<void> {
     const subscriptionPlan =
       await this._subscriptionPlanRepository.findById(id);
 
-   if(!subscriptionPlan)
-   {
-       throw new AppErrors(
-           MESSAGES.PLAN_NOT_FOUND,
-           ErrorCode.ACCOUNT_NOT_FOUND
-       )
-   }
+    if (!subscriptionPlan) {
+      throw new AppErrors(MESSAGES.PLAN_NOT_FOUND, ErrorCode.ACCOUNT_NOT_FOUND);
+    }
 
     const updatedSubscriptionPlan =
-      await this._subscriptionPlanRepository.updateStatus(
-    
-          id,
-          status,
-        
-      );
-
-
+      await this._subscriptionPlanRepository.updateStatus(id, status);
   }
 }

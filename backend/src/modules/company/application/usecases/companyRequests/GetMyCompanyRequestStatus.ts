@@ -5,29 +5,23 @@ import { ICompanyRequestRepository } from "../../../domain/repositories/ICompany
 import { MyCompanyRequestStatus } from "../../../domain/types/MyCompanyRequest";
 import { IGetMyCompanyRequestStatus } from "../../abstraction/IGetMyCompanyRequestStatus";
 
+export class GetMyCompanyRequestStatus implements IGetMyCompanyRequestStatus {
+  constructor(private readonly _companyRepository: ICompanyRequestRepository) {}
 
-export class GetMyCompanyRequestStatus implements IGetMyCompanyRequestStatus{
-    constructor(
-        private readonly _companyRepository:ICompanyRequestRepository
-    ){}
-
-   async execute(
-    accountId: string
-  ): Promise<MyCompanyRequestStatus > {
-
+  async execute(accountId: string): Promise<MyCompanyRequestStatus> {
     const companyRequest =
       await this._companyRepository.findByAccountId(accountId);
-  if (!companyRequest) {
-    throw new AppErrors(
-      MESSAGES.COMPANY_REQUEST_NOT_FOUND,
-      ErrorCode.COMPANY_REQUEST_NOT_FOUND
-    );
+    if (!companyRequest) {
+      throw new AppErrors(
+        MESSAGES.COMPANY_REQUEST_NOT_FOUND,
+        ErrorCode.COMPANY_REQUEST_NOT_FOUND,
+      );
+    }
+
+    return {
+      companyRequestId: companyRequest.id,
+      status: companyRequest.status,
+      reviewRemarks: companyRequest.reviewRemarks,
+    };
   }
-  
- return {
-  companyRequestId:companyRequest.id,
-  status: companyRequest.status,
-  reviewRemarks: companyRequest.reviewRemarks,
-};
-}
 }

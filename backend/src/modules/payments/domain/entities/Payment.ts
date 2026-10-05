@@ -5,7 +5,7 @@ export interface Payment {
   paymentId: string;
 
   companyId: string;
-  subscriptionId: string;
+  subscriptionId: string |null;
   planId: string;
 
   amount: number;

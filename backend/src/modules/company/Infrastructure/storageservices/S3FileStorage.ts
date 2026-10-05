@@ -1,14 +1,18 @@
 import { env } from "../../../../config/env";
 import { IFileStoragePort } from "../../application/ports/IFileStoragePort";
-import { S3Client,  PutObjectCommand, DeleteObjectCommand, GetObjectCommand, } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+  GetObjectCommand,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-
 
 export class S3FileStorage implements IFileStoragePort {
   private readonly s3Client: S3Client;
 
   constructor() {
-this.s3Client = new S3Client({
+    this.s3Client = new S3Client({
       region: env.awsregion,
     });
   }
@@ -17,7 +21,7 @@ this.s3Client = new S3Client({
     file: Buffer,
     fileName: string,
     mimeType: string,
-    path: string
+    path: string,
   ): Promise<{
     url: string;
     key: string;
@@ -25,10 +29,10 @@ this.s3Client = new S3Client({
     const uniqueFileName = `${Date.now()}-${fileName}`;
 
     const key = `${path}/${uniqueFileName}`;
-    
-console.log("Bucket name",env.awsBucketName,)
+
+    console.log("Bucket name", env.awsBucketName);
     const command = new PutObjectCommand({
-      Bucket:env.awsBucketName,
+      Bucket: env.awsBucketName,
       Key: key,
       Body: file,
       ContentType: mimeType,
@@ -36,8 +40,7 @@ console.log("Bucket name",env.awsBucketName,)
 
     await this.s3Client.send(command);
 
-    const url =
-      `https://${env.awsBucketName}.s3.${env.awsregion}.amazonaws.com/${key}`;
+    const url = `https://${env.awsBucketName}.s3.${env.awsregion}.amazonaws.com/${key}`;
 
     return {
       url,
@@ -54,30 +57,25 @@ console.log("Bucket name",env.awsBucketName,)
     await this.s3Client.send(command);
   }
   async getSignedDownloadUrl(key: string): Promise<string> {
-  const command = new GetObjectCommand({
-    Bucket: env.awsBucketName,
-    Key: key,
+    const command = new GetObjectCommand({
+      Bucket: env.awsBucketName,
+      Key: key,
       ResponseContentDisposition: "attachment",
-  });
+    });
 
-  
+    return await getSignedUrl(this.s3Client, command, {
+      expiresIn: 300,
+    });
+  }
+  async getSignedUrl(key: string): Promise<string> {
+    const command = new GetObjectCommand({
+      Bucket: env.awsBucketName,
+      Key: key,
+      ResponseContentDisposition: "inline",
+    });
 
-  return await getSignedUrl(this.s3Client, command, {
-    expiresIn: 300,
-  });
-}
- async getSignedUrl(key: string): Promise<string> {
-  const command = new GetObjectCommand({
-    Bucket: env.awsBucketName,
-    Key: key,
-     ResponseContentDisposition: "inline"
-     
-  });
-  
-  
-
-  return await getSignedUrl(this.s3Client, command, {
-    expiresIn: 300,
-  });
-}
+    return await getSignedUrl(this.s3Client, command, {
+      expiresIn: 300,
+    });
+  }
 }

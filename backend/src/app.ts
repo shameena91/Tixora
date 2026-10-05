@@ -3,14 +3,20 @@ import cors from "cors";
 import express from "express";
 import authRoutes from "./modules/auth/presentation/routes/authRoutes";
 import companyRequestRoutes from "./modules/company/presentation/routes/companyRequestRoutes";
-import subcsriptionPlanRoutes from "./modules/subScriptionPlans/presentation/routes/subcsriptionPlanRoutes";
+// import subcsriptionPlanRoutes from "./modules/subScriptionPlans/presentation/routes/subcsriptionPlanRoutes";
 import { errorHandler } from "./presentation/middlewares/errorHandlers";
 import { notFoundHandler } from "./presentation/middlewares/notFoundHandler";
 
-import subscriptionRoutes from "./modules/subScriptionPlans/presentation/routes/subcsriptionPlanRoutes"
+// import subscriptionRoutes from "./modules/subScriptionPlans/presentation/routes/subcsriptionPlanRoutes"
 import timelineRoute from "./modules/timeline/presentation/route/timelineRoute";
 
 import companyRoute from "./modules/company/presentation/routes/companyRoute"
+
+
+import subcsriptionPlanRoutes from "./modules/subScriptionPlans/presentation/routes/subcsriptionPlanRoutes";
+
+import subscriptionRoutes from "./modules/subScriptionPlans/presentation/routes/subscriptionRoutes";
+import paymentRoutes from "./modules/payments/presentation/routes/PaymentRoutes"
 
 const app = express();
 
@@ -47,6 +53,7 @@ app.use(
    "/api/companies",
 companyRoute
 );
+app.use("/api/companies", paymentRoutes);
 
 app.get("/health", (_req, res) => {
   res.status(200).json({

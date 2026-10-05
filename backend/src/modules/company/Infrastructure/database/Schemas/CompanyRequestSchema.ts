@@ -1,10 +1,14 @@
-import  { Schema } from "mongoose";
-import { CompanyRequestStatus, CompanyType, EmployeeCountRange, RegistrationType } from "../../../domain/entities/CompanyRequest";
-import {companyLocationSchema} from "../Schemas/CompanyLocationSchema"
-import{companyDocumentSchema} from "../Schemas/CompanyDocumentSchemal"
+import { Schema } from "mongoose";
+import {
+  CompanyRequestStatus,
+  CompanyType,
+  EmployeeCountRange,
+  RegistrationType,
+} from "../../../domain/entities/CompanyRequest";
+import { companyLocationSchema } from "../Schemas/CompanyLocationSchema";
+import { companyDocumentSchema } from "../Schemas/CompanyDocumentSchemal";
 export const companyRequestSchema = new Schema(
   {
-    // Request information
     requestId: {
       type: String,
       required: true,
@@ -17,14 +21,12 @@ export const companyRequestSchema = new Schema(
       required: true,
     },
 
-    // Company Admin
     accountId: {
       type: String,
       required: true,
       index: true,
     },
 
-    // Company information
     companyName: {
       type: String,
       required: true,
@@ -67,14 +69,12 @@ export const companyRequestSchema = new Schema(
       required: true,
     },
 
-    // Request status
     status: {
       type: String,
       enum: Object.values(CompanyRequestStatus),
       required: true,
     },
 
-    // Optional company information
     website: {
       type: String,
       default: null,
@@ -92,16 +92,14 @@ export const companyRequestSchema = new Schema(
       trim: true,
     },
 
-    // Submission
     submittedAt: {
       type: Date,
       required: true,
     },
 
-    // Review information
     reviewedBy: {
       type: String,
-          default: null,
+      default: null,
     },
 
     reviewedAt: {
@@ -119,13 +117,11 @@ export const companyRequestSchema = new Schema(
       default: null,
     },
 
-    // Company location
     location: {
       type: companyLocationSchema,
       default: null,
     },
 
-    // Documents
     documents: {
       type: [companyDocumentSchema],
       default: [],
@@ -133,5 +129,5 @@ export const companyRequestSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );

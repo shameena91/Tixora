@@ -7,7 +7,9 @@ export const authorizeRoles = (...allowedRoles: AccountRole[]) => {
  
   return (req: Request, res: Response, next: NextFunction) => {
      console.log("USER IN AUTHORIZE ROLE:", req.user);
-    
+     console.log("USER IN AUTHORIZE ROLE:", req.user);
+    console.log("ALLOWED ROLES:", allowedRoles);
+    console.log("USER ROLE:", req.user?.role);
     if (!req.user) {
       return res.status(401).json({
         message: "Unauthorized",

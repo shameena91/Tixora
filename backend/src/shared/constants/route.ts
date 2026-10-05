@@ -43,7 +43,10 @@ export const COMAPANY_ROUTES={
  GET_ALL:"/",
  GET_BY_ID:"/:id",
  GET_SUBSCRIPTION:"/:id/subscription",
-DEACTIVATE_SUBSCRIPTION:"/:id/subscription/:subscriptionId/deactivate"
+ GET_COMPANY_ADMIN:"/:companyId/admin",
+ GET_PAYMENT_HISTORY:"/:companyId/billingHistory",
+ UPDATE_STATUS: "/:companyId/status",
+
 }
 export const SUBSCRIPTION_ROUTE_CONSTANTS={
   CREATE:"/",

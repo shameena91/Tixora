@@ -14,7 +14,7 @@ export interface CreatePaymentResponseDto {
   paymentId: string;
 
   companyId: string;
-  subscriptionId: string;
+  subscriptionId: string|null;
   planId: string;
 
   amount: number;

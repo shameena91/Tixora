@@ -9,15 +9,11 @@ export class GetCompanies implements IGetCompanies {
     private readonly _s3Service: IFileStoragePort,
   ) {}
 
-  async execute(
-    search?: string,
-  ): Promise<GetCompanyListResponseDto[]> {
-    const companies =
-      await this._companyRepository.findAll(search);
+  async execute(search?: string): Promise<GetCompanyListResponseDto[]> {
+    const companies = await this._companyRepository.findAll(search);
 
     return await Promise.all(
       companies.map(async (company) => {
-
         const logoUrl = company.logo
           ? await this._s3Service.getSignedUrl(company.logo)
           : null;

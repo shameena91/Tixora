@@ -1,33 +1,37 @@
+
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-// import type { CreateSubscriptionPlanFormData } from "../../../components/CreateSubscriptionPlanModal";
-// import CreateSubscriptionPlanModal from "../../components/CreateSubscriptionPlanModal";
-// import SubscriptionPlanDetailsModal from "../../components/SubscriptionPlanDetailsModal";
-
-
-
 import {
-    createSubscriptionPlanThunk,
-    fetchPlanNamesThunk,
-    getAllSubscriptionPlanThunk,
-    getSubscriptionPlanThunk,
-    planDeleteThunk,
-    planStatusUpdateThunk,
-    updateSubscriptionPlanThunk,
-    type SubScriptionListItems,
-    type SubscriptionPlanDetails,
-    type UpdatePlanStatusPayload,
+  createSubscriptionPlanThunk,
+  fetchPlanNamesThunk,
+  getAllSubscriptionPlanThunk,
+  getSubscriptionPlanThunk,
+  planDeleteThunk,
+  planStatusUpdateThunk,
+  updateSubscriptionPlanThunk,
+  type SubScriptionListItems,
+  type SubscriptionPlanDetails,
+  type UpdatePlanStatusPayload,
 } from "../../../../redux/slices/subscriptionPlanSlice";
 
 import {
-    useAppDispatch,
-    useAppSelector,
+  useAppDispatch,
+  useAppSelector,
 } from "../../../../redux/hooks/hooks";
-import SubscriptionPlanCard from "../../components/subscription/SubscriptionPlanCard";
-import CreateSubscriptionPlanModal, { type CreateSubscriptionPlanFormData } from "../../components/subscription/CreateSubscriptionPlanModal";
+
+import CreateSubscriptionPlanModal, {
+  type CreateSubscriptionPlanFormData,
+} from "../../components/subscription/CreateSubscriptionPlanModal";
+
 import SubscriptionPlanDetailsModal from "../../components/subscription/SubscriptionPlanDetailsModal";
+
+import DataTable, {
+  type DataTableColumn,
+} from "../../../../components/common/Datatable";
+import StatusBadge from "../../components/commonComponenets/StatusBadge";
+
 
 const SubscriptionPlan = () => {
   const dispatch = useAppDispatch();
@@ -65,7 +69,7 @@ const SubscriptionPlan = () => {
     createLoading,
     getAllLoading,
   } = useAppSelector(
-    (state) => state.subscriptionPlan
+    (state) => state.subscriptionPlan,
   );
 
   // ------------------------------------
@@ -80,30 +84,32 @@ const SubscriptionPlan = () => {
   // Create Plan
   // ------------------------------------
   const handleCreatePlan = async (
-    data: CreateSubscriptionPlanFormData
+    data: CreateSubscriptionPlanFormData,
   ) => {
     try {
       await dispatch(
-        createSubscriptionPlanThunk(data)
+        createSubscriptionPlanThunk(data),
       ).unwrap();
 
-      toast.success("Plan created successfully");
+      toast.success(
+        "Plan created successfully",
+      );
 
       setIsAddPlanOpen(false);
 
       await dispatch(
-        getAllSubscriptionPlanThunk()
+        getAllSubscriptionPlanThunk(),
       ).unwrap();
     } catch (error) {
       toast.error(
         typeof error === "string"
           ? error
-          : "Failed to create subscription plan"
+          : "Failed to create subscription plan",
       );
 
       console.error(
         "Create plan error:",
-        error
+        error,
       );
     }
   };
@@ -112,24 +118,14 @@ const SubscriptionPlan = () => {
   // View Plan
   // ------------------------------------
   const handleViewPlan = async (
-    plan: SubScriptionListItems
+    plan: SubScriptionListItems,
   ) => {
     try {
-      console.log(
-        "VIEW PLAN ID:",
-        plan.id
-      );
-
       setSelectedPlan(null);
 
       const details = await dispatch(
-        getSubscriptionPlanThunk(plan.id)
+        getSubscriptionPlanThunk(plan.id),
       ).unwrap();
-
-      console.log(
-        "VIEW PLAN FROM API:",
-        details
-      );
 
       setSelectedPlan(details);
       setIsDetailsOpen(true);
@@ -137,12 +133,12 @@ const SubscriptionPlan = () => {
       toast.error(
         typeof error === "string"
           ? error
-          : "Failed to load plan details"
+          : "Failed to load plan details",
       );
 
       console.error(
         "Get plan details error:",
-        error
+        error,
       );
     }
   };
@@ -151,13 +147,8 @@ const SubscriptionPlan = () => {
   // Open Edit Modal
   // ------------------------------------
   const handleEditPlan = (
-    plan: SubscriptionPlanDetails
+    plan: SubscriptionPlanDetails,
   ) => {
-    console.log(
-      "EDIT PLAN:",
-      plan
-    );
-
     setEditingPlan(plan);
 
     setIsDetailsOpen(false);
@@ -170,50 +161,37 @@ const SubscriptionPlan = () => {
   // ------------------------------------
   const handleUpdatePlan = async (
     id: string,
-    data: CreateSubscriptionPlanFormData
+    data: CreateSubscriptionPlanFormData,
   ) => {
     try {
-      console.log(
-        "UPDATING PLAN:",
-        id,
-        data
-      );
-
-      const updatedPlan = await dispatch(
+       await dispatch(
         updateSubscriptionPlanThunk({
           id,
           data,
-        })
+        }),
       ).unwrap();
 
-      console.log(
-        "UPDATED PLAN FROM API:",
-        updatedPlan
-      );
-
       setIsEditOpen(false);
-
       setEditingPlan(null);
-
       setSelectedPlan(null);
 
       await dispatch(
-        getAllSubscriptionPlanThunk()
+        getAllSubscriptionPlanThunk(),
       ).unwrap();
 
       toast.success(
-        "Plan updated successfully"
+        "Plan updated successfully",
       );
     } catch (error) {
       toast.error(
         typeof error === "string"
           ? error
-          : "Failed to update subscription plan"
+          : "Failed to update subscription plan",
       );
 
       console.error(
         "Update plan error:",
-        error
+        error,
       );
     }
   };
@@ -222,7 +200,7 @@ const SubscriptionPlan = () => {
   // Activate / Deactivate
   // ------------------------------------
   const handleToggleStatus = async (
-    plan: SubscriptionPlanDetails
+    plan: SubscriptionPlanDetails,
   ) => {
     try {
       const nextStatus =
@@ -238,30 +216,30 @@ const SubscriptionPlan = () => {
         planStatusUpdateThunk({
           id: plan.id,
           data,
-        })
+        }),
       ).unwrap();
 
       const updatedPlan =
         await dispatch(
-          getSubscriptionPlanThunk(plan.id)
+          getSubscriptionPlanThunk(plan.id),
         ).unwrap();
 
       setSelectedPlan(updatedPlan);
 
       await dispatch(
-        getAllSubscriptionPlanThunk()
+        getAllSubscriptionPlanThunk(),
       ).unwrap();
 
       toast.success(
         nextStatus === "ACTIVE"
           ? "Plan activated successfully"
-          : "Plan deactivated successfully"
+          : "Plan deactivated successfully",
       );
     } catch (error) {
       toast.error(
         typeof error === "string"
           ? error
-          : "Failed to update plan status"
+          : "Failed to update plan status",
       );
     }
   };
@@ -270,41 +248,87 @@ const SubscriptionPlan = () => {
   // Delete Plan
   // ------------------------------------
   const handleDeletePlan = async (
-    plan: SubscriptionPlanDetails
+    plan: SubscriptionPlanDetails,
   ) => {
-    console.log(
-      "Delete plan:",
-      plan
-    );
-
     try {
       await dispatch(
-        planDeleteThunk(plan.id)
+        planDeleteThunk(plan.id),
       ).unwrap();
 
       toast.success(
-        "Plan deleted successfully"
+        "Plan deleted successfully",
       );
 
       setIsDetailsOpen(false);
       setSelectedPlan(null);
 
       await dispatch(
-        getAllSubscriptionPlanThunk()
+        getAllSubscriptionPlanThunk(),
       ).unwrap();
     } catch (error) {
       console.error(
         "Delete plan error:",
-        error
+        error,
       );
 
       toast.error(
         typeof error === "string"
           ? error
-          : "Failed to delete subscription plan"
+          : "Failed to delete subscription plan",
       );
     }
   };
+
+  // ------------------------------------
+  // Subscription Plan Table Columns
+  // ------------------------------------
+  const subscriptionPlanColumns: DataTableColumn<SubScriptionListItems>[] =
+    [
+      {
+        header: "Plan",
+        accessor: "name",
+      },
+
+      {
+        header: "Monthly Price",
+        accessor: "monthlyPrice",
+        render: (value) =>
+          `₹${String(value)}`,
+      },
+
+      {
+        header: "Yearly Price",
+        accessor: "yearlyPrice",
+        render: (value) =>
+          `₹${String(value)}`,
+      },
+
+      {
+        header: "Status",
+        accessor: "planStatus",
+        render: (value) => (
+          <StatusBadge
+            status={String(value)}
+          />
+        ),
+      },
+
+      {
+        header: "Action",
+        accessor: "id",
+        render: (_value, row) => (
+          <button
+            type="button"
+            onClick={() =>
+              handleViewPlan(row)
+            }
+            className="text-sm font-medium text-[#7C3AED] transition hover:text-[#6D28D9]"
+          >
+            View
+          </button>
+        ),
+      },
+    ];
 
   return (
     <div className="w-full space-y-6">
@@ -315,9 +339,7 @@ const SubscriptionPlan = () => {
         <div>
           <div className="mb-1 flex items-center space-x-2 text-xs font-medium text-gray-500">
             <span>Super Admin</span>
-
             <span>/</span>
-
             <span className="font-semibold text-indigo-600">
               Plans
             </span>
@@ -342,34 +364,27 @@ const SubscriptionPlan = () => {
           className="inline-flex items-center justify-center gap-2 self-start rounded-lg bg-[#7C3AED] px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-[#6D28D9] disabled:cursor-not-allowed disabled:opacity-50 sm:self-auto"
         >
           <Plus className="h-4 w-4" />
-
           Add Plan
         </button>
       </div>
 
       {/* ------------------------------------
-          Subscription Plan Cards
+          Subscription Plans Table
       ------------------------------------ */}
-      <div className="mx-auto mt-10 flex max-w-[1450px] flex-wrap justify-center gap-5">
+      <div className="mt-8">
         {getAllLoading ? (
-          <div className="w-full py-10 text-center text-sm text-gray-500">
+          <div className="py-10 text-center text-sm text-gray-500">
             Loading subscription plans...
           </div>
         ) : subscriptionPlans.length === 0 ? (
-          <div className="w-full py-10 text-center text-sm text-gray-500">
+          <div className="py-10 text-center text-sm text-gray-500">
             No subscription plans found.
           </div>
         ) : (
-          subscriptionPlans.map((plan) => (
-            <SubscriptionPlanCard
-              key={plan.id}
-              plan={plan}
-              buttonText="View Plan"
-              onButtonClick={() =>
-                handleViewPlan(plan)
-              }
-            />
-          ))
+          <DataTable
+            data={subscriptionPlans}
+            columns={subscriptionPlanColumns}
+          />
         )}
       </div>
 
@@ -406,7 +421,7 @@ const SubscriptionPlan = () => {
           onSubmit={(data) => {
             handleUpdatePlan(
               editingPlan.id,
-              data
+              data,
             );
           }}
         />
@@ -430,3 +445,4 @@ const SubscriptionPlan = () => {
 };
 
 export default SubscriptionPlan;
+

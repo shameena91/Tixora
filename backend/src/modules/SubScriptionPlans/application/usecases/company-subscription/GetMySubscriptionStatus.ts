@@ -1,38 +1,22 @@
-import { ICompanyRepository } from "../../../company/domain/repositories/ICompanyRepository";
+import { ICompanyRepository } from "../../../../company/domain/repositories/ICompanyRepository";
+import { Subscription } from "../../../domain/entities/Subscription";
+import { ISubscriptionRepository } from "../../../domain/repositories/ISubscriptionRepository";
+import { IGetMySubscriptionStatus } from "../../abstraction/company-subscription/IGetMySubscriptionStatus";
 
-import { ISubscriptionRepository } from "../../domain/repositories/ISubscriptionRepository";
-
-import { Subscription } from "../../domain/entities/Subscription";
-import { IGetMySubscriptionStatus } from "../abstraction/IGetmySubscriptionStatus";
-
-
-export class GetMySubscriptionStatus
-  implements IGetMySubscriptionStatus
-{
+export class GetMySubscriptionStatus implements IGetMySubscriptionStatus {
   constructor(
     private readonly _companyRepository: ICompanyRepository,
 
-    private readonly _subscriptionRepository:
-      ISubscriptionRepository,
+    private readonly _subscriptionRepository: ISubscriptionRepository,
   ) {}
 
-  async execute(
-    accountId: string
-  ): Promise<Subscription | null> {
-
-
-    const company =
-      await this._companyRepository.findByAccountId(
-        accountId
-      );
+  async execute(accountId: string): Promise<Subscription | null> {
+    const company = await this._companyRepository.findByAccountId(accountId);
 
     if (!company) {
       return null;
     }
 
-  
-    return await this._subscriptionRepository.findByCompanyId(
-      company.id
-    );
+    return await this._subscriptionRepository.findByCompanyId(company.id);
   }
 }

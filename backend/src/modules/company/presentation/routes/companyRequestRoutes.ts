@@ -12,12 +12,7 @@ import { authMiddleware } from "../../../auth/container/container";
 const router = Router();
 
 
-// =====================================================
-// PUBLIC REGISTRATION ROUTES
-// Authentication is NOT required
-// =====================================================
 
-// Create company request
 router.post(
   COMPANY_REQUEST_ROUTES.CREATE,
   
@@ -26,7 +21,7 @@ router.post(
   }
 );
 
-// Submit company registration
+
 router.patch(
   COMPANY_REQUEST_ROUTES.SUBMIT,
   async (req, res) => {
@@ -34,7 +29,7 @@ router.patch(
   }
 );
 
-// Get company types
+
 router.get(
   COMPANY_REQUEST_ROUTES.COMPANY_TYPES,
   async (req, res) => {
@@ -42,7 +37,7 @@ router.get(
   }
 );
 
-// Get employee range
+
 router.get(
   COMPANY_REQUEST_ROUTES.EMPLOYEE_RANGE,
   async (req, res) => {
@@ -56,10 +51,10 @@ router.patch(
     await companyRequestController.updateLogo(req, res);
   }
 );
-// Update company details
 
 
-// Update company location
+
+
 router.patch(
   COMPANY_REQUEST_ROUTES.UPDATE_LOCATION,
   async (req, res) => {
@@ -67,7 +62,6 @@ router.patch(
   }
 );
 
-// Upload company document
 router.patch(
   COMPANY_REQUEST_ROUTES.UPDATE_DOCUMENT,
   documentUpload.single("document"),
@@ -82,7 +76,6 @@ router.patch(
     await companyRequestController.update(req, res);
   }
 );
-// Submit documents
 router.patch(
   COMPANY_REQUEST_ROUTES.SUBMIT_DOCUMENTS,
   async (req, res) => {
@@ -96,17 +89,14 @@ router.get(
     await companyRequestController.getById(req, res);
   }
 );
-// =====================================================
-// PROTECTED ROUTES
-// Authentication starts here
-// =====================================================
+
 
 router.use(
   authMiddleware.authenticate.bind(authMiddleware)
 );
 
 
-// Get all company requests
+
 router.get(
   COMPANY_REQUEST_ROUTES.GET_ALL,
   async (req, res) => {
@@ -121,7 +111,7 @@ router.get(COMPANY_REQUEST_ROUTES.GET_MY_REQUEST,
 
 )
 
-// Get company request by ID
+
 router.get(
   COMPANY_REQUEST_ROUTES.GET_SUPER_ADMIN_BY_ID,
   async (req, res) => {
@@ -129,7 +119,7 @@ router.get(
   }
 );
 
-// Approve company request
+
 router.patch(
   COMPANY_REQUEST_ROUTES.APPROVE,
   async (req, res) => {
@@ -137,7 +127,7 @@ router.patch(
   }
 );
 
-// Reject company request
+
 router.patch(
   COMPANY_REQUEST_ROUTES.REJECT,
   async (req, res) => {
@@ -145,7 +135,7 @@ router.patch(
   }
 );
 
-// Request more information
+
 router.patch(
   COMPANY_REQUEST_ROUTES.MORE_INFO,
   async (req, res) => {
@@ -153,7 +143,7 @@ router.patch(
   }
 );
 
-// Resubmit company request
+
 router.patch(
   COMPANY_REQUEST_ROUTES.RESUBMIT,
   async (req, res) => {

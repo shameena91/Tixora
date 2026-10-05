@@ -30,7 +30,6 @@ export class AuthController {
     private readonly _logout: ILogout
   ) {}
 
-  // Login
   async loginRequest(
     req: Request,
     res: Response,
@@ -62,7 +61,7 @@ console.log("mannn:",result.account.firstName)
     }
   }
 
-  // Send OTP
+
   async sendOtpRequest(
     req: Request,
     res: Response
@@ -79,7 +78,6 @@ console.log("mannn:",result.account.firstName)
     );
   }
 
-  // Verify OTP
   async verifyOtpRequest(
     req: Request,
     res: Response
@@ -108,7 +106,7 @@ console.log("mannn:",result.account.firstName)
     );
   }
 
-  // Create Password
+
   async createPasswordRequest(
     req: Request,
     res: Response
@@ -127,7 +125,7 @@ console.log("mannn:",result.account.firstName)
     );
   }
 
-  // Forgot Password
+
   async forgotPasswordRequest(
     req: Request,
     res: Response
@@ -144,7 +142,7 @@ console.log("mannn:",result.account.firstName)
     );
   }
 
-  // Verify Reset OTP
+
   async verifyResetOtpRequest(
     req: Request,
     res: Response
@@ -171,7 +169,7 @@ console.log("mannn:",result.account.firstName)
     );
   }
 
-  // Reset Password
+  
   async resetPasswordRequest(
     req: Request,
     res: Response
@@ -190,7 +188,7 @@ console.log("mannn:",result.account.firstName)
     );
   }
 
-  // Refresh Access Token
+
   async refreshAccessTokenRequest(
     req: Request,
     res: Response
@@ -222,7 +220,7 @@ console.log("mannn:",result.account.firstName)
     );
   }
 
-  // Admin Registration
+
   async adminRegistrationRequest(
     req: Request,
     res: Response

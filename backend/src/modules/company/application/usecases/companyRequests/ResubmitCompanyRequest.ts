@@ -11,36 +11,26 @@ import { ICompanyRequestRepository } from "../../../domain/repositories/ICompany
 import { IResubmitCompanyRequest } from "../../abstraction/IResubmitCompanyRequest";
 
 // Status changes to resubmit
-export class ResubmitCompanyRequest
-  implements IResubmitCompanyRequest
-{
+export class ResubmitCompanyRequest implements IResubmitCompanyRequest {
   constructor(
-    private readonly _companyRequestRepository:
-      ICompanyRequestRepository,
+    private readonly _companyRequestRepository: ICompanyRequestRepository,
 
-    private readonly _createTimeline:
-      ICreateTimeline
+    private readonly _createTimeline: ICreateTimeline,
   ) {}
 
-  async execute(
-    id: string
-  ): Promise<CompanyRequest> {
-    const companyRequest =
-      await this._companyRequestRepository.findById(id);
+  async execute(id: string): Promise<CompanyRequest> {
+    const companyRequest = await this._companyRequestRepository.findById(id);
 
     if (!companyRequest) {
       throw new AppErrors(
         MESSAGES.COMPANY_REQUEST_NOT_FOUND,
-        ErrorCode.COMPANY_REQUEST_NOT_FOUND
+        ErrorCode.COMPANY_REQUEST_NOT_FOUND,
       );
     }
 
     companyRequest.resubmit();
 
-    console.log(
-      "STATUS AFTER RESUBMIT:",
-      companyRequest.status
-    );
+    console.log("STATUS AFTER RESUBMIT:", companyRequest.status);
 
     const updatedCompanyRequest =
       await this._companyRequestRepository.updateStatus(
@@ -49,20 +39,17 @@ export class ResubmitCompanyRequest
         companyRequest.reviewedBy,
         companyRequest.reviewedAt,
         companyRequest.reviewRemarks,
-        companyRequest.rejectionReason
+        companyRequest.rejectionReason,
       );
 
     await this._createTimeline.execute({
-      entityType:
-        TimelineEntityType.COMPANY_REQUEST,
+      entityType: TimelineEntityType.COMPANY_REQUEST,
 
-      entityId:
-        companyRequest.id,
+      entityId: companyRequest.id,
 
       action: "RESUBMITTED",
 
-      description:
-        "Company request resubmitted",
+      description: "Company request resubmitted",
 
       performedBy: null,
 

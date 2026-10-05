@@ -6,6 +6,8 @@ import CompanyDetailsHeader from "../../components/company/CompanyDetailsHeader"
 import CompanyDetailsTabs from "../../components/company/CompanyDetailsTabs";
 import Overview from "../../components/company/Overview";
 import Subscription from "../../components/company/Subscription";
+import CompanyAdmins from "../../components/company/CompanyAdmins";
+import BillingHistory from "../../components/company/BillingHistory";
 
 
 // import Subscription from "./Subscription";
@@ -25,7 +27,7 @@ const CompanyDetails = () => {
 
   const dispatch = useAppDispatch();
 
-  const { companyDetails, loading, error } = useAppSelector(
+  const { companyDetails, companyDetailsLoading, companyDetailsError } = useAppSelector(
     (state) => state.company
   );
 
@@ -37,7 +39,7 @@ const CompanyDetails = () => {
     }
   }, [dispatch, companyId]);
 
-  if (loading) {
+  if (companyDetailsLoading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
         <div className="text-sm text-gray-500">
@@ -47,11 +49,11 @@ const CompanyDetails = () => {
     );
   }
 
-  if (error) {
+  if (companyDetailsError) {
     return (
       <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
         <p className="text-sm font-medium text-red-600">
-          {error}
+          {companyDetailsError}
         </p>
       </div>
     );
@@ -88,7 +90,7 @@ const CompanyDetails = () => {
          {activeTab === "subscription" && (
           <Subscription company={companyDetails} />
         )}
-{/*
+
         {activeTab === "admins" && (
           <CompanyAdmins company={companyDetails} />
         )}
@@ -96,7 +98,7 @@ const CompanyDetails = () => {
         {activeTab === "billing" && (
           <BillingHistory company={companyDetails} />
         )}
-
+{/*
         {activeTab === "tickets" && (
           <SupportTickets company={companyDetails} />
         )} */}

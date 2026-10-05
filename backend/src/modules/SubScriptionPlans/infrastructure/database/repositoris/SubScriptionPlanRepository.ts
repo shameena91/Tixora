@@ -7,12 +7,13 @@ import {
   SubscriptionPlanDocument,
   SubscriptionPlanMapper,
 } from "../../../application/mappers/SubscriptionPlanMapper";
-import { CreateSubscriptionPlanDTO } from "../../../application/validator/CreateSubscriptionPlanValidator";
 import {
   SubscriptionPlan,
+  SubscriptionPlanName,
   SubscriptionPlanStatus,
 } from "../../../domain/entities/SubscriptionPlan";
 import { ISubscriptionPlanRepository } from "../../../domain/repositories/ISubscriptionPlanRepository";
+import { CreateSubscriptionPlanDTO } from "../../../presentation/validator/CreateSubscriptionPlanValidator";
 import { SubscriptionPlanModel } from "../models/SubscriptionPlanModel";
 
 export class SubscriptionPlanRepository implements ISubscriptionPlanRepository {
@@ -41,31 +42,28 @@ export class SubscriptionPlanRepository implements ISubscriptionPlanRepository {
     return SubscriptionPlanMapper.toDomain(document);
   }
 
- async findAllByStatus(
-  status?: SubscriptionPlanStatus
-): Promise<SubscriptionPlan[]> {
+  async findAllByStatus(
+    status?: SubscriptionPlanStatus,
+  ): Promise<SubscriptionPlan[]> {
+    const filter = status
+      ? {
+          subscriptionPlanStatus: status,
+        }
+      : {};
 
-  const filter = status
-    ? {
-        subscriptionPlanStatus: status,
-      }
-    : {};
+    const documents = await this._baseRepository.findAll(filter);
 
-  const documents =
-    await this._baseRepository.findAll(filter);
+    return documents.map((document) =>
+      SubscriptionPlanMapper.toDomain(document),
+    );
+  }
+  async findAll(): Promise<SubscriptionPlan[]> {
+    const documents = await this._baseRepository.findAll({}, { createdAt: -1 });
 
-  return documents.map((document) =>
-    SubscriptionPlanMapper.toDomain(document)
-  );
-}
-async findAll(): Promise<SubscriptionPlan[]> {
-  const documents =
-    await this._baseRepository.findAll();
-
-  return documents.map((document) =>
-    SubscriptionPlanMapper.toDomain(document)
-  );
-}
+    return documents.map((document) =>
+      SubscriptionPlanMapper.toDomain(document),
+    );
+  }
   async update(
     id: string,
     data: CreateSubscriptionPlanDTO,
@@ -120,5 +118,18 @@ async findAll(): Promise<SubscriptionPlan[]> {
         ErrorCode.SUBSCRIPTION_PLAN_NOT_FOUND,
       );
     }
+  }
+  async findByName(
+    name: SubscriptionPlanName,
+  ): Promise<SubscriptionPlan | null> {
+    const document = await this._baseRepository.findOne({
+      name: name,
+    });
+
+    if (!document) {
+      return null;
+    }
+
+    return SubscriptionPlanMapper.toDomain(document);
   }
 }

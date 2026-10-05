@@ -9,11 +9,7 @@ export interface GetCompanySubscriptionItemDto {
 
   billingCycle: "MONTHLY" | "YEARLY";
 
-  status:
-    | "PENDING"
-    | "ACTIVE"
-    | "CANCELLED"
-    | "EXPIRED";
+  status: "PENDING" | "ACTIVE" | "CANCELLED" | "EXPIRED";
 
   startDate: Date;
   endDate: Date | null;

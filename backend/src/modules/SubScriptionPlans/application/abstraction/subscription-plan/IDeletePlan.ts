@@ -1,3 +1,3 @@
-export interface IDeletePlan{
-execute(id:string):Promise<void>
+export interface IDeletePlan {
+  execute(id: string): Promise<void>;
 }

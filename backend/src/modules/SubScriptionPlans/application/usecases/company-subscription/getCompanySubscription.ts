@@ -12,9 +12,7 @@ export class GetCompanySubscription implements IgetCompanySubscription {
     private readonly _subscriptionPlanRepository: ISubscriptionPlanRepository,
   ) {}
 
-  async execute(
-    companyId: string,
-  ): Promise<GetCompanySubscriptionResponseDto> {
+  async execute(companyId: string): Promise<GetCompanySubscriptionResponseDto> {
     const subscriptions =
       await this._subscriptionRepository.findAllByCompanyId(companyId);
 

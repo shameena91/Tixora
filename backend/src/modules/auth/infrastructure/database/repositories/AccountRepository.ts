@@ -2,6 +2,7 @@
 import {
   Account,
   AccountRole,
+  AccountStatus,
   RegistrationStep,
 } from "../../../domain/entities/Account";
 import { IAccountRepository } from "../../../domain/repositories/IAccountRepository";
@@ -120,4 +121,16 @@ async findByPhone(phone: string): Promise<Account | null> {
     }
     return AccountMapper.toDomain(accountDocument)
   }
+  async updateStatus(
+  id: string,
+  status: AccountStatus,
+): Promise<void> {
+  await this._baseRepository.update(
+    { _id: id },
+    {
+      status,
+      updatedAt: new Date(),
+    },
+  );
+}
 }

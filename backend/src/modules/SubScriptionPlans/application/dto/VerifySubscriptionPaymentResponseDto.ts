@@ -1,4 +1,7 @@
-import { BillingCycle, SubscriptionStatus } from "../../domain/entities/Subscription";
+import {
+  BillingCycle,
+  SubscriptionStatus,
+} from "../../domain/entities/Subscription";
 
 export interface VerifySubscriptionPaymentResponseDto {
   subscriptionId: string;

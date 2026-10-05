@@ -11,4 +11,3 @@ export const updateCompanyLocationSchema = z.object({
 
   postalCode: z.string().trim().min(1, "Postal code is required"),
 });
-

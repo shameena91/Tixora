@@ -2,48 +2,41 @@ import { IAccountRepository } from "../../../../auth/domain/repositories/IAccoun
 import { ICompanyRequestRepository } from "../../../domain/repositories/ICompanyRequestRepository";
 import { IGetAllCompanyRequest } from "../../abstraction/IGetAllCompanyRequest";
 
-export class GetAllCompanyRequests
-  implements IGetAllCompanyRequest
-{
+export class GetAllCompanyRequests implements IGetAllCompanyRequest {
   constructor(
     private readonly _companyRequestRepository: ICompanyRequestRepository,
-     private readonly _accountRepository: IAccountRepository
+    private readonly _accountRepository: IAccountRepository,
+  ) {}
 
+  async execute() {
+    const companyRequests = await this._companyRequestRepository.findAll();
 
-) {}
+    const companyRequestsWithAdmin = await Promise.all(
+      companyRequests.map(async (companyRequest) => {
+        const account = await this._accountRepository.findById(
+          companyRequest.accountId,
+        );
 
-   async execute() {
-    const companyRequests =
-      await this._companyRequestRepository.findAll();
+        return {
+          id: companyRequest.id,
 
-    const companyRequestsWithAdmin =
-      await Promise.all(
-        companyRequests.map(async (companyRequest) => {
-          const account =
-            await this._accountRepository.findById(
-              companyRequest.accountId
-            );
+          requestId: companyRequest.requestId,
+          requestType: companyRequest.requestType,
 
-         return {
-  id: companyRequest.id,
+          companyName: companyRequest.companyName,
 
-  requestId: companyRequest.requestId,
-  requestType: companyRequest.requestType,
+          adminName: account
+            ? `${account.firstName} ${account.lastName}`
+            : "Unknown",
 
-  companyName: companyRequest.companyName,
+          status: companyRequest.status,
 
-  adminName: account
-    ? `${account.firstName} ${account.lastName}`
-    : "Unknown",
+          submittedAt: companyRequest.submittedAt,
 
-  status: companyRequest.status,
-
-  submittedAt: companyRequest.submittedAt,
-
-  createdAt: companyRequest.createdAt,
-};
-        })
-      );
+          createdAt: companyRequest.createdAt,
+        };
+      }),
+    );
 
     return companyRequestsWithAdmin;
   }

@@ -18,8 +18,8 @@ function Companies() {
 
   const {
     companyList,
-    companylistLoading,
-    error,
+    companyListLoading,
+    companyListError,
   } = useAppSelector(
     (state) => state.company,
   );
@@ -187,7 +187,7 @@ const handleResetSearch = () => {
           </div>
 
           {/* Result Count */}
-          {!companylistLoading && !error && (
+          {!companyListLoading && !companyListError && (
             <div className="mb-4 text-sm text-gray-500">
               Showing{" "}
               <span className="font-medium text-gray-700">
@@ -201,21 +201,21 @@ const handleResetSearch = () => {
           )}
 
           {/* Loading */}
-          {companylistLoading && (
+          {companyListLoading && (
             <p className="py-6 text-center text-sm text-gray-500">
               Loading companies...
             </p>
           )}
 
           {/* Error */}
-          {error && (
+          {companyListError && (
             <p className="py-6 text-center text-sm text-red-500">
-              {error}
+              {companyListError}
             </p>
           )}
 
           {/* Data Table */}
-          {!companylistLoading && !error && (
+          {!companyListLoading && !companyListError && (
             <DataTable
               data={companyList}
               columns={columns}

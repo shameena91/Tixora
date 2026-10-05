@@ -107,10 +107,7 @@ export const SUBSCRIPTION_PLAN_ROUTES = {
 export const COMPANY_ROUTE={
    GET_COMPANY_SUBSCRIPTION: (id:string)=>`/companies/${id}/subscription`,
 
-
-    DEACTIVATE_SUBSCRIPTION: (
-    companyId: string,
-    subscriptionId: string,
-  ) =>
-    `/companies/${companyId}/subscription/${subscriptionId}/deactivate`,
+   GET_COMPANY_ADMINS: (companyId:string)=>`/companies/${companyId}/admin`,
+   GET_BILLING_HISTORY:(companyId:string)=>`/companies/${companyId}/billingHistory`,
+UPDATE_COMPANY_STATUS:(companyId:string,)=>`/companies/${companyId}/status`
 } as const

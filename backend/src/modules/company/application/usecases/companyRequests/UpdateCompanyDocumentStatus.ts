@@ -8,19 +8,17 @@ import { TimelineEntityType } from "../../../../timeline/domain/entities/Timelin
 import { ICompanyRequestRepository } from "../../../domain/repositories/ICompanyRequestRepository";
 
 import {
-    CompanyDocumentType,
-    DocumentVerificationStatus,
+  CompanyDocumentType,
+  DocumentVerificationStatus,
 } from "../../../domain/value-objects/CompanyDocuments";
 
 import { IUpdateCompanyDocumentStatusUseCase } from "../../abstraction/IUpdateCompanyDocumentStatusUseCase";
 
-export class UpdateCompanyDocumentStatusUseCase
-  implements IUpdateCompanyDocumentStatusUseCase
-{
+export class UpdateCompanyDocumentStatusUseCase implements IUpdateCompanyDocumentStatusUseCase {
   constructor(
     private readonly _companyRequestRepository: ICompanyRequestRepository,
 
-    private readonly _createTimeline: ICreateTimeline
+    private readonly _createTimeline: ICreateTimeline,
   ) {}
 
   async execute(
@@ -29,9 +27,7 @@ export class UpdateCompanyDocumentStatusUseCase
     status: DocumentVerificationStatus,
   ): Promise<void> {
     const companyRequest =
-      await this._companyRequestRepository.findById(
-        companyRequestId
-      );
+      await this._companyRequestRepository.findById(companyRequestId);
 
     if (!companyRequest) {
       throw new AppErrors(
@@ -40,43 +36,32 @@ export class UpdateCompanyDocumentStatusUseCase
       );
     }
 
-    companyRequest.updateDocumentStatus(
-      documentType,
-      status,
-    );
+    companyRequest.updateDocumentStatus(documentType, status);
 
     await this._companyRequestRepository.updateDocuments(
       companyRequestId,
       companyRequest.documents,
     );
 
-    // ------------------------------------
-    // Create Timeline
-    // ------------------------------------
+
     let action: string | null = null;
     let description = "";
 
-    if (
-      status === DocumentVerificationStatus.VERIFIED
-    ) {
+    if (status === DocumentVerificationStatus.VERIFIED) {
       action = "DOCUMENT_VERIFIED";
       description = "Company document verified";
     }
 
-    if (
-      status === DocumentVerificationStatus.REJECTED
-    ) {
+    if (status === DocumentVerificationStatus.REJECTED) {
       action = "DOCUMENT_REJECTED";
       description = "Company document rejected";
     }
 
     if (action) {
       await this._createTimeline.execute({
-        entityType:
-          TimelineEntityType.COMPANY_REQUEST,
+        entityType: TimelineEntityType.COMPANY_REQUEST,
 
-        entityId:
-          companyRequest.id,
+        entityId: companyRequest.id,
 
         action,
 

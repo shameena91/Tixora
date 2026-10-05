@@ -1,93 +1,226 @@
-import { Mail, Phone, UserRound } from "lucide-react";
-import InfoCard from "../commonComponenets/InfoCard";
-import StatusBadge from "../commonComponenets/StatusBadge";
+import { Mail } from "lucide-react";
+import { useEffect, useState } from "react";
 
+import {
+  fetchCompanyAdminThunk,
+  type CompanyAdminList,
+  type CompanyDetails,
+} from "../../../../redux/slices/companySlice";
 
+import {
+  useAppDispatch,
+  useAppSelector,
+} from "../../../../redux/hooks/hooks";
+
+import type { DataTableColumn } from "../../../../components/common/Datatable";
+import DataTable from "../../../../components/common/Datatable";
+import DetailsDrawer from "../../../../components/common/DetailsDrawer";
 
 interface CompanyAdminsProps {
-  company: any;
+  company: CompanyDetails;
 }
 
-const CompanyAdmins = ({ company }: CompanyAdminsProps) => {
-  const admin = company.admin;
+const CompanyAdmins = ({
+  company,
+}: CompanyAdminsProps) => {
+  const dispatch = useAppDispatch();
+
+  const [showAdminDrawer, setShowAdminDrawer] =
+    useState(false);
+
+  useEffect(() => {
+    if (company.id) {
+      dispatch(
+        fetchCompanyAdminThunk(company.id),
+      );
+    }
+  }, [dispatch, company.id]);
+
+  const {
+    companyAdminList,
+    companyAdminError,
+    companyAdminLoading,
+  } = useAppSelector(
+    (state) => state.company,
+  );
+
+  console.log(
+    "companyAdminList",
+    companyAdminList,
+  );
+
+  const companyAdminColumns: DataTableColumn<CompanyAdminList>[] =
+    [
+      {
+        header: "Name",
+        accessor: "firstName",
+        render: (value, row) =>
+          `${String(value)} ${row.lastName}`,
+      },
+
+      {
+        header: "Phone",
+        accessor: "phone",
+      },
+
+      {
+        header: "Email",
+        accessor: "email",
+      },
+
+      {
+        header: "Designation",
+        accessor: "designation",
+      },
+
+      {
+        header: "Status",
+        accessor: "status",
+        render: (value) => (
+          <span
+            className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
+              String(value) === "ACTIVE"
+                ? "bg-green-100 text-green-700"
+                : "bg-gray-100 text-gray-600"
+            }`}
+          >
+            {String(value)}
+          </span>
+        ),
+      },
+
+      {
+        header: "Action",
+        accessor: "id",
+        render: () => (
+          <button
+            type="button"
+            onClick={() =>
+              setShowAdminDrawer(true)
+            }
+            className="text-sm font-medium text-[#7C3AED] hover:text-[#6D28D9]"
+          >
+            View
+          </button>
+        ),
+      },
+    ];
+
+  if (companyAdminLoading) {
+    return (
+      <div className="flex justify-center p-6">
+        <p className="text-sm text-gray-500">
+          Loading company admin...
+        </p>
+      </div>
+    );
+  }
+
+  if (companyAdminError) {
+    return (
+      <div className="p-6">
+        <p className="text-sm text-red-500">
+          {companyAdminError}
+        </p>
+      </div>
+    );
+  }
+
+  if (!companyAdminList) {
+    return (
+      <div className="flex flex-col items-center justify-center p-10 text-center">
+        <Mail
+          size={36}
+          className="mb-3 text-gray-400"
+        />
+
+        <p className="text-sm font-medium text-gray-700">
+          No company admin found
+        </p>
+
+        <p className="mt-1 text-xs text-gray-500">
+          This company does not have any admin.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
-      <InfoCard
-        title="Company Admins"
-        icon={<UserRound className="h-5 w-5" />}
+      <DataTable
+        data={[companyAdminList]}
+        columns={companyAdminColumns}
+      />
+
+      <DetailsDrawer
+        open={showAdminDrawer}
+        title="Admin Details"
+        onClose={() =>
+          setShowAdminDrawer(false)
+        }
       >
-        {admin ? (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
-                    Admin
-                  </th>
+        <div className="space-y-5">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
+              Name
+            </p>
 
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
-                    Email
-                  </th>
-
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
-                    Phone
-                  </th>
-
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
-                    Status
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr className="border-b border-gray-50 last:border-0">
-                  <td className="px-4 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-50 text-sm font-semibold text-[#7C3AED]">
-                        {(admin.name || "A")
-                          .split(" ")
-                          .map((word: string) => word[0])
-                          .slice(0, 2)
-                          .join("")
-                          .toUpperCase()}
-                      </div>
-
-                      <span className="text-sm font-medium text-gray-900">
-                        {admin.name || "-"}
-                      </span>
-                    </div>
-                  </td>
-
-                  <td className="px-4 py-4">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Mail className="h-4 w-4 text-gray-400" />
-                      {admin.email || "-"}
-                    </div>
-                  </td>
-
-                  <td className="px-4 py-4">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Phone className="h-4 w-4 text-gray-400" />
-                      {admin.phone || company.phone || "-"}
-                    </div>
-                  </td>
-
-                  <td className="px-4 py-4">
-                    <StatusBadge status={admin.status || "ACTIVE"} />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="py-10 text-center">
-            <p className="text-sm text-gray-500">
-              No company admin information available.
+            <p className="mt-1 text-sm font-semibold text-gray-900">
+              {companyAdminList.firstName}{" "}
+              {companyAdminList.lastName}
             </p>
           </div>
-        )}
-      </InfoCard>
+
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
+              Email
+            </p>
+
+            <p className="mt-1 text-sm text-gray-700">
+              {companyAdminList.email}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
+              Phone
+            </p>
+
+            <p className="mt-1 text-sm text-gray-700">
+              {companyAdminList.phone}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
+              Designation
+            </p>
+
+            <p className="mt-1 text-sm text-gray-700">
+              {companyAdminList.designation}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
+              Status
+            </p>
+
+            <div className="mt-1">
+              <span
+                className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
+                  companyAdminList.status ===
+                  "ACTIVE"
+                    ? "bg-green-100 text-green-700"
+                    : "bg-gray-100 text-gray-600"
+                }`}
+              >
+                {companyAdminList.status}
+              </span>
+            </div>
+          </div>
+        </div>
+      </DetailsDrawer>
     </div>
   );
 };

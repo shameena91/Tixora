@@ -7,10 +7,10 @@ import { CompanyRequest } from "../../../domain/entities/CompanyRequest";
 import { ICompanyRequestRepository } from "../../../domain/repositories/ICompanyRequestRepository";
 import { IRejectCompanyRequest } from "../../abstraction/IRejectCompanyRequest";
 // Change statusTo reject
-export class RejectCompanyRequest  implements IRejectCompanyRequest{
+export class RejectCompanyRequest implements IRejectCompanyRequest {
   constructor(
     private readonly _companyrequestRepository: ICompanyRequestRepository,
-    private readonly _createTimeline: ICreateTimeline
+    private readonly _createTimeline: ICreateTimeline,
   ) {}
   async execute(id: string): Promise<CompanyRequest> {
     const companyRequest = await this._companyrequestRepository.findById(id);
@@ -18,21 +18,20 @@ export class RejectCompanyRequest  implements IRejectCompanyRequest{
     if (!companyRequest) {
       throw new AppErrors(
         MESSAGES.COMPANY_REQUEST_NOT_FOUND,
-          ErrorCode.COMPANY_REQUEST_NOT_FOUND
-,
+        ErrorCode.COMPANY_REQUEST_NOT_FOUND,
       );
     }
 
-   companyRequest.reject();
+    companyRequest.reject();
 
     const updatedCompanyRequest =
       await this._companyrequestRepository.updateStatus(
         id,
         companyRequest.status,
-         null,
-    new Date(),
-    null,
-    null,
+        null,
+        new Date(),
+        null,
+        null,
       );
 
     await this._createTimeline.execute({

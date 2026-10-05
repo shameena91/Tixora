@@ -1,8 +1,8 @@
-import { CreateCompanyRequestDto, CreateCompanyResponseDto } from "../dto/CreateCompanyDto";
-
+import {
+  CreateCompanyRequestDto,
+  CreateCompanyResponseDto,
+} from "../dto/CreateCompanyDto";
 
 export interface ICreateCompany {
-  execute(
-    data: CreateCompanyRequestDto
-  ): Promise<CreateCompanyResponseDto>;
+  execute(data: CreateCompanyRequestDto): Promise<CreateCompanyResponseDto>;
 }

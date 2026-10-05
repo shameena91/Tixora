@@ -2,8 +2,14 @@ import { Router } from "express";
 import { BaseRepository } from "../../../infrastructure/repositories/Baserepository";
 import { CompanyModel } from "../../company/Infrastructure/database/models/CompanyModel";
 import { CompanyRepository } from "../../company/Infrastructure/database/repositories/CompanyRepository";
-import { SubscriptionCreateData, SubscriptionDocument } from "../application/mappers/SubscriptionMapper";
-import { SubscriptionPlanCreateData, SubscriptionPlanDocument } from "../application/mappers/SubscriptionPlanMapper";
+import {
+  SubscriptionCreateData,
+  SubscriptionDocument,
+} from "../application/mappers/SubscriptionMapper";
+import {
+  SubscriptionPlanCreateData,
+  SubscriptionPlanDocument,
+} from "../application/mappers/SubscriptionPlanMapper";
 import { CreateSubscription } from "../application/usecases/company-subscription/CreateSubscription";
 import { CreateSubscriptionPlan } from "../application/usecases/subscription-plan/CreateSubscriptionPlan";
 import { DeletePlan } from "../application/usecases/subscription-plan/DeletePlan";
@@ -20,95 +26,88 @@ import { SubscriptionPlanController } from "../presentation/controllers/Subscrip
 import { UpdatePlanStatus } from "../application/usecases/subscription-plan/UpdatePlanStatus";
 import { GetMySubscriptionStatus } from "../application/usecases/company-subscription/GetMySubscriptionStatus";
 import { VerifySubscriptionPayment } from "../application/usecases/company-subscription/VerifySubscriptionPayment";
-import { GetCompanySubscription  } from "../application/usecases/company-subscription/getCompanySubscription";
+import { GetCompanySubscription } from "../application/usecases/company-subscription/getCompanySubscription";
+import {
+  createPayment,
+  paymentRepository,
+} from "../../payments/container/Container";
 
-const router=Router()
+const router = Router();
 
+const baseSubscriptionPlanRepository = new BaseRepository<
+  SubscriptionPlanDocument,
+  SubscriptionPlanCreateData
+>(SubscriptionPlanModel);
 
-const baseSubscriptionPlanRepository =
-  new BaseRepository<
-    SubscriptionPlanDocument,
-    SubscriptionPlanCreateData
-  >(SubscriptionPlanModel);
+export const subscriptionPlanRepository = new SubscriptionPlanRepository(
+  baseSubscriptionPlanRepository,
+);
 
+const createSubscriptionPlanUseCase = new CreateSubscriptionPlan(
+  subscriptionPlanRepository,
+);
+const getSubscriptionPlanById = new GetSubscriptionPlanById(
+  subscriptionPlanRepository,
+);
+const getAllSubscriptionPlans = new GetAllSubscriptions(
+  subscriptionPlanRepository,
+);
+const updateSubscriptionPlan = new UpdateSubscriptionPlan(
+  subscriptionPlanRepository,
+);
+const updateplanStatus = new UpdatePlanStatus(subscriptionPlanRepository);
+const deletePlan = new DeletePlan(subscriptionPlanRepository);
 
-export const subscriptionPlanRepository =
-new SubscriptionPlanRepository(baseSubscriptionPlanRepository)
+const baseSubscriptionRepository = new BaseRepository<
+  SubscriptionDocument,
+  SubscriptionCreateData
+>(SubscriptionModel);
 
-const createSubscriptionPlanUseCase =
-  new CreateSubscriptionPlan(
-    subscriptionPlanRepository
-  );
-const getSubscriptionPlanById=new GetSubscriptionPlanById(
-  subscriptionPlanRepository
-)
-  const getAllSubscriptionPlans=new GetAllSubscriptions(subscriptionPlanRepository)
-  const updateSubscriptionPlan=new UpdateSubscriptionPlan(subscriptionPlanRepository)
-  const updateplanStatus=new UpdatePlanStatus(subscriptionPlanRepository)
-  const deletePlan=new DeletePlan(subscriptionPlanRepository)
+export const subscriptionRepository = new SubscriptionRepository(
+  baseSubscriptionRepository,
+);
+const baseCompanyrepository = new BaseRepository(CompanyModel);
 
+const companyRepository = new CompanyRepository(baseCompanyrepository);
+const razorpayOrderService = new RazorpayOrderService();
 
-const baseSubscriptionRepository =
-  new BaseRepository<
-    SubscriptionDocument,
-    SubscriptionCreateData
-  >(SubscriptionModel);
+const createSubscription = new CreateSubscription(
+  subscriptionRepository,
+  companyRepository,
+  subscriptionPlanRepository,
+  razorpayOrderService,
+  paymentRepository,
+);
+const getMySubscription = new GetMySubscriptionStatus(
+  companyRepository,
+  subscriptionRepository,
+);
 
-export const subscriptionRepository =
-  new SubscriptionRepository(
-    baseSubscriptionRepository
-  );
-  const baseCompanyrepository =
-  new BaseRepository(CompanyModel);
+const verifySubscriptionPayment = new VerifySubscriptionPayment(
+  subscriptionRepository,
+  companyRepository,
+  razorpayOrderService,
+  paymentRepository,
+);
 
-const companyRepository =
-  new CompanyRepository(baseCompanyrepository);
-const razorpayOrderService =
-  new RazorpayOrderService();
+const getCompanySubscription = new GetCompanySubscription(
+  subscriptionRepository,
+  subscriptionPlanRepository,
+);
 
-const createSubscription =
-  new CreateSubscription(
-    subscriptionRepository,
-    companyRepository,
-    subscriptionPlanRepository,
-    razorpayOrderService
-  );
-  const getMySubscription =
-  new GetMySubscriptionStatus(
-    companyRepository,
-    subscriptionRepository
-  );
+export const createSubscriptionPlanController = new SubscriptionPlanController(
+  createSubscriptionPlanUseCase,
+  getAllSubscriptionPlans,
+  getSubscriptionPlanById,
+  updateSubscriptionPlan,
+  updateplanStatus,
+  deletePlan,
+);
 
-  const verifySubscriptionPayment=new VerifySubscriptionPayment(
-    
-   
-    subscriptionRepository,
-     companyRepository,
-    razorpayOrderService
-  )
+export const createSubScriptionController = new SubscriptionController(
+  createSubscription,
+  getMySubscription,
+  verifySubscriptionPayment,
 
-  const getCompanySubscription=new GetCompanySubscription(
-    subscriptionRepository,
-    subscriptionPlanRepository
-  )
-
- 
-  export const createSubscriptionPlanController =
-  new SubscriptionPlanController(
-    createSubscriptionPlanUseCase,
-    getAllSubscriptionPlans,
-    getSubscriptionPlanById,
-    updateSubscriptionPlan,
-    updateplanStatus,
-    deletePlan
-  );
-
-  export const createSubScriptionController=
-  new SubscriptionController(
-    createSubscription,
-    getMySubscription,
-    verifySubscriptionPayment,
-   
-    getCompanySubscription,
-    
-  )
+  getCompanySubscription,
+);

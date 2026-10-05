@@ -1,4 +1,4 @@
-import { Company } from "../entities/Company";
+import { Company, CompanyStatus } from "../entities/Company";
 import { CompanyCreateData } from "../../application/mappers/CompanyMapper";
 
 export interface ICompanyRepository {
@@ -6,9 +6,9 @@ export interface ICompanyRepository {
 
   findById(id: string): Promise<Company | null>;
 
-  findAll(search?:string): Promise<Company[]>;
+  findAll(search?: string): Promise<Company[]>;
 
-  findByAccountId(
-    accountId: string
-  ): Promise<Company | null>;
+  findByAccountId(accountId: string): Promise<Company | null>;
+
+  updateStatus(id: string, status: CompanyStatus): Promise<Company>;
 }

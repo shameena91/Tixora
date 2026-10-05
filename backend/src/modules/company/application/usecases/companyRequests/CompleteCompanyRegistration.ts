@@ -1,5 +1,3 @@
-
-
 // When submitting all the data from the review page,
 
 import { MESSAGES } from "../../../../../shared/constants/messages";
@@ -11,43 +9,36 @@ import { ICreateTimeline } from "../../../../timeline/application/abstraction/IC
 import { TimelineEntityType } from "../../../../timeline/domain/entities/Timeline";
 import { ICompleteCompanyRegistration } from "../../abstraction/ICompleteCompanyRegistration";
 
-// the company registration is completed.
-export class CompleteCompanyRegistration
-  implements ICompleteCompanyRegistration
-{
+
+export class CompleteCompanyRegistration implements ICompleteCompanyRegistration {
   constructor(
     private readonly _accountRepository: IAccountRepository,
-    // private readonly _createNotification: CreateNotification,
-    private readonly _createTimeline: ICreateTimeline
+
+    private readonly _createTimeline: ICreateTimeline,
   ) {}
 
-  async execute(
-    accountId: string,
-    companyRequestId: string
-  ): Promise<void> {
-    const account =
-      await this._accountRepository.findById(accountId);
+  async execute(accountId: string, companyRequestId: string): Promise<void> {
+    const account = await this._accountRepository.findById(accountId);
 
     if (!account) {
       throw new AppErrors(
         MESSAGES.ACCOUNT_NOT_FOUND,
-        ErrorCode.ACCOUNT_NOT_FOUND
+        ErrorCode.ACCOUNT_NOT_FOUND,
       );
     }
 
-    const superAdmin =
-      await this._accountRepository.findSuperAdmin();
+    const superAdmin = await this._accountRepository.findSuperAdmin();
 
     if (!superAdmin) {
       throw new AppErrors(
         MESSAGES.ACCOUNT_NOT_FOUND,
-        ErrorCode.ACCOUNT_NOT_FOUND
+        ErrorCode.ACCOUNT_NOT_FOUND,
       );
     }
 
     await this._accountRepository.updateRegistrationStep(
       accountId,
-      RegistrationStep.COMPLETED
+      RegistrationStep.COMPLETED,
     );
 
     await this._createTimeline.execute({

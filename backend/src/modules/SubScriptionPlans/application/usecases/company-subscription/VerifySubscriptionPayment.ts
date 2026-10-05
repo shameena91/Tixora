@@ -3,6 +3,8 @@ import { AppErrors } from "../../../../../shared/errors/AppErrors";
 import { ErrorCode } from "../../../../../shared/errors/ErrorCode";
 
 import { ICompanyRepository } from "../../../../company/domain/repositories/ICompanyRepository";
+import { IPaymentRepository } from "../../../../payments/domain/repositories/IPaymentRepository";
+import { PaymentStatus } from "../../../../payments/domain/types/PaymentStatus";
 
 import {
   BillingCycle,
@@ -13,20 +15,19 @@ import {
 import { ISubscriptionRepository } from "../../../domain/repositories/ISubscriptionRepository";
 import { IVerifySubscriptionPayment } from "../../abstraction/company-subscription/IVerifySubscriptionPayment";
 
-
 import { VerifySubscriptionPaymentResponseDto } from "../../dto/VerifySubscriptionPaymentResponseDto";
 
 import { IRazorpayOrderService } from "../../ports/IRazorpayOrderService";
 
-export class VerifySubscriptionPayment
-  implements IVerifySubscriptionPayment
-{
+export class VerifySubscriptionPayment implements IVerifySubscriptionPayment {
   constructor(
     private readonly _subscriptionRepository: ISubscriptionRepository,
 
     private readonly _companyRepository: ICompanyRepository,
 
     private readonly _razorpayOrderService: IRazorpayOrderService,
+
+    private readonly _paymentRepository: IPaymentRepository,
   ) {}
 
   async execute(
@@ -35,13 +36,11 @@ export class VerifySubscriptionPayment
     paymentId: string,
     signature: string,
   ): Promise<VerifySubscriptionPaymentResponseDto> {
-    // 1. Verify Razorpay payment signature
-    const isValid =
-      this._razorpayOrderService.verifyPayment(
-        orderId,
-        paymentId,
-        signature,
-      );
+    const isValid = this._razorpayOrderService.verifyPayment(
+      orderId,
+      paymentId,
+      signature,
+    );
 
     if (!isValid) {
       throw new AppErrors(
@@ -50,11 +49,7 @@ export class VerifySubscriptionPayment
       );
     }
 
-    // 2. Find company
-    const company =
-      await this._companyRepository.findByAccountId(
-        accountId,
-      );
+    const company = await this._companyRepository.findByAccountId(accountId);
 
     if (!company) {
       throw new AppErrors(
@@ -63,100 +58,84 @@ export class VerifySubscriptionPayment
       );
     }
 
-    // 3. Get Razorpay order details
-    const razorpayOrder =
-      await this._razorpayOrderService.getOrder(
-        orderId,
-      );
+    const razorpayOrder = await this._razorpayOrderService.getOrder(orderId);
 
-    // 4. Verify that the order belongs to this company
-    if (
-      razorpayOrder.notes.companyId !==
-      company.id
-    ) {
-      throw new AppErrors(
-        MESSAGES.UNAUTHORIZED,
-        ErrorCode.UNAUTHORIZED,
-      );
+    if (razorpayOrder.notes.companyId !== company.id) {
+      throw new AppErrors(MESSAGES.UNAUTHORIZED, ErrorCode.UNAUTHORIZED);
     }
 
-    // 5. Get plan and billing cycle from Razorpay order
-    const planId =
-      razorpayOrder.notes.planId;
+    const payment =
+      await this._paymentRepository.findByRazorpayOrderId(orderId);
 
-   const billingCycle =
-  razorpayOrder.notes.billingCycle === "MONTHLY"
-    ? BillingCycle.MONTHLY
-    : BillingCycle.YEARLY;
+    if (!payment) {
+      throw new AppErrors(
+        MESSAGES.PAYMENT_NOT_FOUND,
+        ErrorCode.PAYMENT_NOT_FOUND,
+      );
+    }
+    const planId = razorpayOrder.notes.planId;
 
-    // 6. Calculate subscription dates
+    const billingCycle =
+      razorpayOrder.notes.billingCycle === "MONTHLY"
+        ? BillingCycle.MONTHLY
+        : BillingCycle.YEARLY;
+
     const startDate = new Date();
 
     const endDate = new Date(startDate);
 
-    if (
-      billingCycle === BillingCycle.MONTHLY
-    ) {
-      endDate.setMonth(
-        endDate.getMonth() + 1,
-      );
+    if (billingCycle === BillingCycle.MONTHLY) {
+      endDate.setMonth(endDate.getMonth() + 1);
     }
 
-    if (
-      billingCycle === BillingCycle.YEARLY
-    ) {
-      endDate.setFullYear(
-        endDate.getFullYear() + 1,
-      );
+    if (billingCycle === BillingCycle.YEARLY) {
+      endDate.setFullYear(endDate.getFullYear() + 1);
     }
 
-    // 7. Create ACTIVE subscription
-    const subscription =
-      new Subscription(
-        crypto.randomUUID(),
+    const subscription = new Subscription(
+      crypto.randomUUID(),
 
-        company.id,
+      company.id,
 
-        planId,
-
-        orderId,
-
-        billingCycle,
-
-        SubscriptionStatus.ACTIVE,
-
-        startDate,
-
-        endDate,
-
-        startDate,
-
-        startDate,
-      );
-
-    const createdSubscription =
-      await this._subscriptionRepository.create(
-        subscription,
-      );
-
-    // 8. Return subscription details
-    return {
-      subscriptionId:
-        createdSubscription.id,
+      planId,
 
       orderId,
 
-      billingCycle:
-        createdSubscription.billingCycle,
+      billingCycle,
 
-      status:
-        createdSubscription.status,
+      SubscriptionStatus.ACTIVE,
 
-      startDate:
-        createdSubscription.startDate,
+      startDate,
 
-      endDate:
-        createdSubscription.endDate,
+      endDate,
+
+      startDate,
+
+      startDate,
+    );
+
+    const createdSubscription =
+      await this._subscriptionRepository.create(subscription);
+
+    await this._paymentRepository.updatePaymentStatus(
+      payment.id,
+      PaymentStatus.SUCCESS,
+      createdSubscription.id,
+      paymentId,
+      startDate,
+    );
+    return {
+      subscriptionId: createdSubscription.id,
+
+      orderId,
+
+      billingCycle: createdSubscription.billingCycle,
+
+      status: createdSubscription.status,
+
+      startDate: createdSubscription.startDate,
+
+      endDate: createdSubscription.endDate,
     };
   }
 }

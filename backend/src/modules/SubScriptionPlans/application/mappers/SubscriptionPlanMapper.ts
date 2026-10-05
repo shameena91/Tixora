@@ -15,8 +15,6 @@ export interface SubscriptionPlanDocument {
   monthlyPrice: number;
   yearlyPrice: number;
 
-
-
   memberLimit: number | null;
   companyAdminLimit: number | null;
   departmentLimit: number | null;
@@ -37,9 +35,7 @@ export type SubscriptionPlanCreateData = Omit<
 >;
 
 export class SubscriptionPlanMapper {
-  static toDomain(
-    doc: SubscriptionPlanDocument,
-  ): SubscriptionPlan {
+  static toDomain(doc: SubscriptionPlanDocument): SubscriptionPlan {
     return new SubscriptionPlan(
       doc._id.toString(),
 
@@ -48,8 +44,6 @@ export class SubscriptionPlanMapper {
 
       doc.monthlyPrice,
       doc.yearlyPrice,
-
-    
 
       doc.memberLimit,
       doc.companyAdminLimit,
@@ -76,24 +70,16 @@ export class SubscriptionPlanMapper {
       monthlyPrice: subscriptionPlan.monthlyPrice,
       yearlyPrice: subscriptionPlan.yearlyPrice,
 
-   
-
       memberLimit: subscriptionPlan.memberLimit,
-      companyAdminLimit:
-        subscriptionPlan.companyAdminLimit,
-      departmentLimit:
-        subscriptionPlan.departmentLimit,
-      ticketLimit:
-        subscriptionPlan.ticketLimit,
+      companyAdminLimit: subscriptionPlan.companyAdminLimit,
+      departmentLimit: subscriptionPlan.departmentLimit,
+      ticketLimit: subscriptionPlan.ticketLimit,
 
-      automaticTicketAssignment:
-        subscriptionPlan.automaticTicketAssignment,
+      automaticTicketAssignment: subscriptionPlan.automaticTicketAssignment,
 
-      slaManagement:
-        subscriptionPlan.slaManagement,
+      slaManagement: subscriptionPlan.slaManagement,
 
-      subscriptionPlanStatus:
-        subscriptionPlan.subscriptionPlanStatus,
+      subscriptionPlanStatus: subscriptionPlan.subscriptionPlanStatus,
     };
   }
 }

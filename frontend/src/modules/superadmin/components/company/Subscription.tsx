@@ -23,6 +23,7 @@ import DataTable, {
 import type {
   GetCompanySubscriptionItemDto,
 } from "../../../../redux/slices/companySubscription/companySubscriptionTypes";
+import StatusBadge from "../commonComponenets/StatusBadge";
 
 
 interface SubscriptionProps {
@@ -34,9 +35,6 @@ const Subscription = ({ company }: SubscriptionProps) => {
 
 
 
-  // ============================================================
-  // GET COMPANY SUBSCRIPTION
-  // ============================================================
 
   useEffect(() => {
     if (company.id) {
@@ -44,9 +42,6 @@ const Subscription = ({ company }: SubscriptionProps) => {
     }
   }, [dispatch, company.id]);
 
-  // ============================================================
-  // REDUX STATE
-  // ============================================================
 
   const { companySubscription } = useAppSelector(
     (state) => state.companySubscription,
@@ -54,16 +49,11 @@ const Subscription = ({ company }: SubscriptionProps) => {
 
  
 
-  // ============================================================
-  // CURRENT SUBSCRIPTION
-  // ============================================================
 
   const currentSubscription =
     companySubscription?.data?.currentSubscription;
 
-  // ============================================================
-  // DATE FORMAT
-  // ============================================================
+
 
   const formatDate = (
     date: Date | string | null | undefined,
@@ -77,35 +67,31 @@ const Subscription = ({ company }: SubscriptionProps) => {
     });
   };
 
-  // ============================================================
-  // SUBSCRIPTION STATUS STYLES
-  // ============================================================
 
-  const subscriptionStatusStyles = {
-    ACTIVE: {
-      badge: "bg-emerald-50 text-emerald-600",
-      dot: "bg-emerald-500",
-    },
 
-    PENDING: {
-      badge: "bg-yellow-50 text-yellow-600",
-      dot: "bg-yellow-500",
-    },
+  // const subscriptionStatusStyles = {
+  //   ACTIVE: {
+  //     badge: "bg-emerald-50 text-emerald-600",
+  //     dot: "bg-emerald-500",
+  //   },
 
-    CANCELLED: {
-      badge: "bg-red-50 text-red-600",
-      dot: "bg-red-500",
-    },
+  //   PENDING: {
+  //     badge: "bg-yellow-50 text-yellow-600",
+  //     dot: "bg-yellow-500",
+  //   },
 
-    EXPIRED: {
-      badge: "bg-gray-100 text-gray-500",
-      dot: "bg-gray-400",
-    },
-  } as const;
+  //   CANCELLED: {
+  //     badge: "bg-red-50 text-red-600",
+  //     dot: "bg-red-500",
+  //   },
 
-  // ============================================================
-  // SUBSCRIPTION HISTORY TABLE
-  // ============================================================
+  //   EXPIRED: {
+  //     badge: "bg-gray-100 text-gray-500",
+  //     dot: "bg-gray-400",
+  //   },
+  // } as const;
+
+
 
   const subscriptionHistoryColumns: DataTableColumn<GetCompanySubscriptionItemDto>[] =
     [
@@ -155,40 +141,24 @@ const Subscription = ({ company }: SubscriptionProps) => {
         render: (value) => `₹${value}`,
       },
 
-      {
+      
+ {
   header: "Status",
   accessor: "status",
   render: (value) => {
     const status =
       value as GetCompanySubscriptionItemDto["status"];
 
-    const style = subscriptionStatusStyles[status];
-
-    return (
-      <span
-        className={`inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-semibold ${style.badge}`}
-      >
-        <span
-          className={`h-1.5 w-1.5 rounded-full ${style.dot}`}
-        />
-
-        {status}
-      </span>
-    );
+    return <StatusBadge status={status} />;
   },
+
 },
     ];
 
-  // ============================================================
-  // JSX
-  // ============================================================
+
 
   return (
     <div className="p-6">
-
-      {/* ====================================================== */}
-      {/* PAGE HEADER */}
-      {/* ====================================================== */}
 
       <div className="mb-6 flex items-center justify-between">
 
@@ -202,28 +172,16 @@ const Subscription = ({ company }: SubscriptionProps) => {
           </p>
         </div>
 
-        {/* ==================================================== */}
-        {/* ACTION BUTTON */}
-        {/* ==================================================== */}
-
       
       </div>
 
-      {/* ====================================================== */}
-      {/* MAIN LAYOUT */}
-      {/* ====================================================== */}
 
       <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-6">
 
-        {/* ==================================================== */}
-        {/* LEFT - 4 COLUMNS */}
-        {/* ==================================================== */}
 
         <div className="flex min-w-0 flex-col gap-5 xl:col-span-4">
 
-          {/* ================================================== */}
-          {/* CURRENT SUBSCRIPTION */}
-          {/* ================================================== */}
+        
 
           {currentSubscription ? (
             <InfoCard
@@ -231,10 +189,6 @@ const Subscription = ({ company }: SubscriptionProps) => {
               subtitle="Active subscription plan"
             >
               <div className="space-y-6">
-
-                {/* -------------------------------------------- */}
-                {/* PLAN HEADER */}
-                {/* -------------------------------------------- */}
 
                 <div className="flex items-center justify-between gap-4">
 
@@ -256,18 +210,15 @@ const Subscription = ({ company }: SubscriptionProps) => {
 
                   </div>
 
-                  {/* Status Badge */}
+               
 
                  
                 </div>
 
-                {/* -------------------------------------------- */}
-                {/* SUBSCRIPTION DETAILS */}
-                {/* -------------------------------------------- */}
 
                 <div className="grid grid-cols-2 gap-x-6 gap-y-5 border-t border-gray-100 pt-5 md:grid-cols-4">
 
-                  {/* Next Renewal */}
+           
 
                   <div>
                     <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
@@ -281,7 +232,7 @@ const Subscription = ({ company }: SubscriptionProps) => {
                     </p>
                   </div>
 
-                  {/* Amount */}
+                
 
                   <div>
                     <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
@@ -293,7 +244,7 @@ const Subscription = ({ company }: SubscriptionProps) => {
                     </p>
                   </div>
 
-                  {/* Billing Cycle */}
+             
 
                   <div>
                     <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
@@ -305,44 +256,25 @@ const Subscription = ({ company }: SubscriptionProps) => {
                     </p>
                   </div>
 
-                  {/* Status */}
+               
 
-                  <div>
-                    <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
-                      Status
-                    </p>
+                 <div>
+  <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
+    Status
+  </p>
 
-                    <div className="mt-2">
-
-                      <span
-                        className={`inline-flex shrink-0 items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold ${
-                          subscriptionStatusStyles[
-                            currentSubscription.status
-                          ].badge
-                        }`}
-                      >
-                        <span
-                          className={`h-1.5 w-1.5 rounded-full ${
-                            subscriptionStatusStyles[
-                              currentSubscription.status
-                            ].dot
-                          }`}
-                        />
-
-                        {currentSubscription.status}
-                      </span>
-
-                    </div>
-                  </div>
+  <div className="mt-2">
+    <StatusBadge
+      status={currentSubscription.status}
+    />
+  </div>
+</div>
 
                 </div>
               </div>
             </InfoCard>
           ) : (
 
-            /* ================================================ */
-            /* NO ACTIVE SUBSCRIPTION */
-            /* ================================================ */
 
             <InfoCard
               title="Current Subscription"
@@ -367,10 +299,7 @@ const Subscription = ({ company }: SubscriptionProps) => {
             </InfoCard>
           )}
 
-          {/* ================================================== */}
-          {/* SUBSCRIPTION HISTORY */}
-          {/* ================================================== */}
-
+      
           <InfoCard
             title="Subscription History"
             subtitle="Previous and current subscription plans"
@@ -387,7 +316,6 @@ const Subscription = ({ company }: SubscriptionProps) => {
 
             </div>
 
-            {/* View More */}
 
             <div className="mt-4 border-t border-gray-100 pt-4 text-center">
 
@@ -403,15 +331,10 @@ const Subscription = ({ company }: SubscriptionProps) => {
 
         </div>
 
-        {/* ==================================================== */}
-        {/* RIGHT - 2 COLUMNS */}
-        {/* ==================================================== */}
 
         <div className="flex min-w-0 flex-col gap-5 xl:col-span-2">
 
-          {/* ================================================== */}
-          {/* USER USAGE */}
-          {/* ================================================== */}
+       
 
           <InfoCard
             title="User Usage"

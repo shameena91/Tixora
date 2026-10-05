@@ -6,13 +6,13 @@ import { DocumentAccessType } from "../../../domain/types/DocumentAccessType";
 import { IGetCompanyDocumentUrl } from "../../abstraction/IGetCompanyDocumentUrl";
 import { IFileStoragePort } from "../../ports/IFileStoragePort";
 
-export class GetCompanyDocumentUrl implements IGetCompanyDocumentUrl{
+export class GetCompanyDocumentUrl implements IGetCompanyDocumentUrl {
   constructor(
     private readonly _companyRequestRepository: ICompanyRequestRepository,
-    private readonly _fileStorage: IFileStoragePort
+    private readonly _fileStorage: IFileStoragePort,
   ) {}
 
-   async execute(
+  async execute(
     companyRequestId: string,
     documentType: string,
     accessType: DocumentAccessType,

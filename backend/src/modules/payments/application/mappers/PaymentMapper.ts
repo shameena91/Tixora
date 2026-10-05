@@ -2,13 +2,15 @@ import { Payment } from "../../domain/entities/Payment";
 import { PaymentStatus } from "../../domain/types/PaymentStatus";
 
 
+import { Types } from "mongoose";
+
 export interface PaymentDocument {
-  _id: string;
+  _id: Types.ObjectId;
 
   paymentId: string;
 
   companyId: string;
-  subscriptionId: string;
+  subscriptionId: string | null;
   planId: string;
 
   amount: number;
@@ -27,7 +29,7 @@ export interface PaymentDocument {
 
 export interface PaymentCreateData {
   companyId: string;
-  subscriptionId: string;
+ subscriptionId: string | null;
   planId: string;
 
   amount: number;

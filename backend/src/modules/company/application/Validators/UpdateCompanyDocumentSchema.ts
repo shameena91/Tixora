@@ -8,8 +8,7 @@ export const updateCompanyDocumentsSchema = z.object({
         documentType: z.enum(CompanyDocumentType),
         fileName: z.string().trim().min(1),
         fileUrl: z.string().trim().min(1),
-      })
+      }),
     )
     .min(1, "At least one document is required"),
 });
-

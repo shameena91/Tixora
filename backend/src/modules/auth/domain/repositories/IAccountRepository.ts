@@ -1,4 +1,4 @@
-import { Account, RegistrationStep } from "../entities/Account";
+import { Account, AccountStatus, RegistrationStep } from "../entities/Account";
 
 export interface IAccountRepository {
   create(account: Account): Promise<Account>;
@@ -21,4 +21,8 @@ export interface IAccountRepository {
   ): Promise<void>;
 
   findSuperAdmin():Promise<Account|null>
+  updateStatus(
+  id: string,
+  status: AccountStatus,
+): Promise<void>;
 }
