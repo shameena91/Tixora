@@ -1,58 +1,140 @@
-import { useEffect, useState } from "react";
+
+import { useEffect } from "react";
+import { useNavigate ,useSearchParams,
+} from "react-router-dom";
 
 import DataTable, {
-    type DataTableColumn,
+  type DataTableColumn,
 } from "../../../../components/common/Datatable";
 
+import Pagination from "../../../../components/common/Pagination";
+
 import {
-    useAppDispatch,
-    useAppSelector,
+  useAppDispatch,
+  useAppSelector,
 } from "../../../../redux/hooks/hooks";
+import type { CompanyList } from "../../../../redux/slices/company/companyTypes";
+import { fetchCompanyListsThunk } from "../../../../redux/slices/company/companyThunk";
 
-
-import { useNavigate } from "react-router-dom";
-import { fetchCompanyListsThunk, type CompanyList } from "../../../../redux/slices/companySlice";
 
 function Companies() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] =
+  useSearchParams();
+
+const search =
+  searchParams.get("search") || "";
+
+const page =
+  Number(searchParams.get("page")) || 1;
+
+const limit =
+  Number(searchParams.get("limit")) || 3;
 
   const {
     companyList,
     companyListLoading,
     companyListError,
+    companyListTotal,
+   
+    companyListTotalPages,
   } = useAppSelector(
     (state) => state.company,
   );
 
-  const navigate = useNavigate();
-
-  const [search, setSearch] = useState("");
-
+//   const [search, setSearch] = useState("");
+// const [page, setPage] = useState(1);
+// const [limit, setLimit] = useState(3);
 useEffect(() => {
+  if (
+    !searchParams.get("page") ||
+    !searchParams.get("limit")
+  ) {
+    const params = new URLSearchParams(
+      searchParams,
+    );
 
+    if (!params.get("page")) {
+      params.set("page", "1");
+    }
+
+    if (!params.get("limit")) {
+      params.set("limit", "3");
+    }
+
+    setSearchParams(params, {
+      replace: true,
+    });
+  }
+}, [searchParams, setSearchParams]);
+ useEffect(() => {
   const timer = setTimeout(() => {
-
     dispatch(
-      fetchCompanyListsThunk(
-        search.trim() || undefined,
-      ),
+      fetchCompanyListsThunk({
+        search: search.trim() || undefined,
+        page,
+        limit,
+      }),
     );
   }, 500);
 
   return () => {
     clearTimeout(timer);
   };
-}, [search, dispatch]);
-
+}, [
+  search,
+  page,
+  limit,
+  dispatch,
+]);
 const handleSearch = (
   event: React.ChangeEvent<HTMLInputElement>,
 ) => {
   const value = event.target.value;
-  setSearch(value);
+
+  const params = new URLSearchParams(
+    searchParams,
+  );
+
+  params.set("page", "1");
+
+  if (value.trim()) {
+    params.set(
+      "search",
+      value.trim(),
+    );
+  } else {
+    params.delete("search");
+  }
+
+  setSearchParams(params);
 };
-const handleResetSearch = () => {
-  setSearch("");
+ const handleResetSearch = () => {
+  const params = new URLSearchParams();
+
+  params.set("page", "1");
+  params.set("limit", String(limit));
+
+  setSearchParams(params);
 };
+const handlePageChange = (newPage: number) => {
+  const params = new URLSearchParams(searchParams);
+
+  params.set("page", String(newPage));
+
+  setSearchParams(params);
+};
+
+const handleLimitChange = (newLimit: number) => {
+  const params = new URLSearchParams(searchParams);
+
+  params.set("page", "1");
+  params.set("limit", String(newLimit));
+
+  setSearchParams(params);
+};
+
   const columns: DataTableColumn<CompanyList>[] = [
     {
       header: "Logo",
@@ -122,7 +204,7 @@ const handleResetSearch = () => {
             )
           }
         >
-          View 
+          View
         </button>
       ),
     },
@@ -131,7 +213,6 @@ const handleResetSearch = () => {
   return (
     <div className="min-h-screen bg-[#faf7ff] text-[#182238]">
       <main className="mx-auto px-4 py-6 sm:px-6 sm:py-8">
-
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold sm:text-3xl">
@@ -145,7 +226,6 @@ const handleResetSearch = () => {
 
         {/* Companies Card */}
         <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6">
-
           {/* Card Header */}
           <div className="mb-6">
             <h2 className="text-lg font-semibold">
@@ -160,7 +240,6 @@ const handleResetSearch = () => {
           {/* Search */}
           <div className="mb-6 rounded-xl border border-gray-100 bg-gray-50 p-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-
               <div className="flex-1">
                 <label className="mb-1.5 block text-sm font-medium text-gray-700">
                   Search
@@ -182,23 +261,27 @@ const handleResetSearch = () => {
               >
                 Reset
               </button>
-
             </div>
           </div>
 
           {/* Result Count */}
-          {!companyListLoading && !companyListError && (
-            <div className="mb-4 text-sm text-gray-500">
-              Showing{" "}
-              <span className="font-medium text-gray-700">
-                {companyList.length}
-              </span>{" "}
-              compan
-              {companyList.length !== 1
-                ? "ies"
-                : "y"}
-            </div>
-          )}
+          {!companyListLoading &&
+            !companyListError && (
+              <div className="mb-4 text-sm text-gray-500">
+                Showing{" "}
+                <span className="font-medium text-gray-700">
+                  {companyList.length}
+                </span>{" "}
+                of{" "}
+                <span className="font-medium text-gray-700">
+                  {companyListTotal}
+                </span>{" "}
+                compan
+                {companyListTotal !== 1
+                  ? "ies"
+                  : "y"}
+              </div>
+            )}
 
           {/* Loading */}
           {companyListLoading && (
@@ -215,13 +298,29 @@ const handleResetSearch = () => {
           )}
 
           {/* Data Table */}
-          {!companyListLoading && !companyListError && (
-            <DataTable
-              data={companyList}
-              columns={columns}
-            />
-          )}
-
+          {!companyListLoading &&
+            !companyListError && (
+              <>
+                {companyList.length > 0 ? (
+                  <DataTable
+                    data={companyList}
+                    columns={columns}
+                  />
+                ) : (
+                  <p className="py-10 text-center text-sm text-gray-500">
+                    No companies found.
+                  </p>
+                )}
+<Pagination
+  page={page}
+  totalPages={companyListTotalPages}
+  total={companyListTotal}
+  limit={limit}
+  onPageChange={handlePageChange}
+  onLimitChange={handleLimitChange}
+/>
+              </>
+            )}
         </div>
       </main>
     </div>

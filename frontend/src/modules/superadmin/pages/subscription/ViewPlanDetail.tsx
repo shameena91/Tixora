@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "../../../../redux/hooks/hooks";
-import { getSubscriptionPlanThunk } from "../../../../redux/slices/subscriptionPlanSlice";
+import { getSubscriptionPlanThunk } from "../../../../redux/slices/subscriptionPlan/subscriptionPlanThunk";
 
 const ViewPlanDetail = () => {
   const { id } = useParams<{ id: string }>();

@@ -20,15 +20,18 @@ import { IUpdateSubscriptionPlan } from "../../application/abstraction/subscript
 import { createSubscriptionPlanSchema } from "../validator/CreateSubscriptionPlanValidator";
 
 import { SubscriptionPlanName } from "../../domain/entities/SubscriptionPlan";
+import { IGetActiveSubscriptionPlans } from "../../application/abstraction/subscription-plan/IGetActiveSubscriptionPlans";
 
 export class SubscriptionPlanController {
   constructor(
     private readonly _createSubscriptionPlan: ICreateSubscriptionPlan,
-    private readonly _getAllSubscriptionPlans: IGetAllSubscriptions,
+  
     private readonly _viewSubscriptionPlan: IGetSubscriptionPlanById,
     private readonly _updateSubscriptionPlan: IUpdateSubscriptionPlan,
     private readonly _updateSubscriptionPlanStatus: IUpdatePlanStatus,
     private readonly _deleteSubscriptionPlan: IDeletePlan,
+      private readonly _getAllSubscriptionPlans: IGetAllSubscriptions,
+    private readonly _getActiveSubscriptionPlans: IGetActiveSubscriptionPlans,
   ) {}
 
   async createPlan(req: Request, res: Response) {
@@ -53,18 +56,51 @@ export class SubscriptionPlanController {
     );
   }
 
-  async getAllPlans(req: Request, res: Response) {
-    const role = req.user?.role;
+  
+  async getAllSubscriptionPlans(
+    req: Request,
+    res: Response,
+  ) {
+    const page =
+      typeof req.query.page === "string"
+        ? Number(req.query.page)
+        : 1;
 
-    const subscriptionPlans = await this._getAllSubscriptionPlans.execute(role);
+    const limit =
+      typeof req.query.limit === "string"
+        ? Number(req.query.limit)
+        : 3;
+
+    const plans =
+      await this._getAllSubscriptionPlans.execute(
+        page,
+        limit,
+      );
 
     return sendSuccess(
       res,
-      MESSAGES.PLAN_FETCHED_SUCCESSFULLY,
-      subscriptionPlans,
+      MESSAGES.SUBSCRIPTION_PLAN_LIST_FETCHED,
+      plans,
       HttpStatusCode.OK,
     );
   }
+
+  
+  async getActiveSubscriptionPlans(
+    _req: Request,
+    res: Response,
+  ) {
+    const plans =
+      await this._getActiveSubscriptionPlans.execute();
+
+    return sendSuccess(
+      res,
+      MESSAGES.SUBSCRIPTION_PLAN_LIST_FETCHED,
+      plans,
+      HttpStatusCode.OK,
+    );
+  }
+
 
   async getPlanById(req: Request, res: Response) {
     const { id } = req.params;

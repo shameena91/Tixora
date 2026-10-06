@@ -1,53 +1,72 @@
 
 import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 import Navbar from "../../../components/home/Navbar";
 
-import {
-    getAllSubscriptionPlanThunk,
-   
-    type SubScriptionListItems,
-} from "../../../redux/slices/subscriptionPlanSlice";
 
-import { useAppDispatch, useAppSelector } from "../../../redux/hooks/hooks";
+
+import {
+  useAppDispatch,
+  useAppSelector,
+} from "../../../redux/hooks/hooks";
 
 import { AuthContext } from "../../auth/context/AuthContext";
+
 import SubscriptionPlanCard from "../../superadmin/components/subscription/SubscriptionPlanCard";
 
-import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
-
 import RazorpayCheckout from "@razorpay/razorpay-js/checkout";
-import { selectSubscriptionPlanThunk, verifyPaymentThunk } from "../../../redux/slices/companySubscription/companySubscriptionThunk";
+
+import {
+
+  selectSubscriptionPlanThunk,
+  verifyPaymentThunk,
+} from "../../../redux/slices/companySubscription/companySubscriptionThunk";
+import type { SubScriptionListItems } from "../../../redux/slices/subscriptionPlan/subscriptionPlanTypes";
+import { fetchActiveSubscriptionPlansThunk } from "../../../redux/slices/subscriptionPlan/subscriptionPlanThunk";
 
 const CompanySubscriptionPlans = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const auth = useContext(AuthContext);
-  const navigate = useNavigate();
 
   const [selectedPlan, setSelectedPlan] =
     useState<SubScriptionListItems | null>(null);
 
-  const [paymentFailed, setPaymentFailed] = useState(false);
+  const [paymentFailed, setPaymentFailed] =
+    useState(false);
 
   const [isBillingModalOpen, setIsBillingModalOpen] =
     useState(false);
 
-  const { subscriptionPlans, getAllLoading } = useAppSelector(
+  // ------------------------------------
+  // Company Subscription State
+  // ------------------------------------
+
+  const {
+    activeSubscriptionPlans,
+    activeSubscriptionPlansLoading,
+    activeSubscriptionPlansError,
+  } = useAppSelector(
     (state) => state.subscriptionPlan,
   );
 
   // ------------------------------------
-  // Load Plans
+  // Load Active Subscription Plans
   // ------------------------------------
+
   useEffect(() => {
-    dispatch(getAllSubscriptionPlanThunk());
+    dispatch(
+      fetchActiveSubscriptionPlansThunk(),
+    );
   }, [dispatch]);
 
   // ------------------------------------
   // Select Plan
   // ------------------------------------
+
   const handleSelectPlan = async (
     plan: SubScriptionListItems,
   ) => {
@@ -57,6 +76,7 @@ const CompanySubscriptionPlans = () => {
       // ------------------------------------
       // FREE PLAN
       // ------------------------------------
+
       if (plan.name === "FREE") {
         await dispatch(
           selectSubscriptionPlanThunk({
@@ -77,6 +97,7 @@ const CompanySubscriptionPlans = () => {
       // ------------------------------------
       // PAID PLAN
       // ------------------------------------
+
       setPaymentFailed(false);
       setSelectedPlan(plan);
       setIsBillingModalOpen(true);
@@ -92,6 +113,7 @@ const CompanySubscriptionPlans = () => {
   // ------------------------------------
   // Billing Cycle Selection
   // ------------------------------------
+
   const handleBillingCycleSelect = async (
     billingCycle: "MONTHLY" | "YEARLY",
   ) => {
@@ -118,6 +140,7 @@ const CompanySubscriptionPlans = () => {
       // ------------------------------------
       // Razorpay Order
       // ------------------------------------
+
       if (response.data.orderId) {
         await openRazorpayCheckout(
           response.data.orderId,
@@ -144,75 +167,82 @@ const CompanySubscriptionPlans = () => {
   // ------------------------------------
   // Open Razorpay Checkout
   // ------------------------------------
+
   const openRazorpayCheckout = async (
     orderId: string,
     amount: number,
     currency: string,
   ) => {
     try {
-      const razorpay = await RazorpayCheckout({
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      const razorpay =
+        await RazorpayCheckout({
+          key: import.meta.env.VITE_RAZORPAY_KEY_ID,
 
-        amount,
-        currency,
+          amount,
+          currency,
 
-        name: "Tixora",
+          name: "Tixora",
 
-        description: "Tixora Subscription",
+          description: "Tixora Subscription",
 
-        order_id: orderId,
+          order_id: orderId,
 
-        handler: async (response: {
-          razorpay_order_id: string;
-          razorpay_payment_id: string;
-          razorpay_signature: string;
-        }) => {
-          try {
-            // ------------------------------------
-            // Verify Payment
-            // ------------------------------------
-            const result = await dispatch(
-              verifyPaymentThunk({
-                razorpay_order_id:
-                  response.razorpay_order_id,
+          handler: async (response: {
+            razorpay_order_id: string;
+            razorpay_payment_id: string;
+            razorpay_signature: string;
+          }) => {
+            try {
+              // ------------------------------------
+              // Verify Payment
+              // ------------------------------------
 
-                razorpay_payment_id:
-                  response.razorpay_payment_id,
+              const result = await dispatch(
+                verifyPaymentThunk({
+                  razorpay_order_id:
+                    response.razorpay_order_id,
 
-                razorpay_signature:
-                  response.razorpay_signature,
-              }),
-            ).unwrap();
+                  razorpay_payment_id:
+                    response.razorpay_payment_id,
 
-            console.log(
-              "Payment verified:",
-              result,
-            );
+                  razorpay_signature:
+                    response.razorpay_signature,
+                }),
+              ).unwrap();
 
-            // Payment successful
-            setPaymentFailed(false);
-            setSelectedPlan(null);
-            setIsBillingModalOpen(false);
+              console.log(
+                "Payment verified:",
+                result,
+              );
 
-            toast.success("Payment successful");
+              // Payment successful
+              setPaymentFailed(false);
+              setSelectedPlan(null);
+              setIsBillingModalOpen(false);
 
-            navigate("/Company-admin/dashboard");
-          } catch (error) {
-            console.error(
-              "Payment verification error:",
-              error,
-            );
+              toast.success(
+                "Payment successful",
+              );
 
-            setPaymentFailed(true);
+              navigate(
+                "/Company-admin/dashboard",
+              );
+            } catch (error) {
+              console.error(
+                "Payment verification error:",
+                error,
+              );
 
-            toast.error(
-              typeof error === "string"
-                ? error
-                : "Payment verification failed",
-            );
-          }
-        },
-      });
+              setPaymentFailed(true);
+
+              toast.error(
+                typeof error === "string"
+                  ? error
+                  : "Payment verification failed",
+              );
+            }
+          },
+        });
 
       razorpay.open();
     } catch (error) {
@@ -232,6 +262,7 @@ const CompanySubscriptionPlans = () => {
   // ------------------------------------
   // Retry Payment
   // ------------------------------------
+
   const handleRetryPayment = () => {
     if (!selectedPlan) {
       return;
@@ -246,6 +277,7 @@ const CompanySubscriptionPlans = () => {
       {/* ------------------------------------
           Navbar
       ------------------------------------ */}
+
       <div className="w-full border-b border-gray-100 bg-white">
         <Navbar
           showLogin={false}
@@ -257,32 +289,41 @@ const CompanySubscriptionPlans = () => {
       {/* ------------------------------------
           Main Content
       ------------------------------------ */}
+
       <main className="mx-auto w-full max-w-[1500px] px-4 py-10 sm:px-6 lg:px-8">
         {/* ------------------------------------
             Header
         ------------------------------------ */}
+
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
             Choose Your Plan
           </h1>
 
           <p className="mt-3 text-sm leading-6 text-gray-500 sm:text-base">
-            Choose a subscription plan that fits your
-            company needs.
+            Choose a subscription plan that fits
+            your company needs.
           </p>
         </div>
 
         {/* ------------------------------------
             Plans
         ------------------------------------ */}
+
         <section className="mt-12">
-          {getAllLoading ? (
+          {activeSubscriptionPlansLoading ? (
             <div className="flex min-h-[300px] items-center justify-center">
               <p className="text-sm text-gray-500">
                 Loading subscription plans...
               </p>
             </div>
-          ) : subscriptionPlans.length === 0 ? (
+          ) : activeSubscriptionPlansError ? (
+            <div className="flex min-h-[300px] items-center justify-center">
+              <p className="text-sm text-red-500">
+                {activeSubscriptionPlansError}
+              </p>
+            </div>
+          ) : activeSubscriptionPlans.length === 0 ? (
             <div className="flex min-h-[300px] items-center justify-center">
               <p className="text-sm text-gray-500">
                 No subscription plans available.
@@ -290,8 +331,10 @@ const CompanySubscriptionPlans = () => {
             </div>
           ) : (
             <div className="flex flex-wrap items-stretch justify-center gap-6">
-              {subscriptionPlans.map(
-                (plan: SubScriptionListItems) => (
+              {activeSubscriptionPlans.map(
+                (
+                  plan: SubScriptionListItems,
+                ) => (
                   <div
                     key={plan.id}
                     className="flex w-full justify-center sm:w-[340px]"
@@ -313,116 +356,121 @@ const CompanySubscriptionPlans = () => {
         {/* ------------------------------------
             Payment Failed / Retry
         ------------------------------------ */}
-        {paymentFailed && selectedPlan && (
-          <div className="mt-8 flex justify-center">
-            <div className="w-full max-w-md rounded-xl border border-gray-200 bg-white p-5 text-center shadow-sm">
-              <p className="text-sm text-gray-600">
-                Payment was not completed.
-              </p>
 
-              <p className="mt-1 text-sm text-gray-500">
-                You can try the payment again.
-              </p>
+        {paymentFailed &&
+          selectedPlan && (
+            <div className="mt-8 flex justify-center">
+              <div className="w-full max-w-md rounded-xl border border-gray-200 bg-white p-5 text-center shadow-sm">
+                <p className="text-sm text-gray-600">
+                  Payment was not completed.
+                </p>
 
-              <button
-                type="button"
-                onClick={handleRetryPayment}
-                className="mt-4 rounded-md bg-black px-5 py-2 text-sm font-medium text-white transition hover:bg-gray-800"
-              >
-                Retry Payment
-              </button>
+                <p className="mt-1 text-sm text-gray-500">
+                  You can try the payment again.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={
+                    handleRetryPayment
+                  }
+                  className="mt-4 rounded-md bg-black px-5 py-2 text-sm font-medium text-white transition hover:bg-gray-800"
+                >
+                  Retry Payment
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </main>
 
       {/* ------------------------------------
           Billing Cycle Modal
       ------------------------------------ */}
-      {isBillingModalOpen && selectedPlan && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Choose Billing Cycle
-            </h2>
 
-            <p className="mt-2 text-sm text-gray-500">
-              {selectedPlan.name}
-            </p>
+      {isBillingModalOpen &&
+        selectedPlan && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+              <h2 className="text-xl font-semibold text-gray-900">
+                Choose Billing Cycle
+              </h2>
 
-            <div className="mt-6 grid grid-cols-2 gap-4">
+              <p className="mt-2 text-sm text-gray-500">
+                {selectedPlan.name}
+              </p>
+
+              <div className="mt-6 grid grid-cols-2 gap-4">
+                {/* ------------------------------------
+                    Monthly
+                ------------------------------------ */}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleBillingCycleSelect(
+                      "MONTHLY",
+                    );
+                  }}
+                  className="rounded-xl border border-gray-200 p-4 text-left transition hover:border-gray-400"
+                >
+                  <p className="font-semibold text-gray-900">
+                    Monthly
+                  </p>
+
+                  <p className="mt-1 text-sm text-gray-500">
+                    ₹
+                    {
+                      selectedPlan.monthlyPrice
+                    }{" "}
+                    / month
+                  </p>
+                </button>
+
+                {/* ------------------------------------
+                    Yearly
+                ------------------------------------ */}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleBillingCycleSelect(
+                      "YEARLY",
+                    );
+                  }}
+                  className="rounded-xl border border-gray-200 p-4 text-left transition hover:border-gray-400"
+                >
+                  <p className="font-semibold text-gray-900">
+                    Yearly
+                  </p>
+
+                  <p className="mt-1 text-sm text-gray-500">
+                    ₹
+                    {
+                      selectedPlan.yearlyPrice
+                    }{" "}
+                    / year
+                  </p>
+                </button>
+              </div>
+
               {/* ------------------------------------
-                  Monthly
+                  Cancel
               ------------------------------------ */}
+
               <button
                 type="button"
                 onClick={() => {
-                  console.log(
-                    "Selected:",
-                    selectedPlan.id,
-                    "MONTHLY",
-                  );
-
-                  handleBillingCycleSelect(
-                    "MONTHLY",
-                  );
+                  setIsBillingModalOpen(false);
+                  setSelectedPlan(null);
+                  setPaymentFailed(false);
                 }}
-                className="rounded-xl border border-gray-200 p-4 text-left transition hover:border-gray-400"
+                className="mt-6 w-full rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
               >
-                <p className="font-semibold text-gray-900">
-                  Monthly
-                </p>
-
-                <p className="mt-1 text-sm text-gray-500">
-                  ₹{selectedPlan.monthlyPrice} / month
-                </p>
-              </button>
-
-              {/* ------------------------------------
-                  Yearly
-              ------------------------------------ */}
-              <button
-                type="button"
-                onClick={() => {
-                  console.log(
-                    "Selected:",
-                    selectedPlan.id,
-                    "YEARLY",
-                  );
-
-                  handleBillingCycleSelect(
-                    "YEARLY",
-                  );
-                }}
-                className="rounded-xl border border-gray-200 p-4 text-left transition hover:border-gray-400"
-              >
-                <p className="font-semibold text-gray-900">
-                  Yearly
-                </p>
-
-                <p className="mt-1 text-sm text-gray-500">
-                  ₹{selectedPlan.yearlyPrice} / year
-                </p>
+                Cancel
               </button>
             </div>
-
-            {/* ------------------------------------
-                Cancel
-            ------------------------------------ */}
-            <button
-              type="button"
-              onClick={() => {
-                setIsBillingModalOpen(false);
-                setSelectedPlan(null);
-                setPaymentFailed(false);
-              }}
-              className="mt-6 w-full rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
-            >
-              Cancel
-            </button>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 };

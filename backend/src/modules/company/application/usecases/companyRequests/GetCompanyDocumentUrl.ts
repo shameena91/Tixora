@@ -3,7 +3,7 @@ import { AppErrors } from "../../../../../shared/errors/AppErrors";
 import { ErrorCode } from "../../../../../shared/errors/ErrorCode";
 import { ICompanyRequestRepository } from "../../../domain/repositories/ICompanyRequestRepository";
 import { DocumentAccessType } from "../../../domain/types/DocumentAccessType";
-import { IGetCompanyDocumentUrl } from "../../abstraction/IGetCompanyDocumentUrl";
+import { IGetCompanyDocumentUrl } from "../../abstraction/company-requests/IGetCompanyDocumentUrl";
 import { IFileStoragePort } from "../../ports/IFileStoragePort";
 
 export class GetCompanyDocumentUrl implements IGetCompanyDocumentUrl {

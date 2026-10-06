@@ -7,7 +7,7 @@ import {
   CompanyDocument,
   DocumentVerificationStatus,
 } from "../../../domain/value-objects/CompanyDocuments";
-import { IUpdateCompanyDocuments } from "../../abstraction/IUpdateCompanyDocuments";
+import { IUpdateCompanyDocuments } from "../../abstraction/company-requests/IUpdateCompanyDocuments";
 import { IFileStoragePort } from "../../ports/IFileStoragePort";
 // Adding company Documents only adding each documents not submitting at this step
 export class UpdateCompanyDocuments implements IUpdateCompanyDocuments {

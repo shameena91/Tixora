@@ -3,7 +3,7 @@ import { AppErrors } from "../../../../../shared/errors/AppErrors";
 import { ErrorCode } from "../../../../../shared/errors/ErrorCode";
 import { IAccountRepository } from "../../../../auth/domain/repositories/IAccountRepository";
 import { ICompanyRequestRepository } from "../../../domain/repositories/ICompanyRequestRepository";
-import { IGetCompanyRequest } from "../../abstraction/IGetCompanyRequest";
+import { IGetCompanyRequest } from "../../abstraction/company-requests/IGetCompanyRequest";
 import { CompanyRequestDetails } from "../../dto/CompanyrequestDetailsDto";
 import { IFileStoragePort } from "../../ports/IFileStoragePort";
 

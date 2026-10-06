@@ -7,12 +7,6 @@ import {
   useAppSelector,
 } from "../../../../redux/hooks/hooks";
 
-import {
-  approveCompanyRequestThunk,
-  fetchCompanyRequestById,
-  moreInfoCompanyRequestThunk,
-  rejectCompanyRequestThunk,
-} from "../../../../redux/slices/companyrequestSlice";
 
 import RequestMoreInfoModal from "../../components/commonComponenets/RemarksModal";
 
@@ -23,6 +17,7 @@ import {
   verifyCompanyDocument,
 } from "../../services/superadminServices";
 import CompanyRequestTimeline from "../../components/companyRequests/CompanyRequestTimeline";
+import { approveCompanyRequestThunk, fetchCompanyRequestById, moreInfoCompanyRequestThunk, rejectCompanyRequestThunk } from "../../../../redux/slices/companyRrequest/companyRequestThunk";
 
 
 type Tab =

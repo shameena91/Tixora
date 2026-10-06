@@ -3,7 +3,7 @@ import { AppErrors } from "../../../../../shared/errors/AppErrors";
 import { ErrorCode } from "../../../../../shared/errors/ErrorCode";
 import { IAccountRepository } from "../../../../auth/domain/repositories/IAccountRepository";
 import { ICompanyRepository } from "../../../domain/repositories/ICompanyRepository";
-import { IGetCompanyAdmins } from "../../abstraction/IGetCompanyAdmins";
+import { IGetCompanyAdmins } from "../../abstraction/company/IGetCompanyAdmins";
 import { GetAdminListDto } from "../../dto/GetAdminListDto";
 
 

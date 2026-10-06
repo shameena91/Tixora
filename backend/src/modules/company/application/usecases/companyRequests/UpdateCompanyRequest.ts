@@ -4,7 +4,7 @@ import { ErrorCode } from "../../../../../shared/errors/ErrorCode";
 import { CompanyRequestStatus } from "../../../domain/enums/CompanyRequestStatus";
 import { ICompanyRequestRepository } from "../../../domain/repositories/ICompanyRequestRepository";
 import { UpdateCompanyRequestData } from "../../../domain/types/UpdateCompanyRequesstData";
-import { IUpdateCompanyRequest } from "../../abstraction/IUpdateCompanyRequest";
+import { IUpdateCompanyRequest } from "../../abstraction/company-requests/IUpdateCompanyRequest";
 
 export class UpdateCompanyRequest implements IUpdateCompanyRequest {
   constructor(

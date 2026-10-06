@@ -1,12 +1,11 @@
-import { Company } from "../../../domain/entities/Company";
-import { CompanyCreateData } from "../../mappers/CompanyMapper";
-import { ICompanyRepository } from "../../../domain/repositories/ICompanyRepository";
-import { ICreateCompany } from "../../abstraction/ICreateCompany";
 import { CompanyStatus } from "../../../domain/entities/Company";
+import { ICompanyRepository } from "../../../domain/repositories/ICompanyRepository";
+import { ICreateCompany } from "../../abstraction/company/ICreateCompany";
 import {
   CreateCompanyRequestDto,
   CreateCompanyResponseDto,
 } from "../../dto/CreateCompanyDto";
+import { CompanyCreateData } from "../../mappers/CompanyMapper";
 
 export class CreateCompany implements ICreateCompany {
   constructor(private readonly _companyRepository: ICompanyRepository) {}

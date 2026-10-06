@@ -27,26 +27,26 @@ import {
   DocumentVerificationStatus,
 } from "../../domain/value-objects/CompanyDocuments";
 
-import { IApproveCompanyRequest } from "../../application/abstraction/IApproveCompanyrequest";
-import { ICompleteCompanyRegistration } from "../../application/abstraction/ICompleteCompanyRegistration";
-import { ICreateCompanyRequest } from "../../application/abstraction/ICreateCompanyRequest";
-import { IGetAllCompanyRequest } from "../../application/abstraction/IGetAllCompanyRequest";
-import { IGetCompanyDocumentUrl } from "../../application/abstraction/IGetCompanyDocumentUrl";
-import { IGetCompanyRequest } from "../../application/abstraction/IGetCompanyRequest";
-import { IGetMyCompanyRequestStatus } from "../../application/abstraction/IGetMyCompanyRequestStatus";
-import { IMoreInfoCompanyRequest } from "../../application/abstraction/IMoreInfoCompanyRequest";
-import { IRejectCompanyRequest } from "../../application/abstraction/IRejectCompanyRequest";
-import { IResubmitCompanyRequest } from "../../application/abstraction/IResubmitCompanyRequest";
-import { ISubmitCompanyDocuments } from "../../application/abstraction/ISubmitCompanyDocuments";
-import { IUpdateCompanyDocuments } from "../../application/abstraction/IUpdateCompanyDocuments";
-import { IUpdateCompanyLocation } from "../../application/abstraction/IUpdateCompanyLocation";
-import { IUpdateCompanyLogo } from "../../application/abstraction/IUpdateCompanyLogo";
-import { IUpdateCompanyRequest } from "../../application/abstraction/IUpdateCompanyRequest";
+import { IApproveCompanyRequest } from "../../application/abstraction/company-requests/IApproveCompanyrequest";
+import { ICompleteCompanyRegistration } from "../../application/abstraction/company-requests/ICompleteCompanyRegistration";
+import { ICreateCompanyRequest } from "../../application/abstraction/company-requests/ICreateCompanyRequest";
+import { IGetAllCompanyRequest } from "../../application/abstraction/company-requests/IGetAllCompanyRequest";
+import { IGetCompanyRequest } from "../../application/abstraction/company-requests/IGetCompanyRequest";
+import { IGetMyCompanyRequestStatus } from "../../application/abstraction/company-requests/IGetMyCompanyRequestStatus";
+import { IMoreInfoCompanyRequest } from "../../application/abstraction/company-requests/IMoreInfoCompanyRequest";
+import { IRejectCompanyRequest } from "../../application/abstraction/company-requests/IRejectCompanyRequest";
+import { IResubmitCompanyRequest } from "../../application/abstraction/company-requests/IResubmitCompanyRequest";
+import { ISubmitCompanyDocuments } from "../../application/abstraction/company-requests/ISubmitCompanyDocuments";
+import { IUpdateCompanyDocuments } from "../../application/abstraction/company-requests/IUpdateCompanyDocuments";
+import { IUpdateCompanyLocation } from "../../application/abstraction/company-requests/IUpdateCompanyLocation";
+import { IUpdateCompanyLogo } from "../../application/abstraction/company-requests/IUpdateCompanyLogo";
+import { IUpdateCompanyRequest } from "../../application/abstraction/company-requests/IUpdateCompanyRequest";
 
 import {
   sendError,
   sendSuccess,
 } from "../../../../presentation/response/ResponseHelper";
+import { IGetCompanyDocumentUrl } from "../../application/abstraction/company-requests/IGetCompanyDocumentUrl";
 
 export class CompanyRequestController {
   constructor(

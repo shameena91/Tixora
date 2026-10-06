@@ -5,7 +5,7 @@ import { IAccountRepository } from "../../../../auth/domain/repositories/IAccoun
 import { ISubscriptionPlanRepository } from "../../../../subScriptionPlans/domain/repositories/ISubscriptionPlanRepository";
 import { ISubscriptionRepository } from "../../../../subScriptionPlans/domain/repositories/ISubscriptionRepository";
 import { ICompanyRepository } from "../../../domain/repositories/ICompanyRepository";
-import { IGetCompanyDetails } from "../../abstraction/IgetCompanyDetails";
+import { IGetCompanyDetails } from "../../abstraction/company/IgetCompanyDetails";
 import { CompanyDetailsResponse } from "../../dto/GetCompanyDto";
 import { IFileStoragePort } from "../../ports/IFileStoragePort";
 

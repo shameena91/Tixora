@@ -46,7 +46,7 @@ export class PaymentController {
     await this._getPaymentHistory.execute(
       companyId,
     );
-
+console.log("payments",payments)
   return sendSuccess(
     res,
     MESSAGES.PAYMENT_HISTORY_FETCHED_SUCCESSFULLY,

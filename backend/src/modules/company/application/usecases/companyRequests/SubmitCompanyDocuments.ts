@@ -5,7 +5,7 @@ import { RegistrationStep } from "../../../../auth/domain/entities/Account";
 import { IAccountRepository } from "../../../../auth/domain/repositories/IAccountRepository";
 import { ICompanyRequestRepository } from "../../../domain/repositories/ICompanyRequestRepository";
 import { CompanyDocumentType } from "../../../domain/value-objects/CompanyDocuments";
-import { ISubmitCompanyDocuments } from "../../abstraction/ISubmitCompanyDocuments";
+import { ISubmitCompanyDocuments } from "../../abstraction/company-requests/ISubmitCompanyDocuments";
 // Aftre uploading each document submit the documents
 export class SubmitCompanyDocuments implements ISubmitCompanyDocuments {
   constructor(

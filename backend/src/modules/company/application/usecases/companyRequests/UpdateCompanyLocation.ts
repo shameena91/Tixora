@@ -5,7 +5,7 @@ import { RegistrationStep } from "../../../../auth/domain/enums/RegistrationStep
 import { IAccountRepository } from "../../../../auth/domain/repositories/IAccountRepository";
 import { ICompanyRequestRepository } from "../../../domain/repositories/ICompanyRequestRepository";
 import { CompanyLocation } from "../../../domain/value-objects/CompanyLocation";
-import { IUpdateCompanyLocation } from "../../abstraction/IUpdateCompanyLocation";
+import { IUpdateCompanyLocation } from "../../abstraction/company-requests/IUpdateCompanyLocation";
 
 export class UpdateCompanyLocation implements IUpdateCompanyLocation {
   constructor(

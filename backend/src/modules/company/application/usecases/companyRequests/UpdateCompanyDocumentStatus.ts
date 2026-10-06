@@ -12,7 +12,7 @@ import {
   DocumentVerificationStatus,
 } from "../../../domain/value-objects/CompanyDocuments";
 
-import { IUpdateCompanyDocumentStatusUseCase } from "../../abstraction/IUpdateCompanyDocumentStatusUseCase";
+import { IUpdateCompanyDocumentStatusUseCase } from "../../abstraction/company-requests/IUpdateCompanyDocumentStatusUseCase";
 
 export class UpdateCompanyDocumentStatusUseCase implements IUpdateCompanyDocumentStatusUseCase {
   constructor(

@@ -1,20 +1,10 @@
 
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 
-import {
-  createSubscriptionPlanThunk,
-  fetchPlanNamesThunk,
-  getAllSubscriptionPlanThunk,
-  getSubscriptionPlanThunk,
-  planDeleteThunk,
-  planStatusUpdateThunk,
-  updateSubscriptionPlanThunk,
-  type SubScriptionListItems,
-  type SubscriptionPlanDetails,
-  type UpdatePlanStatusPayload,
-} from "../../../../redux/slices/subscriptionPlanSlice";
+
 
 import {
   useAppDispatch,
@@ -30,17 +20,33 @@ import SubscriptionPlanDetailsModal from "../../components/subscription/Subscrip
 import DataTable, {
   type DataTableColumn,
 } from "../../../../components/common/Datatable";
-import StatusBadge from "../../components/commonComponenets/StatusBadge";
 
+import Pagination from "../../../../components/common/Pagination";
+
+import StatusBadge from "../../components/commonComponenets/StatusBadge";
+import type { SubScriptionListItems, SubscriptionPlanDetails, UpdatePlanStatusPayload } from "../../../../redux/slices/subscriptionPlan/subscriptionPlanTypes";
+import { createSubscriptionPlanThunk, fetchPlanNamesThunk, getAllSubscriptionPlanThunk, getSubscriptionPlanThunk, planDeleteThunk, planStatusUpdateThunk, updateSubscriptionPlanThunk } from "../../../../redux/slices/subscriptionPlan/subscriptionPlanThunk";
 
 const SubscriptionPlan = () => {
   const dispatch = useAppDispatch();
 
-  // ------------------------------------
-  // Details Modal
-  // ------------------------------------
+  const [searchParams, setSearchParams] =
+    useSearchParams();
+
+  
+
+  const page =
+    Number(searchParams.get("page")) || 1;
+
+  const limit =
+    Number(searchParams.get("limit")) || 3;
+
+
+
   const [selectedPlan, setSelectedPlan] =
-    useState<SubscriptionPlanDetails | null>(null);
+    useState<SubscriptionPlanDetails | null>(
+      null,
+    );
 
   const [isDetailsOpen, setIsDetailsOpen] =
     useState(false);
@@ -48,41 +54,123 @@ const SubscriptionPlan = () => {
   // ------------------------------------
   // Edit Modal
   // ------------------------------------
+
   const [editingPlan, setEditingPlan] =
-    useState<SubscriptionPlanDetails | null>(null);
+    useState<SubscriptionPlanDetails | null>(
+      null,
+    );
 
   const [isEditOpen, setIsEditOpen] =
     useState(false);
 
-  // ------------------------------------
-  // Create Modal
-  // ------------------------------------
+
+
   const [isAddPlanOpen, setIsAddPlanOpen] =
     useState(false);
 
   // ------------------------------------
   // Redux State
   // ------------------------------------
+
   const {
     planNames,
     subscriptionPlans,
     createLoading,
     getAllLoading,
+    subscriptionPlanTotal,
+    subscriptionPlanTotalPages,
   } = useAppSelector(
     (state) => state.subscriptionPlan,
   );
 
   // ------------------------------------
-  // Initial Load
+  // Set default pagination params
   // ------------------------------------
+
   useEffect(() => {
-    dispatch(fetchPlanNamesThunk());
-    dispatch(getAllSubscriptionPlanThunk());
-  }, [dispatch]);
+    if (
+      !searchParams.get("page") ||
+      !searchParams.get("limit")
+    ) {
+      const params = new URLSearchParams(
+        searchParams,
+      );
+
+      if (!params.get("page")) {
+        params.set("page", "1");
+      }
+
+      if (!params.get("limit")) {
+        params.set("limit", "3");
+      }
+
+      setSearchParams(params, {
+        replace: true,
+      });
+    }
+  }, [searchParams, setSearchParams]);
+
+  // ------------------------------------
+  // Initial Load / Pagination
+  // ------------------------------------
+
+useEffect(() => {
+  dispatch(fetchPlanNamesThunk());
+}, [dispatch]);
+
+useEffect(() => {
+  dispatch(
+    getAllSubscriptionPlanThunk({
+      page,
+      limit,
+    }),
+  );
+}, [dispatch, page, limit]);
+
+  // ------------------------------------
+  // Page Change
+  // ------------------------------------
+
+  const handlePageChange = (
+    newPage: number,
+  ) => {
+    const params = new URLSearchParams(
+      searchParams,
+    );
+
+    params.set(
+      "page",
+      String(newPage),
+    );
+
+    setSearchParams(params);
+  };
+
+  // ------------------------------------
+  // Limit Change
+  // ------------------------------------
+
+  const handleLimitChange = (
+    newLimit: number,
+  ) => {
+    const params = new URLSearchParams(
+      searchParams,
+    );
+
+    params.set("page", "1");
+
+    params.set(
+      "limit",
+      String(newLimit),
+    );
+
+    setSearchParams(params);
+  };
 
   // ------------------------------------
   // Create Plan
   // ------------------------------------
+
   const handleCreatePlan = async (
     data: CreateSubscriptionPlanFormData,
   ) => {
@@ -98,7 +186,10 @@ const SubscriptionPlan = () => {
       setIsAddPlanOpen(false);
 
       await dispatch(
-        getAllSubscriptionPlanThunk(),
+        getAllSubscriptionPlanThunk({
+          page,
+          limit,
+        }),
       ).unwrap();
     } catch (error) {
       toast.error(
@@ -117,6 +208,7 @@ const SubscriptionPlan = () => {
   // ------------------------------------
   // View Plan
   // ------------------------------------
+
   const handleViewPlan = async (
     plan: SubScriptionListItems,
   ) => {
@@ -144,8 +236,9 @@ const SubscriptionPlan = () => {
   };
 
   // ------------------------------------
-  // Open Edit Modal
+  // Open Edit Plan
   // ------------------------------------
+
   const handleEditPlan = (
     plan: SubscriptionPlanDetails,
   ) => {
@@ -159,12 +252,13 @@ const SubscriptionPlan = () => {
   // ------------------------------------
   // Update Plan
   // ------------------------------------
+
   const handleUpdatePlan = async (
     id: string,
     data: CreateSubscriptionPlanFormData,
   ) => {
     try {
-       await dispatch(
+      await dispatch(
         updateSubscriptionPlanThunk({
           id,
           data,
@@ -176,7 +270,10 @@ const SubscriptionPlan = () => {
       setSelectedPlan(null);
 
       await dispatch(
-        getAllSubscriptionPlanThunk(),
+        getAllSubscriptionPlanThunk({
+          page,
+          limit,
+        }),
       ).unwrap();
 
       toast.success(
@@ -199,6 +296,7 @@ const SubscriptionPlan = () => {
   // ------------------------------------
   // Activate / Deactivate
   // ------------------------------------
+
   const handleToggleStatus = async (
     plan: SubscriptionPlanDetails,
   ) => {
@@ -227,7 +325,10 @@ const SubscriptionPlan = () => {
       setSelectedPlan(updatedPlan);
 
       await dispatch(
-        getAllSubscriptionPlanThunk(),
+        getAllSubscriptionPlanThunk({
+          page,
+          limit,
+        }),
       ).unwrap();
 
       toast.success(
@@ -247,6 +348,7 @@ const SubscriptionPlan = () => {
   // ------------------------------------
   // Delete Plan
   // ------------------------------------
+
   const handleDeletePlan = async (
     plan: SubscriptionPlanDetails,
   ) => {
@@ -263,7 +365,10 @@ const SubscriptionPlan = () => {
       setSelectedPlan(null);
 
       await dispatch(
-        getAllSubscriptionPlanThunk(),
+        getAllSubscriptionPlanThunk({
+          page,
+          limit,
+        }),
       ).unwrap();
     } catch (error) {
       console.error(
@@ -282,6 +387,7 @@ const SubscriptionPlan = () => {
   // ------------------------------------
   // Subscription Plan Table Columns
   // ------------------------------------
+
   const subscriptionPlanColumns: DataTableColumn<SubScriptionListItems>[] =
     [
       {
@@ -335,11 +441,14 @@ const SubscriptionPlan = () => {
       {/* ------------------------------------
           Header
       ------------------------------------ */}
+
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <div className="mb-1 flex items-center space-x-2 text-xs font-medium text-gray-500">
             <span>Super Admin</span>
+
             <span>/</span>
+
             <span className="font-semibold text-indigo-600">
               Plans
             </span>
@@ -364,6 +473,7 @@ const SubscriptionPlan = () => {
           className="inline-flex items-center justify-center gap-2 self-start rounded-lg bg-[#7C3AED] px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-[#6D28D9] disabled:cursor-not-allowed disabled:opacity-50 sm:self-auto"
         >
           <Plus className="h-4 w-4" />
+
           Add Plan
         </button>
       </div>
@@ -371,6 +481,7 @@ const SubscriptionPlan = () => {
       {/* ------------------------------------
           Subscription Plans Table
       ------------------------------------ */}
+
       <div className="mt-8">
         {getAllLoading ? (
           <div className="py-10 text-center text-sm text-gray-500">
@@ -381,16 +492,32 @@ const SubscriptionPlan = () => {
             No subscription plans found.
           </div>
         ) : (
-          <DataTable
-            data={subscriptionPlans}
-            columns={subscriptionPlanColumns}
-          />
+          <>
+            <DataTable
+              data={subscriptionPlans}
+              columns={subscriptionPlanColumns}
+            />
+
+            <Pagination
+              page={page}
+              totalPages={
+                subscriptionPlanTotalPages
+              }
+              total={subscriptionPlanTotal}
+              limit={limit}
+              onPageChange={handlePageChange}
+              onLimitChange={
+                handleLimitChange
+              }
+            />
+          </>
         )}
       </div>
 
       {/* ------------------------------------
           Details Modal
       ------------------------------------ */}
+
       <SubscriptionPlanDetailsModal
         plan={selectedPlan}
         open={isDetailsOpen}
@@ -408,6 +535,7 @@ const SubscriptionPlan = () => {
       {/* ------------------------------------
           Edit Subscription Plan Modal
       ------------------------------------ */}
+
       {isEditOpen && editingPlan && (
         <CreateSubscriptionPlanModal
           key={editingPlan.id}
@@ -430,6 +558,7 @@ const SubscriptionPlan = () => {
       {/* ------------------------------------
           Create Subscription Plan Modal
       ------------------------------------ */}
+
       {isAddPlanOpen && (
         <CreateSubscriptionPlanModal
           isOpen={isAddPlanOpen}

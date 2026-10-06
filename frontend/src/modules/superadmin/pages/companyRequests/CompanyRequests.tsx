@@ -6,7 +6,7 @@ import DataTable, {
 
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../../redux/hooks/hooks";
-import { fetchCompanyRequests } from "../../../../redux/slices/companyrequestSlice";
+import { fetchCompanyRequests } from "../../../../redux/slices/companyRrequest/companyRequestThunk";
 
 interface CompanyRequest {
   id: string;

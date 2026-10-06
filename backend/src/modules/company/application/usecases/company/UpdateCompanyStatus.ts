@@ -3,7 +3,7 @@ import { AppErrors } from "../../../../../shared/errors/AppErrors";
 import { ErrorCode } from "../../../../../shared/errors/ErrorCode";
 import { CompanyStatus } from "../../../domain/entities/Company";
 import { ICompanyRepository } from "../../../domain/repositories/ICompanyRepository";
-import { IUpdateCompanyStatus } from "../../abstraction/IUpdateCompanyStatus";
+import { IUpdateCompanyStatus } from "../../abstraction/company/IUpdateCompanyStatus";
 import { UpdateCompanyStatusResponseDto } from "../../dto/UpdateCompanyStatusResponseDto";
 
 export class UpdateCompanyStatus implements IUpdateCompanyStatus {

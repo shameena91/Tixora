@@ -1,5 +1,5 @@
 
-import { MyCompanyRequestStatus } from "../../domain/types/MyCompanyRequest";
+import { MyCompanyRequestStatus } from "../../../domain/types/MyCompanyRequest";
 
 
 export interface IGetMyCompanyRequestStatus

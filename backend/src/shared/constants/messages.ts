@@ -43,19 +43,22 @@ COMPANY_LIST_FETCHED:"companylist fetched",
 
   DOCUMENT_TYPE_REQUIRED: "Document type is required",
   PLAN_CREATED:"SubScription plan created",
-  SUBSCRIPTION_PLAN_NOT_FOUND:"SubScription plan not found",
+ 
   PLAN_FETCHED_SUCCESSFULLY:"SubScription plan fetched successfully",
   PLAN_NOT_FOUND:"plan not found",
-   SUBSCRIPTION_PLAN_UPDATED:"SubScription plan status updated successfully",
    INVALID_PLAN:"Invalid Plan",
   ALL_REDY_SUBSCRIBED: "Company already has a subscription",
   COMPANY_NOT_FOUND:"Company not found",
-  SUBSCRIPTION_PLAN_NOT_ACTIVE:"Subscription plan Not Active",
   INVALID_PAYMENT_SIGNATURE:"Invalid Payment Signature",
   PAYMENT_NOT_FOUND:"Payment not found",
   COMPANY_ADMIN_NOT_FOUND:"Company admin not found",
   COMPANY_ADMIN_FETCHED:"Company Admin fetched",
   PAYMENT_HISTORY_FETCHED_SUCCESSFULLY:"Payment history fetched successfully",
-  SUBSCRIPTION_PLAN_ALREADY_EXISTS:"SubscriptionPlan Allready Exist"
+  SUBSCRIPTION_PLAN_ALREADY_EXISTS:"SubscriptionPlan Allready Exist",
+   SUBSCRIPTION_PLAN_NOT_FOUND:"SubScription plan not found",
+      SUBSCRIPTION_PLAN_UPDATED:"SubScription plan status updated successfully",
+
+  SUBSCRIPTION_PLAN_NOT_ACTIVE:"Subscription plan Not Active",
+  SUBSCRIPTION_PLAN_LIST_FETCHED:"SubscriptionPlan List fetched successfully"
 
 };

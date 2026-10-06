@@ -13,7 +13,7 @@ import {
 import { CreateSubscription } from "../application/usecases/company-subscription/CreateSubscription";
 import { CreateSubscriptionPlan } from "../application/usecases/subscription-plan/CreateSubscriptionPlan";
 import { DeletePlan } from "../application/usecases/subscription-plan/DeletePlan";
-import { GetAllSubscriptions } from "../application/usecases/subscription-plan/GetAllSubscriptionPlan";
+import { GetAllSubscriptionPlan } from "../application/usecases/subscription-plan/GetAllSubscriptionPlan";
 import { GetSubscriptionPlanById } from "../application/usecases/subscription-plan/GetSubscriptionPlanById";
 import { UpdateSubscriptionPlan } from "../application/usecases/subscription-plan/UpdateSubscriptionPlan";
 import { SubscriptionModel } from "../infrastructure/database/models/SubscriptionModel";
@@ -31,6 +31,7 @@ import {
   createPayment,
   paymentRepository,
 } from "../../payments/container/Container";
+import { GetActiveSubscriptionPlans } from "../application/usecases/subscription-plan/GetActiveSubscriptionPlans";
 
 const router = Router();
 
@@ -49,9 +50,15 @@ const createSubscriptionPlanUseCase = new CreateSubscriptionPlan(
 const getSubscriptionPlanById = new GetSubscriptionPlanById(
   subscriptionPlanRepository,
 );
-const getAllSubscriptionPlans = new GetAllSubscriptions(
-  subscriptionPlanRepository,
-);
+const getAllSubscriptionPlans =
+  new GetAllSubscriptionPlan(
+    subscriptionPlanRepository,
+  );
+
+const getActiveSubscriptionPlans =
+  new GetActiveSubscriptionPlans(
+    subscriptionPlanRepository,
+  );
 const updateSubscriptionPlan = new UpdateSubscriptionPlan(
   subscriptionPlanRepository,
 );
@@ -97,11 +104,13 @@ const getCompanySubscription = new GetCompanySubscription(
 
 export const createSubscriptionPlanController = new SubscriptionPlanController(
   createSubscriptionPlanUseCase,
-  getAllSubscriptionPlans,
+ 
   getSubscriptionPlanById,
   updateSubscriptionPlan,
   updateplanStatus,
   deletePlan,
+      getAllSubscriptionPlans,
+    getActiveSubscriptionPlans,
 );
 
 export const createSubScriptionController = new SubscriptionController(

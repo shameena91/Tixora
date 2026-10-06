@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
-import { IGetCompanyDetails } from "../../application/abstraction/IgetCompanyDetails";
-import { IGetCompanies } from "../../application/abstraction/IGetCompanies";
+import { IGetCompanies } from "../../application/abstraction/company/IGetCompanies";
+import { IGetCompanyDetails } from "../../application/abstraction/company/IgetCompanyDetails";
 
 import { HttpStatusCode } from "../../../../shared/constants/httpStattusCode";
 import { MESSAGES } from "../../../../shared/constants/messages";
@@ -10,9 +10,10 @@ import {
   sendError,
   sendSuccess,
 } from "../../../../presentation/response/ResponseHelper";
-import { IGetCompanyAdmins } from "../../application/abstraction/IGetCompanyAdmins";
-import { IUpdateCompanyStatus } from "../../application/abstraction/IUpdateCompanyStatus";
+import { IGetCompanyAdmins } from "../../application/abstraction/company/IGetCompanyAdmins";
+import { IUpdateCompanyStatus } from "../../application/abstraction/company/IUpdateCompanyStatus";
 import { CompanyStatus } from "../../domain/entities/Company";
+import { PAGINATION } from "../../../../shared/constants/paginationConstatnt";
 
 export class CompanyController {
   constructor(
@@ -22,22 +23,39 @@ export class CompanyController {
     private readonly _updateCompanyStatus: IUpdateCompanyStatus,
   ) {}
 
-  async getAllCompanies(req: Request, res: Response) {
-    const search =
-      typeof req.query.search === "string"
-        ? req.query.search.trim()
-        : undefined;
+ async getAllCompanies(
+  req: Request,
+  res: Response,
+) {
+  const search =
+    typeof req.query.search === "string"
+      ? req.query.search.trim()
+      : undefined;
 
-    const companies = await this._getCompanies.execute(search);
+ const page =
+  typeof req.query.page === "string"
+    ? Number(req.query.page)
+    : PAGINATION.DEFAULT_PAGE;
 
-    return sendSuccess(
-      res,
-      MESSAGES.COMPANY_LIST_FETCHED,
-      companies,
-      HttpStatusCode.OK,
+const limit =
+  typeof req.query.limit === "string"
+    ? Number(req.query.limit)
+    : PAGINATION.DEFAULT_LIMIT;
+
+  const companies =
+    await this._getCompanies.execute(
+      search,
+      page,
+      limit,
     );
-  }
 
+  return sendSuccess(
+    res,
+    MESSAGES.COMPANY_LIST_FETCHED,
+    companies,
+    HttpStatusCode.OK,
+  );
+}
   async GetCompany(req: Request, res: Response) {
     const { id } = req.params;
 

@@ -1,13 +1,11 @@
-import type {
- 
-  UpdatePlanStatusPayload,
-} from "../../../redux/slices/subscriptionPlanSlice";
+
 import axiosInstance from "../../auth/api/axiosInstance";
 // import type { CreateSubscriptionPlanFormData } from "../components/CreateSubscriptionPlanModal";
 import {  SUBSCRIPTION_PLAN_ROUTES } from "../../../shared/constants/apiRoutes";
 import type { VerifyPaymentData } from "../types/PaymentType";
 import type { CreateSubscriptionPlanFormData } from "../components/subscription/CreateSubscriptionPlanModal";
 import type { SelectSubscriptionPlanData } from "../../../redux/slices/companySubscription/companySubscriptionTypes";
+import type { UpdatePlanStatusPayload } from "../../../redux/slices/subscriptionPlan/subscriptionPlanTypes";
 
 
 export const getPlanNames = async () => {
@@ -29,9 +27,18 @@ export const createSubscriptionPlan = async (
   return response.data;
 };
 
-export const fetchAllSubscriptionPlans = async () => {
+export const fetchAllSubscriptionPlans = async (
+  page = 1,
+  limit = 3,
+) => {
   const response = await axiosInstance.get(
-    SUBSCRIPTION_PLAN_ROUTES.BASE
+    SUBSCRIPTION_PLAN_ROUTES.BASE,
+    {
+      params: {
+        page,
+        limit,
+      },
+    },
   );
 
   return response.data;

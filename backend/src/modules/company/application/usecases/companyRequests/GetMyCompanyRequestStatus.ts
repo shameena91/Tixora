@@ -3,7 +3,7 @@ import { AppErrors } from "../../../../../shared/errors/AppErrors";
 import { ErrorCode } from "../../../../../shared/errors/ErrorCode";
 import { ICompanyRequestRepository } from "../../../domain/repositories/ICompanyRequestRepository";
 import { MyCompanyRequestStatus } from "../../../domain/types/MyCompanyRequest";
-import { IGetMyCompanyRequestStatus } from "../../abstraction/IGetMyCompanyRequestStatus";
+import { IGetMyCompanyRequestStatus } from "../../abstraction/company-requests/IGetMyCompanyRequestStatus";
 
 export class GetMyCompanyRequestStatus implements IGetMyCompanyRequestStatus {
   constructor(private readonly _companyRepository: ICompanyRequestRepository) {}

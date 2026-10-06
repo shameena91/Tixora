@@ -7,7 +7,7 @@ import { RegistrationStep } from "../../../../auth/domain/enums/RegistrationStep
 import { IAccountRepository } from "../../../../auth/domain/repositories/IAccountRepository";
 import { ICreateTimeline } from "../../../../timeline/application/abstraction/ICreateTimeline";
 import { TimelineEntityType } from "../../../../timeline/domain/entities/Timeline";
-import { ICompleteCompanyRegistration } from "../../abstraction/ICompleteCompanyRegistration";
+import { ICompleteCompanyRegistration } from "../../abstraction/company-requests/ICompleteCompanyRegistration";
 
 
 export class CompleteCompanyRegistration implements ICompleteCompanyRegistration {

@@ -1,4 +1,4 @@
-import type { CompanyDetails } from "../../../../redux/slices/companySlice";
+import type { CompanyDetails } from "../../../../redux/slices/company/companyTypes";
 import InfoCard from "../commonComponenets/InfoCard";
 import InfoRow from "../commonComponenets/InfoRow";
 

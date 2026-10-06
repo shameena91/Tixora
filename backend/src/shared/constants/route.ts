@@ -58,7 +58,8 @@ export const SUBSCRIPTION_ROUTE_CONSTANTS={
   DELET_PLAN:"/:id",
   SELECT_SUBSCRIPTION:"/select-plan",
  MY_SUBSCRIPTION_STATUS: "/my-subscription-status",
- VERIFY_PAYMENT:"/verify-payment"
+ VERIFY_PAYMENT:"/verify-payment",
+ GET_ACTIVE_PLANS: "/active",
 
 
 }

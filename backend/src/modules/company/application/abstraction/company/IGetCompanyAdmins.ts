@@ -1,4 +1,4 @@
-import { GetAdminListDto } from "../dto/GetAdminListDto";
+import { GetAdminListDto } from "../../dto/GetAdminListDto";
 
 
 

@@ -8,8 +8,8 @@ import { TimelineEntityType } from "../../../../timeline/domain/entities/Timelin
 import { CompanyRequest } from "../../../domain/entities/CompanyRequest";
 import { CompanyRequestStatus } from "../../../domain/enums/CompanyRequestStatus";
 import { ICompanyRequestRepository } from "../../../domain/repositories/ICompanyRequestRepository";
-import { IApproveCompanyRequest } from "../../abstraction/IApproveCompanyrequest";
-import { ICreateCompany } from "../../abstraction/ICreateCompany";
+import { IApproveCompanyRequest } from "../../abstraction/company-requests/IApproveCompanyrequest";
+import { ICreateCompany } from "../../abstraction/company/ICreateCompany";
 
 export class ApproveCompanyRequest implements IApproveCompanyRequest {
   constructor(

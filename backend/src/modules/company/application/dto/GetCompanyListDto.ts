@@ -10,3 +10,11 @@ export interface GetCompanyListResponseDto{
   createdAt:Date
     
 }
+
+export interface GetCompaniesPaginatedResponseDto {
+  data: GetCompanyListResponseDto[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}

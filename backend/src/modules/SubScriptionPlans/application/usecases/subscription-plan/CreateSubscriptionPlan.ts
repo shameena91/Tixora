@@ -19,8 +19,9 @@ export class CreateSubscriptionPlan implements ICreateSubscriptionPlan {
 
   async execute(data: CreateSubscriptionPlanDTO): Promise<SubscriptionPlan> {
     console.log("existingPlan", data.name);
-    const existingPlan = await this._subscriptionPlanRepository.findByName(
+    const existingPlan = await this._subscriptionPlanRepository.findByNameAndStatus(
       data.name,
+       SubscriptionPlanStatus.ACTIVE,
     );
     console.log("existingPlan", existingPlan);
     if (existingPlan) {

@@ -1,5 +1,5 @@
-import { CompanyRequest } from "../../domain/entities/CompanyRequest";
-import { CompanyDocumentFile } from "../../domain/types/CompanyDocumentFile";
+import { CompanyRequest } from "../../../domain/entities/CompanyRequest";
+import { CompanyDocumentFile } from "../../../domain/types/CompanyDocumentFile";
 
 export interface IUpdateCompanyDocuments{
      execute(

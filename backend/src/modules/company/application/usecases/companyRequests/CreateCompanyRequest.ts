@@ -1,4 +1,8 @@
 import { randomUUID } from "crypto";
+import { HttpStatusCode } from "../../../../../shared/constants/httpStattusCode";
+import { MESSAGES } from "../../../../../shared/constants/messages";
+import { AppErrors } from "../../../../../shared/errors/AppErrors";
+import { generateRequestId } from "../../../../../shared/utills/generateRequestId";
 import { RegistrationStep } from "../../../../auth/domain/entities/Account";
 import { IAccountRepository } from "../../../../auth/domain/repositories/IAccountRepository";
 import {
@@ -7,11 +11,7 @@ import {
   RegistrationType,
 } from "../../../domain/entities/CompanyRequest";
 import { ICompanyRequestRepository } from "../../../domain/repositories/ICompanyRequestRepository";
-import { ICreateCompanyRequest } from "../../abstraction/ICreateCompanyRequest";
-import { generateRequestId } from "../../../../../shared/utills/generateRequestId";
-import { AppErrors } from "../../../../../shared/errors/AppErrors";
-import { MESSAGES } from "../../../../../shared/constants/messages";
-import { HttpStatusCode } from "../../../../../shared/constants/httpStattusCode";
+import { ICreateCompanyRequest } from "../../abstraction/company-requests/ICreateCompanyRequest";
 import { CreateCompanyRequestDto } from "../../dto/CreateCompanyRequestDto";
 
 export class CreateCompanyRequest implements ICreateCompanyRequest {

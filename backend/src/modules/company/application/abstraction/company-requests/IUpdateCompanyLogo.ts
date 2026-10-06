@@ -1,4 +1,4 @@
-import { CompanyLogoFile } from "../../domain/types/CompanyDocumentFile";
+import { CompanyLogoFile } from "../../../domain/types/CompanyDocumentFile";
 
 export interface IUpdateCompanyLogo {
   execute(

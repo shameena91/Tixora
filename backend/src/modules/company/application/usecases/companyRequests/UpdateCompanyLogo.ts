@@ -1,5 +1,5 @@
 import { CompanyLogoFile } from "../../../domain/types/CompanyDocumentFile";
-import { IUpdateCompanyLogo } from "../../abstraction/IUpdateCompanyLogo";
+import { IUpdateCompanyLogo } from "../../abstraction/company-requests/IUpdateCompanyLogo";
 import { IFileStoragePort } from "../../ports/IFileStoragePort";
 
 export class UpdateCompanyLogo implements IUpdateCompanyLogo {

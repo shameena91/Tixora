@@ -1,9 +1,6 @@
 import { useEffect } from "react";
 
-import {
- 
-  type CompanyDetails,
-} from "../../../../redux/slices/companySlice";
+
 
 import InfoCard from "../commonComponenets/InfoCard";
 
@@ -24,6 +21,7 @@ import type {
   GetCompanySubscriptionItemDto,
 } from "../../../../redux/slices/companySubscription/companySubscriptionTypes";
 import StatusBadge from "../commonComponenets/StatusBadge";
+import type { CompanyDetails } from "../../../../redux/slices/company/companyTypes";
 
 
 interface SubscriptionProps {

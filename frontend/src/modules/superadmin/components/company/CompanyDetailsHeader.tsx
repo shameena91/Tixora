@@ -10,10 +10,7 @@ import {
 import { useState } from "react";
 
 import StatusBadge from "../commonComponenets/StatusBadge";
-import {
-  updateCompanyStatusThunk,
-  type CompanyDetails,
-} from "../../../../redux/slices/companySlice";
+
 
 import ConfirmationModal from "../../../../components/common/ConfirmationModal";
 
@@ -21,6 +18,8 @@ import {
   useAppDispatch,
   useAppSelector,
 } from "../../../../redux/hooks/hooks";
+import type { CompanyDetails } from "../../../../redux/slices/company/companyTypes";
+import { updateCompanyStatusThunk } from "../../../../redux/slices/company/companyThunk";
 
 interface CompanyDetailsHeaderProps {
   company: CompanyDetails;

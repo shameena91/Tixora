@@ -1,4 +1,4 @@
-import { CompanyDocumentType, DocumentVerificationStatus } from "../../domain/value-objects/CompanyDocuments";
+import { CompanyDocumentType, DocumentVerificationStatus } from "../../../domain/value-objects/CompanyDocuments";
 
 export interface IUpdateCompanyDocumentStatusUseCase{
     execute(

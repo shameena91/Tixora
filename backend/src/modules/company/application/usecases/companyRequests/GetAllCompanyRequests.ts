@@ -1,6 +1,6 @@
 import { IAccountRepository } from "../../../../auth/domain/repositories/IAccountRepository";
 import { ICompanyRequestRepository } from "../../../domain/repositories/ICompanyRequestRepository";
-import { IGetAllCompanyRequest } from "../../abstraction/IGetAllCompanyRequest";
+import { IGetAllCompanyRequest } from "../../abstraction/company-requests/IGetAllCompanyRequest";
 
 export class GetAllCompanyRequests implements IGetAllCompanyRequest {
   constructor(

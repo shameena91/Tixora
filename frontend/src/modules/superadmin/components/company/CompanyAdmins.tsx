@@ -1,11 +1,7 @@
 import { Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import {
-  fetchCompanyAdminThunk,
-  type CompanyAdminList,
-  type CompanyDetails,
-} from "../../../../redux/slices/companySlice";
+
 
 import {
   useAppDispatch,
@@ -15,6 +11,8 @@ import {
 import type { DataTableColumn } from "../../../../components/common/Datatable";
 import DataTable from "../../../../components/common/Datatable";
 import DetailsDrawer from "../../../../components/common/DetailsDrawer";
+import type { CompanyAdminList, CompanyDetails } from "../../../../redux/slices/company/companyTypes";
+import { fetchCompanyAdminThunk } from "../../../../redux/slices/company/companyThunk";
 
 interface CompanyAdminsProps {
   company: CompanyDetails;

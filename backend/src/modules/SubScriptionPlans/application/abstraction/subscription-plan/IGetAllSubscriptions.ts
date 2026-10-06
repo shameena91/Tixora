@@ -1,7 +1,8 @@
-
-import { AccountRole } from "../../../../auth/domain/entities/Account";
-import { SubScriptionListItems } from "../../dto/SubScriptionListItems";
+import { GetSubscriptionsPaginatedResponseDto } from "../../dto/GetSubscriptionsPaginatedResponseDto";
 
 export interface IGetAllSubscriptions {
-  execute(role: AccountRole): Promise<SubScriptionListItems[]>;
+  execute(
+    page: number,
+    limit: number,
+  ): Promise<GetSubscriptionsPaginatedResponseDto>;
 }

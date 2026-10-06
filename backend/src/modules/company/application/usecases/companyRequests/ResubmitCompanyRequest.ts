@@ -8,7 +8,7 @@ import { TimelineEntityType } from "../../../../timeline/domain/entities/Timelin
 import { CompanyRequest } from "../../../domain/entities/CompanyRequest";
 import { ICompanyRequestRepository } from "../../../domain/repositories/ICompanyRequestRepository";
 
-import { IResubmitCompanyRequest } from "../../abstraction/IResubmitCompanyRequest";
+import { IResubmitCompanyRequest } from "../../abstraction/company-requests/IResubmitCompanyRequest";
 
 // Status changes to resubmit
 export class ResubmitCompanyRequest implements IResubmitCompanyRequest {

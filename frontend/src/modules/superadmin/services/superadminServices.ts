@@ -124,20 +124,22 @@ export const getCompanyRequestTimeline = async (
 
 export const getAllCompaniesList = async (
   search?: string,
+  page = 1,
+  limit = 10,
 ) => {
-
   const response = await axiosInstance.get(
     "/companies",
     {
       params: {
         search,
+        page,
+        limit,
       },
     },
   );
 
   return response.data;
 };
-
 export const getCompany = async (
   companyId:string
 ) => {
@@ -182,6 +184,8 @@ export const getBillingHistory=async(companyId:string)=>{
   const url=COMPANY_ROUTE.GET_BILLING_HISTORY(companyId)
 
   const response=await axiosInstance.get(url)
+
+  console.log("getBillingHistory",response.data)
   return response.data
 }
 export const updateCompanyStatus=async (companyId:string,

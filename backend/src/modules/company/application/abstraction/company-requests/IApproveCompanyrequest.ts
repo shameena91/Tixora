@@ -1,4 +1,4 @@
-import { CompanyRequest } from "../../domain/entities/CompanyRequest";
+import { CompanyRequest } from "../../../domain/entities/CompanyRequest";
 
 export interface IApproveCompanyRequest {
   execute(id: string, reviewedBy: string): Promise<CompanyRequest>;

@@ -1,11 +1,7 @@
 import { CreditCard } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import {
-  fetchBillingHistory,
-  type BillingHistory as BillingHistoryType,
-  type CompanyDetails,
-} from "../../../../redux/slices/companySlice";
+
 
 import {
   useAppDispatch,
@@ -18,6 +14,8 @@ import type { DataTableColumn } from "../../../../components/common/Datatable";
 import DetailsDrawer from "../../../../components/common/DetailsDrawer";
 import InfoCard from "../commonComponenets/InfoCard";
 import StatusBadge from "../commonComponenets/StatusBadge";
+import { fetchBillingHistory } from "../../../../redux/slices/company/companyThunk";
+import type { BillingHistoryType, CompanyDetails } from "../../../../redux/slices/company/companyTypes";
 
 interface BillingHistoryProps {
   company: CompanyDetails;
@@ -52,6 +50,13 @@ const BillingHistory = ({
 
   const billingHistoryColumns: DataTableColumn<BillingHistoryType>[] =
     [
+
+      {
+        header: "Payment Id",
+        accessor: "paymentId",
+        render: (value) =>
+          String(value)
+      },
       {
         header: "Razorpay Payment ID",
         accessor: "razorpayPaymentId",
@@ -93,7 +98,7 @@ const BillingHistory = ({
 
       {
         header: "Action",
-        accessor: "razorpayPaymentId",
+        accessor: "id",
         render: (_value, row) => (
           <button
             type="button"

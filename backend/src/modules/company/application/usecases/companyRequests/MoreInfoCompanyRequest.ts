@@ -5,7 +5,7 @@ import { ICreateTimeline } from "../../../../timeline/application/abstraction/IC
 import { TimelineEntityType } from "../../../../timeline/domain/entities/Timeline";
 import { CompanyRequest } from "../../../domain/entities/CompanyRequest";
 import { ICompanyRequestRepository } from "../../../domain/repositories/ICompanyRequestRepository";
-import { IMoreInfoCompanyRequest } from "../../abstraction/IMoreInfoCompanyRequest";
+import { IMoreInfoCompanyRequest } from "../../abstraction/company-requests/IMoreInfoCompanyRequest";
 
 export class MoreInfoCompanyrequest implements IMoreInfoCompanyRequest {
   constructor(

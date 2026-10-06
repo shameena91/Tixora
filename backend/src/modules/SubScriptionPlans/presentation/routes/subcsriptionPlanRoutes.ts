@@ -23,9 +23,15 @@ router.post(
 );
 router.get(
   SUBSCRIPTION_ROUTE_CONSTANTS.GET_ALL_PLANS,
-
-  authorizeRoles(AccountRole.SUPER_ADMIN, AccountRole.COMPANY_ADMIN),
-  createSubscriptionPlanController.getAllPlans.bind(
+  authorizeRoles(AccountRole.SUPER_ADMIN),
+  createSubscriptionPlanController.getAllSubscriptionPlans.bind(
+    createSubscriptionPlanController,
+  ),
+);
+router.get(
+  SUBSCRIPTION_ROUTE_CONSTANTS.GET_ACTIVE_PLANS,
+  authorizeRoles(AccountRole.COMPANY_ADMIN),
+  createSubscriptionPlanController.getActiveSubscriptionPlans.bind(
     createSubscriptionPlanController,
   ),
 );

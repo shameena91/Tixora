@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../../redux/hooks/hooks";
-import { fetchCompanyThunk } from "../../../../redux/slices/companySlice";
 import CompanyDetailsHeader from "../../components/company/CompanyDetailsHeader";
 import CompanyDetailsTabs from "../../components/company/CompanyDetailsTabs";
 import Overview from "../../components/company/Overview";
 import Subscription from "../../components/company/Subscription";
 import CompanyAdmins from "../../components/company/CompanyAdmins";
+import { fetchCompanyThunk } from "../../../../redux/slices/company/companyThunk";
 import BillingHistory from "../../components/company/BillingHistory";
 
 

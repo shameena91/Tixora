@@ -1,20 +1,29 @@
+// import { BaseRepository } from "../../../../../infrastructure/repositories/Baserepository";
 import { BaseRepository } from "../../../../../infrastructure/repositories/Baserepository";
 import { MESSAGES } from "../../../../../shared/constants/messages";
 import { AppErrors } from "../../../../../shared/errors/AppErrors";
 import { ErrorCode } from "../../../../../shared/errors/ErrorCode";
+
 import {
   SubscriptionCreateData,
   SubscriptionDocument,
   SubscriptionMapper,
 } from "../../../application/mappers/SubscriptionMapper";
+
 import {
   Subscription,
   SubscriptionStatus,
 } from "../../../domain/entities/Subscription";
-import { ISubscriptionRepository } from "../../../domain/repositories/ISubscriptionRepository";
+
+import {
+  ISubscriptionRepository,
+} from "../../../domain/repositories/ISubscriptionRepository";
+
 import { SubscriptionModel } from "../models/SubscriptionModel";
 
-export class SubscriptionRepository implements ISubscriptionRepository {
+export class SubscriptionRepository
+  implements ISubscriptionRepository
+{
   constructor(
     private readonly _baseRepository: BaseRepository<
       SubscriptionDocument,
@@ -22,14 +31,26 @@ export class SubscriptionRepository implements ISubscriptionRepository {
     >,
   ) {}
 
-  async create(data: SubscriptionCreateData): Promise<Subscription> {
-    const subscriptionDocument = await this._baseRepository.create(data);
+  // -------------------------
+  // Common CRUD
+  // -------------------------
 
-    return SubscriptionMapper.toDomain(subscriptionDocument);
+  async create(
+    data: SubscriptionCreateData,
+  ): Promise<Subscription> {
+    const subscriptionDocument =
+      await this._baseRepository.create(data);
+
+    return SubscriptionMapper.toDomain(
+      subscriptionDocument,
+    );
   }
 
-  async findById(id: string): Promise<Subscription | null> {
-    const document = await this._baseRepository.findById(id);
+  async findById(
+    id: string,
+  ): Promise<Subscription | null> {
+    const document =
+      await this._baseRepository.findById(id);
 
     if (!document) {
       return null;
@@ -38,16 +59,13 @@ export class SubscriptionRepository implements ISubscriptionRepository {
     return SubscriptionMapper.toDomain(document);
   }
 
-  async findAll(): Promise<Subscription[]> {
-    const documents = await this._baseRepository.findAll({}, { createdAt: -1 });
-
-    return documents.map((document) => SubscriptionMapper.toDomain(document));
-  }
-
-  async findByCompanyId(companyId: string): Promise<Subscription | null> {
-    const document = await this._baseRepository.findOne({
-      companyId,
-    });
+  async findOne(
+    filter: Partial<Subscription>,
+  ): Promise<Subscription | null> {
+    const document =
+      await this._baseRepository.findOne(
+        filter as Partial<SubscriptionDocument>,
+      );
 
     if (!document) {
       return null;
@@ -56,19 +74,79 @@ export class SubscriptionRepository implements ISubscriptionRepository {
     return SubscriptionMapper.toDomain(document);
   }
 
-  async findAllByCompanyId(companyId: string): Promise<Subscription[]> {
-    const documents = await this._baseRepository.findAll({
-      companyId,
-    });
+  async findAll(
+    filter?: Partial<Subscription>,
+    sort?: Record<string, 1 | -1>,
+  ): Promise<Subscription[]> {
+    const documents =
+      await this._baseRepository.findAll(
+        filter as Partial<SubscriptionDocument>,
+        sort,
+      );
 
-    return documents.map((document) => SubscriptionMapper.toDomain(document));
+    return documents.map(
+      (document) =>
+        SubscriptionMapper.toDomain(document),
+    );
   }
+
+  async update(
+    filter: Partial<Subscription>,
+    data: Partial<Subscription>,
+  ): Promise<Subscription | null> {
+    const document =
+      await this._baseRepository.update(
+        filter as Partial<SubscriptionDocument>,
+        data as Partial<SubscriptionDocument>,
+      );
+
+    if (!document) {
+      return null;
+    }
+
+    return SubscriptionMapper.toDomain(document);
+  }
+
+  // -------------------------
+  // Subscription-specific
+  // -------------------------
+
+  async findByCompanyId(
+    companyId: string,
+  ): Promise<Subscription | null> {
+    const document =
+      await this._baseRepository.findOne({
+        companyId,
+      });
+
+    if (!document) {
+      return null;
+    }
+
+    return SubscriptionMapper.toDomain(document);
+  }
+
+  async findAllByCompanyId(
+    companyId: string,
+  ): Promise<Subscription[]> {
+    const documents =
+      await this._baseRepository.findAll({
+        companyId,
+      });
+
+    return documents.map(
+      (document) =>
+        SubscriptionMapper.toDomain(document),
+    );
+  }
+
   async findByRazorpayOrderId(
     razorpayOrderId: string,
   ): Promise<Subscription | null> {
-    const document = await this._baseRepository.findOne({
-      razorpayOrderId,
-    });
+    const document =
+      await this._baseRepository.findOne({
+        razorpayOrderId,
+      });
 
     if (!document) {
       return null;
@@ -76,7 +154,8 @@ export class SubscriptionRepository implements ISubscriptionRepository {
 
     return SubscriptionMapper.toDomain(document);
   }
-  async update(
+
+  async updateSubscription(
     id: string,
     data: {
       status?: SubscriptionStatus;
@@ -84,21 +163,22 @@ export class SubscriptionRepository implements ISubscriptionRepository {
       endDate?: Date | null;
     },
   ): Promise<Subscription> {
-    const document = await SubscriptionModel.findByIdAndUpdate(
-      id,
-      {
-        $set: {
-          ...data,
-          updatedAt: new Date(),
+    const document =
+      await SubscriptionModel.findByIdAndUpdate(
+        id,
+        {
+          $set: {
+            ...data,
+            updatedAt: new Date(),
+          },
         },
-      },
-      {
-        new: true,
-        runValidators: true,
-      },
-    )
-      .lean<SubscriptionDocument>()
-      .exec();
+        {
+          new: true,
+          runValidators: true,
+        },
+      )
+        .lean<SubscriptionDocument>()
+        .exec();
 
     if (!document) {
       throw new AppErrors(

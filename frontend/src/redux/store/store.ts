@@ -1,8 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
 import superAdminDashboardReducer from "../slices/superAdminDashboardSlice";
-import companyRequestReducer from "../slices/companyrequestSlice";
-import subscriptionPlanReducer from "../slices/subscriptionPlanSlice";
-import companylistReducer from "../slices/companySlice"
+import companyRequestReducer from "../slices/companyRrequest/companyRequestSlice";
+import subscriptionPlanReducer from "../slices/subscriptionPlan/subscriptionPlanSlice";
+import companylistReducer from "../slices/company/companySlice"
 import companySubscriptionReducer from "../slices/companySubscription/companySubscriptionSlice";
 export const store=configureStore({
     reducer:{
