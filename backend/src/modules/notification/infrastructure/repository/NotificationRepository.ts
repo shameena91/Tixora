@@ -4,12 +4,10 @@ import {
   NotificationCreateData,
   NotificationDocument,
   NotificationMapper,
-} from "../../application/mapper/NotificationMappers"
+} from "../../application/mapper/NotificationMappers";
 
 import { Notification } from "../../domain/entities/Notification";
 import { INotificationRepository } from "../../../notification/domain/repositories/INotificationrepository";
-
-import { NotificationModel } from "../models/NotifiationModel";
 
 export class NotificationRepository
   implements INotificationRepository
@@ -31,7 +29,6 @@ export class NotificationRepository
   async create(
     notification: Notification
   ): Promise<Notification> {
-
     // Domain → Persistence
     const persistenceData =
       NotificationMapper.toPersistence(notification);
@@ -49,7 +46,6 @@ export class NotificationRepository
   async findById(
     id: string
   ): Promise<Notification | null> {
-
     const notificationDocument =
       await this.baseRepository.findById(id);
 
@@ -62,13 +58,52 @@ export class NotificationRepository
     );
   }
 
-  async findAll(): Promise<Notification[]> {
+  async findOne(
+    filter: Partial<Notification>
+  ): Promise<Notification | null> {
+    const notificationDocument =
+      await this.baseRepository.findOne(filter);
 
+    if (!notificationDocument) {
+      return null;
+    }
+
+    return NotificationMapper.toDomain(
+      notificationDocument
+    );
+  }
+
+  async findAll(
+    filter?: Partial<Notification>,
+    sort?: Record<string, 1 | -1>
+  ): Promise<Notification[]> {
     const notificationDocuments =
-      await this.baseRepository.findAll();
+      await this.baseRepository.findAll(
+        filter,
+        sort
+      );
 
     return notificationDocuments.map(
       NotificationMapper.toDomain
+    );
+  }
+
+  async update(
+    filter: Partial<Notification>,
+    data: Partial<Notification>
+  ): Promise<Notification | null> {
+    const notificationDocument =
+      await this.baseRepository.update(
+        filter,
+        data
+      );
+
+    if (!notificationDocument) {
+      return null;
+    }
+
+    return NotificationMapper.toDomain(
+      notificationDocument
     );
   }
 }
