@@ -5,6 +5,7 @@ import { AuthContext } from "../../modules/auth/context/AuthContext"
 import { useContext } from "react";
 import { clearAccessToken } from "../../modules/auth/api/tokenStorage";
 
+import logo2 from "../../assets/logo2.png"
 interface NavbarProps {
   showRegister?: boolean;
   showLogin?: boolean;
@@ -40,18 +41,20 @@ navigate("/login");
   console.log("NAVBAR NAME:", name);
   return (
     <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 backdrop-blur">
-      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 lg:px-8">
+      <nav className=" mx-auto flex  h-16 max-w-7xl items-center justify-between px-5 lg:px-8">
 
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white">
-            ✦
-          </div>
-
-          <span className="text-lg font-bold tracking-tight">
-            Tixora
-          </span>
+           <Link to="/" className="flex items-center">
+      <img
+        src={logo2}
+        alt="Tixora logo"
+            className="h-17 w-auto object-contain"
+      />
+         {/* <span className="text-lg font-bold tracking-tight">
+          Tixora
+        </span> */}
         </Link>
+       
 
         {/* Navigation */}
         <div className="hidden items-center gap-8 text-sm text-slate-600 md:flex">
@@ -74,6 +77,7 @@ navigate("/login");
           <a href="#contact" className="transition hover:text-indigo-600">
             Contact
           </a>
+       
         </div>
 
         {/* Actions */}

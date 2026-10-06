@@ -1,303 +1,564 @@
 import { Request, Response } from "express";
 
-
+import { HttpStatusCode } from "../../../../shared/constants/httpStattusCode";
+import { MESSAGES } from "../../../../shared/constants/messages";
 import { AppErrors } from "../../../../shared/errors/AppErrors";
-import { CompleteCompanyRegistration } from "../../application/usecases/CompleteCompanyRegistration";
-import { CreateCompanyRequest } from "../../application/usecases/CreateCompanyRequest";
-import { GetCompanyRequest } from "../../application/usecases/GetCompanyRequest";
-import { MoreInfoCompanyrequest } from "../../application/usecases/MoreInfoCompanyRequest";
-import { RejectCompanyRequest } from "../../application/usecases/RejectCompanyRequest";
-import { ResubmitCompanyRequest } from "../../application/usecases/ResubmitCompanyRequest";
-import { SubmitCompanyDocuments } from "../../application/usecases/SubmitCompanyDocuments";
-import { UpdateCompanyDocuments } from "../../application/usecases/UpdateCompanyDocuments";
-import { UpdateCompanyLocation } from "../../application/usecases/UpdateCompanyLocation";
-import { UpdateCompanyRequest } from "../../application/usecases/UpdateCompanyRequest";
+import { ErrorCode } from "../../../../shared/errors/ErrorCode";
+
+import { UpdateCompanyDocumentStatusUseCase } from "../../application/usecases/companyRequests/UpdateCompanyDocumentStatus";
+
 import { updateCompanyLocationSchema } from "../../application/Validators/UpdateCompanyLocationSchema";
 import { updateCompanyRequestSchema } from "../../application/Validators/UpdateCompanyRequestSchema";
-import { CompanyType, EmployeeCountRange } from "../../domain/entities/CompanyRequest";
-import { CompanyDocumentFile } from "../../domain/types/CompanyDocumentFile";
+
+import {
+  CompanyType,
+  EmployeeCountRange,
+} from "../../domain/entities/CompanyRequest";
+
+import {
+  CompanyDocumentFile,
+  CompanyLogoFile,
+} from "../../domain/types/CompanyDocumentFile";
+
 import { UpdateCompanyRequestData } from "../../domain/types/UpdateCompanyRequesstData";
-import { CompanyDocumentType } from "../../domain/value-objects/CompanyDocuments";
-import { HttpStatusCode } from "../../../../shared/constants/httpStattusCode";
-import { ErrorCode } from "../../../../shared/errors/ErrorCode";
+
+import {
+  CompanyDocumentType,
+  DocumentVerificationStatus,
+} from "../../domain/value-objects/CompanyDocuments";
+
 import { IApproveCompanyRequest } from "../../application/abstraction/IApproveCompanyrequest";
 import { ICompleteCompanyRegistration } from "../../application/abstraction/ICompleteCompanyRegistration";
 import { ICreateCompanyRequest } from "../../application/abstraction/ICreateCompanyRequest";
-import { IRejectCompanyRequest } from "../../application/abstraction/IRejectCompanyRequest";
-import { IMoreInfoCompanyRequest } from "../../application/abstraction/IMoreInfoCompanyRequest";
+import { IGetAllCompanyRequest } from "../../application/abstraction/IGetAllCompanyRequest";
+import { IGetCompanyDocumentUrl } from "../../application/abstraction/IGetCompanyDocumentUrl";
 import { IGetCompanyRequest } from "../../application/abstraction/IGetCompanyRequest";
-import { IUpdateCompanyLocation } from "../../application/abstraction/IUpdateCompanyLocation";
+import { IGetMyCompanyRequestStatus } from "../../application/abstraction/IGetMyCompanyRequestStatus";
+import { IMoreInfoCompanyRequest } from "../../application/abstraction/IMoreInfoCompanyRequest";
+import { IRejectCompanyRequest } from "../../application/abstraction/IRejectCompanyRequest";
 import { IResubmitCompanyRequest } from "../../application/abstraction/IResubmitCompanyRequest";
-import { IUpdateCompanyRequest } from "../../application/abstraction/IUpdateCompanyRequest";
-import { IUpdateCompanyDocuments } from "../../application/abstraction/IUpdateCompanyDocuments";
 import { ISubmitCompanyDocuments } from "../../application/abstraction/ISubmitCompanyDocuments";
+import { IUpdateCompanyDocuments } from "../../application/abstraction/IUpdateCompanyDocuments";
+import { IUpdateCompanyLocation } from "../../application/abstraction/IUpdateCompanyLocation";
+import { IUpdateCompanyLogo } from "../../application/abstraction/IUpdateCompanyLogo";
+import { IUpdateCompanyRequest } from "../../application/abstraction/IUpdateCompanyRequest";
+
+import {
+  sendError,
+  sendSuccess,
+} from "../../../../presentation/response/ResponseHelper";
+
 export class CompanyRequestController {
-constructor(
-private readonly createCompanyRequest: ICreateCompanyRequest,
-private readonly approveCompanyRequest: IApproveCompanyRequest,
-private readonly rejectCompanyRequest: IRejectCompanyRequest,
-private readonly requestMoreInfo: IMoreInfoCompanyRequest,
-private readonly resubmitCompanyRequest: IResubmitCompanyRequest,
-private readonly updateCompanyRequest: IUpdateCompanyRequest,
-private readonly updateCompanyLocation:IUpdateCompanyLocation,
-private readonly updateCompanyDocuments: IUpdateCompanyDocuments,
-private readonly getCompanyRequest: IGetCompanyRequest,
-private readonly completeCompanyRegistration:ICompleteCompanyRegistration,
-private readonly submitCompanyDocuments: ISubmitCompanyDocuments
-) {}
+  constructor(
+    private readonly _createCompanyRequest: ICreateCompanyRequest,
+    private readonly _approveCompanyRequest: IApproveCompanyRequest,
+    private readonly _rejectCompanyRequest: IRejectCompanyRequest,
+    private readonly _requestMoreInfo: IMoreInfoCompanyRequest,
+    private readonly _resubmitCompanyRequest: IResubmitCompanyRequest,
+    private readonly _updateCompanyRequest: IUpdateCompanyRequest,
+    private readonly _updateCompanyLocation: IUpdateCompanyLocation,
+    private readonly _updateCompanyDocuments: IUpdateCompanyDocuments,
+    private readonly _getCompanyRequest: IGetCompanyRequest,
+    private readonly _getAllCompanyRequests: IGetAllCompanyRequest,
+    private readonly _completeCompanyRegistration: ICompleteCompanyRegistration,
+    private readonly _submitCompanyDocuments: ISubmitCompanyDocuments,
+    private readonly _getMyCompanyRequest: IGetMyCompanyRequestStatus,
+    private readonly _updateCompanyLogo: IUpdateCompanyLogo,
+    private readonly _getCompanyDocumentUrlUseCase: IGetCompanyDocumentUrl,
+    private readonly _updateCompanyDocumentStatus: UpdateCompanyDocumentStatusUseCase,
+  ) {}
 
+  async create(req: Request, res: Response) {
+    const companyRequest = await this._createCompanyRequest.execute({
+      ...req.body,
+    });
 
-// during creation
-async create(
-  req: Request,
-  res: Response
-): Promise<void> {
+    return sendSuccess(
+      res,
+      MESSAGES.COMPANY_REQUEST_CREATED,
+      companyRequest,
+      HttpStatusCode.CREATED,
+    );
+  }
 
-  const companyRequest =
-    await this.createCompanyRequest.execute(req.body);
+  async updateLocation(req: Request, res: Response) {
+    const { id } = req.params;
 
-  console.log("company data:", companyRequest);
+    if (typeof id !== "string") {
+      return sendError(
+        res,
+        MESSAGES.INVALID_COMPANY_REQUEST_ID,
+        HttpStatusCode.BAD_REQUEST,
+      );
+    }
 
-  res.status(HttpStatusCode.OK).json({
-    success: true,
-    message: "Company request created successfully",
-    data: companyRequest,
-  });
-}
-async updateLocation(
-  req: Request<{ id: string }>,
-  res: Response
-): Promise<void> {
+    const validatedData = updateCompanyLocationSchema.parse(req.body);
 
-  const { id } = req.params;
-
-  const validatedData =
-    updateCompanyLocationSchema.parse(req.body);
-
-  const companyRequest =
-    await this.updateCompanyLocation.execute(
+    const companyRequest = await this._updateCompanyLocation.execute(
       id,
-      validatedData
+      validatedData,
     );
 
-  res.status(HttpStatusCode.OK).json({
-    success: true,
-    message: "Company location updated successfully",
-    data: companyRequest,
-  });
-}
-async updateDocuments(
-  req: Request<{ companyRequestId: string }>,
-  res: Response
-): Promise<void> {
-
-  const { companyRequestId } = req.params;
-
-  const file = req.file;
-
-  if (!file) {
-    throw new AppErrors(
-      "Document file is required",
-       HttpStatusCode.BAD_REQUEST
+    return sendSuccess(
+      res,
+      MESSAGES.COMPANY_LOCATION_UPDATED,
+      companyRequest,
+      HttpStatusCode.OK,
     );
   }
 
-  const { documentType } = req.body;
+  async updateDocuments(req: Request, res: Response) {
+    const { companyRequestId } = req.params;
 
-  if (
-    !documentType ||
-    !Object.values(CompanyDocumentType).includes(documentType)
-  ) {
-    throw new AppErrors(
-      "Document type is required",
-      HttpStatusCode.BAD_REQUEST
-    );
-  }
+    if (typeof companyRequestId !== "string") {
+      return sendError(
+        res,
+        MESSAGES.INVALID_COMPANY_REQUEST_ID,
+        HttpStatusCode.BAD_REQUEST,
+      );
+    }
 
-  const document: CompanyDocumentFile = {
-    documentType,
-    file: file.buffer,
-    fileName: file.originalname,
-    mimeType: file.mimetype,
-  };
+    const file = req.file;
 
-  const companyRequest =
-    await this.updateCompanyDocuments.execute(
+    if (!file) {
+      throw new AppErrors(
+        MESSAGES.DOCUMENT_FILE_REQUIRED,
+        HttpStatusCode.BAD_REQUEST,
+      );
+    }
+
+    const { documentType } = req.body;
+
+    if (
+      !documentType ||
+      !Object.values(CompanyDocumentType).includes(documentType)
+    ) {
+      throw new AppErrors(
+        MESSAGES.DOCUMENT_TYPE_REQUIRED,
+        HttpStatusCode.BAD_REQUEST,
+      );
+    }
+
+    const document: CompanyDocumentFile = {
+      documentType,
+      file: file.buffer,
+      fileName: file.originalname,
+      mimeType: file.mimetype,
+    };
+
+    const companyRequest = await this._updateCompanyDocuments.execute(
       companyRequestId,
-      document
+      document,
     );
 
-  res.status(HttpStatusCode.OK).json({
-    success: true,
-    message: "Document uploaded successfully",
-    data: companyRequest,
-  });
-}
-async submitDocuments(
-  req: Request<{ companyRequestId: string }>,
-  res: Response
-): Promise<void> {
+    return sendSuccess(
+      res,
+      MESSAGES.DOCUMENT_UPLOADED,
+      companyRequest,
+      HttpStatusCode.OK,
+    );
+  }
 
-  const { companyRequestId } = req.params;
+  async submitDocuments(req: Request, res: Response) {
+    const { companyRequestId } = req.params;
 
-  const companyRequest =
-    await this.submitCompanyDocuments.execute(
-      companyRequestId
+    if (typeof companyRequestId !== "string") {
+      return sendError(
+        res,
+        MESSAGES.INVALID_COMPANY_REQUEST_ID,
+        HttpStatusCode.BAD_REQUEST,
+      );
+    }
+
+    const companyRequest =
+      await this._submitCompanyDocuments.execute(companyRequestId);
+
+    return sendSuccess(
+      res,
+      MESSAGES.COMPANY_DOCUMENTS_SUBMITTED,
+      companyRequest,
+      HttpStatusCode.OK,
+    );
+  }
+
+  async updateLogo(req: Request, res: Response) {
+    const file = req.file;
+
+    if (!file) {
+      throw new AppErrors(
+        MESSAGES.LOGO_FILE_REQUIRED,
+        HttpStatusCode.BAD_REQUEST,
+      );
+    }
+
+    const logo: CompanyLogoFile = {
+      file: file.buffer,
+      fileName: file.originalname,
+      mimeType: file.mimetype,
+    };
+
+    const logoUrl = await this._updateCompanyLogo.execute(logo);
+
+    return sendSuccess(
+      res,
+      MESSAGES.LOGO_UPLOADED,
+      {
+        logo: logoUrl,
+      },
+      HttpStatusCode.OK,
+    );
+  }
+
+  async getById(req: Request, res: Response) {
+    const { id } = req.params;
+
+    if (typeof id !== "string") {
+      return sendError(
+        res,
+        MESSAGES.INVALID_COMPANY_REQUEST_ID,
+        HttpStatusCode.BAD_REQUEST,
+      );
+    }
+
+    const companyRequest = await this._getCompanyRequest.execute(id);
+
+    return sendSuccess(
+      res,
+      MESSAGES.COMPANY_REQUEST_FETCHED,
+      companyRequest,
+      HttpStatusCode.OK,
+    );
+  }
+
+  async submit(req: Request, res: Response) {
+    const { accountId } = req.body;
+    const { companyRequestId } = req.params;
+
+    if (typeof companyRequestId !== "string") {
+      throw new AppErrors(
+        MESSAGES.COMPANY_REQUEST_NOT_FOUND,
+        ErrorCode.COMPANY_REQUEST_NOT_FOUND,
+      );
+    }
+
+    await this._completeCompanyRegistration.execute(
+      accountId,
+      companyRequestId,
     );
 
-  res.status(HttpStatusCode.OK).json({
-    success: true,
-    message: "Company documents submitted successfully",
-    data: companyRequest,
-  });
-}
-
-// it shows company details in review page
-async getById(
-  req: Request<{ id: string }>,
-  res: Response
-): Promise<void> {
-  const { id } = req.params;
-
-  // if (typeof id !== "string") {
-  //   res.status(400).json({
-  //     success: false,
-  //     message: "Invalid company request id",
-  //   });
-  //   return;
-  // }
-
-  
-    const companyRequest =
-      await this.getCompanyRequest.execute(id);
-
-    res.status(HttpStatusCode.OK).json({
-    success: true,
-    message: "Company request fetched successfully",
-    data: companyRequest,
-  });
-  
-}
-// Complete registration
-async submit(
-  req: Request,
-  res: Response
-): Promise<void> {
-  const { accountId } = req.body;
-    await this.completeCompanyRegistration.execute(
-      accountId
+    return sendSuccess(
+      res,
+      MESSAGES.COMPANY_REGISTRATION_SUBMITTED,
+      undefined,
+      HttpStatusCode.OK,
     );
+  }
 
-    res.status(HttpStatusCode.OK).json({
-      success: true,
-      message: "Company registration submitted successfully",
-    });
-}
+  async approve(req: Request, res: Response) {
+    const { id } = req.params;
+    const reviewedBy = req.user?.accountId;
 
+    if (typeof id !== "string") {
+      return sendError(
+        res,
+        MESSAGES.INVALID_COMPANY_REQUEST_ID,
+        HttpStatusCode.BAD_REQUEST,
+      );
+    }
 
+    if (!reviewedBy) {
+      throw new AppErrors(MESSAGES.UNAUTHORIZED, ErrorCode.UNAUTHORIZED);
+    }
 
-
-async approve(
-  req: Request<{ id: string }>,
-  res: Response
-): Promise<void> {
-
-  const { id } = req.params;
-
-  const companyRequest =
-    await this.approveCompanyRequest.execute(id);
-
-  res.status(HttpStatusCode.OK).json({
-    success: true,
-    message: "Company request Approved Successfully",
-    data: companyRequest,
-  });
-}
-async reject(
-  req: Request<{id:string}>,
-  res: Response
-): Promise<void> {
-  const { id } = req.params;
-  
-    const companyRequest =
-      await this.rejectCompanyRequest.execute(id);
-
-    res.status(HttpStatusCode.OK).json({
-      success: true,
-      message: "Company request rejected successfully",
-      data: companyRequest,
-    });
-  
-}
-async moreInfo(
-  req: Request<{id:string}>,
-  res: Response
-): Promise<void> {
-  const { id } = req.params;
-    const companyRequest =
-      await this.requestMoreInfo.execute(id);
-
-    res.status(HttpStatusCode.OK).json({
-      success: true,
-      message: "More information requested successfully",
-      data: companyRequest,
-    });
-
-}
-// / after admin ask for more info can edit our details
-async update(
-  req: Request<{ id: string }>,
-  res: Response
-): Promise<void> {
-
-  const { id } = req.params;
-
-  const validatedData =
-    updateCompanyRequestSchema.parse(req.body);
-
-  const updateData: UpdateCompanyRequestData =
-    validatedData;
-
-  const companyRequest =
-    await this.updateCompanyRequest.execute(
+    const companyRequest = await this._approveCompanyRequest.execute(
       id,
-      updateData
+      reviewedBy,
     );
 
-  res.status(HttpStatusCode.OK).json({
-    success: true,
-    message: "Company request updated successfully",
-    data: companyRequest,
-  });
-}
-async resubmit(
-  req: Request<{ id: string }>,
-  res: Response
-): Promise<void> {
+    return sendSuccess(
+      res,
+      MESSAGES.COMPANY_REQUEST_APPROVED,
+      companyRequest,
+      HttpStatusCode.OK,
+    );
+  }
 
-  const { id } = req.params;
+  async reject(req: Request, res: Response) {
+    const { id } = req.params;
 
-  const companyRequest =
-    await this.resubmitCompanyRequest.execute(id);
+    if (typeof id !== "string") {
+      return sendError(
+        res,
+        MESSAGES.INVALID_COMPANY_REQUEST_ID,
+        HttpStatusCode.BAD_REQUEST,
+      );
+    }
 
-  res.status(HttpStatusCode.OK).json({
-    success: true,
-    message: "Company request resubmitted successfully",
-    data: companyRequest,
-  });
-}
+    const companyRequest = await this._rejectCompanyRequest.execute(id);
 
-async getCompanyTypes(req:Request,res:Response):Promise<void>
-{ res.status(HttpStatusCode.OK).json({
-    success: true,
-    data: Object.values(CompanyType),
-  });
-}
+    return sendSuccess(
+      res,
+      MESSAGES.COMPANY_REQUEST_REJECTED,
+      companyRequest,
+      HttpStatusCode.OK,
+    );
+  }
 
-async getEmployeeRange(req:Request,res:Response):Promise<void>{
-  res.status(HttpStatusCode.OK).json({
-    success:true,
-    data:Object.values(EmployeeCountRange)
-  })
-}
+  async moreInfo(req: Request, res: Response) {
+    const { id } = req.params;
+    const { remarks } = req.body;
+    const reviewedBy = req.user?.accountId;
+
+    if (typeof id !== "string") {
+      return sendError(
+        res,
+        MESSAGES.INVALID_COMPANY_REQUEST_ID,
+        HttpStatusCode.BAD_REQUEST,
+      );
+    }
+
+    if (!reviewedBy) {
+      throw new AppErrors(MESSAGES.UNAUTHORIZED, ErrorCode.UNAUTHORIZED);
+    }
+
+    const companyRequest = await this._requestMoreInfo.execute(
+      id,
+      reviewedBy,
+      remarks,
+    );
+
+    return sendSuccess(
+      res,
+      MESSAGES.MORE_INFORMATION_REQUESTED,
+      companyRequest,
+      HttpStatusCode.OK,
+    );
+  }
+
+  async update(req: Request, res: Response) {
+    const { id } = req.params;
+
+    if (typeof id !== "string") {
+      return sendError(
+        res,
+        MESSAGES.INVALID_COMPANY_REQUEST_ID,
+        HttpStatusCode.BAD_REQUEST,
+      );
+    }
+
+    const validatedData = updateCompanyRequestSchema.parse(req.body);
+
+    const updateData: UpdateCompanyRequestData = validatedData;
+
+    const companyRequest = await this._updateCompanyRequest.execute(
+      id,
+      updateData,
+    );
+
+    return sendSuccess(
+      res,
+      MESSAGES.COMPANY_REQUEST_UPDATED,
+      companyRequest,
+      HttpStatusCode.OK,
+    );
+  }
+
+  async resubmit(req: Request, res: Response) {
+    const { id } = req.params;
+
+    if (typeof id !== "string") {
+      return sendError(
+        res,
+        MESSAGES.INVALID_COMPANY_REQUEST_ID,
+        HttpStatusCode.BAD_REQUEST,
+      );
+    }
+
+    const companyRequest = await this._resubmitCompanyRequest.execute(id);
+
+    return sendSuccess(
+      res,
+      MESSAGES.COMPANY_REQUEST_RESUBMITTED,
+      companyRequest,
+      HttpStatusCode.OK,
+    );
+  }
+
+  async getCompanyTypes(req: Request, res: Response) {
+    return sendSuccess(
+      res,
+      "Company types fetched successfully",
+      Object.values(CompanyType),
+      HttpStatusCode.OK,
+    );
+  }
+
+  async getEmployeeRange(req: Request, res: Response) {
+    return sendSuccess(
+      res,
+      "Employee ranges fetched successfully",
+      Object.values(EmployeeCountRange),
+      HttpStatusCode.OK,
+    );
+  }
+
+  async getAll(req: Request, res: Response) {
+    const companyRequests = await this._getAllCompanyRequests.execute();
+
+    return sendSuccess(
+      res,
+      MESSAGES.COMPANY_REQUEST_FETCHED,
+      companyRequests,
+      HttpStatusCode.OK,
+    );
+  }
+
+  async getMyRequest(req: Request, res: Response) {
+    const accountId = req.user?.accountId;
+
+    if (!accountId) {
+      throw new AppErrors(MESSAGES.UNAUTHORIZED, ErrorCode.UNAUTHORIZED);
+    }
+
+    const result = await this._getMyCompanyRequest.execute(accountId);
+
+    return sendSuccess(
+      res,
+      MESSAGES.COMPANY_REQUEST_FETCHED,
+      result,
+      HttpStatusCode.OK,
+    );
+  }
+
+  async getCompanyDocumentViewUrl(req: Request, res: Response) {
+    const { companyRequestId, documentType } = req.params;
+
+    if (!companyRequestId || !documentType) {
+      throw new AppErrors(
+        MESSAGES.INVALID_COMPANY_REQUEST_ID,
+        ErrorCode.COMPANY_REQUEST_NOT_FOUND,
+      );
+    }
+
+    if (typeof companyRequestId !== "string") {
+      return sendError(
+        res,
+        MESSAGES.INVALID_COMPANY_REQUEST_ID,
+        HttpStatusCode.BAD_REQUEST,
+      );
+    }
+
+    const signedUrl = await this._getCompanyDocumentUrlUseCase.execute(
+      companyRequestId,
+      documentType as CompanyDocumentType,
+      "view",
+    );
+
+    return sendSuccess(
+      res,
+      MESSAGES.COMPANY_REQUEST_FETCHED,
+      {
+        url: signedUrl,
+      },
+      HttpStatusCode.OK,
+    );
+  }
+
+  async getCompanyDocumentDownloadUrl(req: Request, res: Response) {
+    const { companyRequestId, documentType } = req.params;
+
+    if (!companyRequestId || !documentType) {
+      throw new AppErrors(
+        MESSAGES.INVALID_COMPANY_REQUEST_ID,
+        ErrorCode.COMPANY_REQUEST_NOT_FOUND,
+      );
+    }
+
+    if (typeof companyRequestId !== "string") {
+      return sendError(
+        res,
+        MESSAGES.INVALID_COMPANY_REQUEST_ID,
+        HttpStatusCode.BAD_REQUEST,
+      );
+    }
+
+    const signedUrl = await this._getCompanyDocumentUrlUseCase.execute(
+      companyRequestId,
+      documentType as CompanyDocumentType,
+      "download",
+    );
+
+    return sendSuccess(
+      res,
+      MESSAGES.COMPANY_REQUEST_FETCHED,
+      {
+        url: signedUrl,
+      },
+      HttpStatusCode.OK,
+    );
+  }
+
+  async verifyCompanyDocument(req: Request, res: Response) {
+    const { companyRequestId, documentType } = req.params;
+
+    if (!companyRequestId || !documentType) {
+      throw new AppErrors(
+        MESSAGES.INVALID_COMPANY_REQUEST_ID,
+        ErrorCode.COMPANY_REQUEST_NOT_FOUND,
+      );
+    }
+
+    if (typeof companyRequestId !== "string") {
+      return sendError(
+        res,
+        MESSAGES.INVALID_COMPANY_REQUEST_ID,
+        HttpStatusCode.BAD_REQUEST,
+      );
+    }
+
+    await this._updateCompanyDocumentStatus.execute(
+      companyRequestId,
+      documentType as CompanyDocumentType,
+      DocumentVerificationStatus.VERIFIED,
+    );
+
+    return sendSuccess(
+      res,
+      MESSAGES.DOCUMENT_VERIFIED,
+      undefined,
+      HttpStatusCode.OK,
+    );
+  }
+
+  async rejectCompanyDocument(req: Request, res: Response) {
+    const { companyRequestId, documentType } = req.params;
+
+    if (!companyRequestId || !documentType) {
+      throw new AppErrors(
+        MESSAGES.INVALID_COMPANY_REQUEST_ID,
+        ErrorCode.COMPANY_REQUEST_NOT_FOUND,
+      );
+    }
+
+    if (typeof companyRequestId !== "string") {
+      return sendError(
+        res,
+        MESSAGES.INVALID_COMPANY_REQUEST_ID,
+        HttpStatusCode.BAD_REQUEST,
+      );
+    }
+
+    await this._updateCompanyDocumentStatus.execute(
+      companyRequestId,
+      documentType as CompanyDocumentType,
+      DocumentVerificationStatus.REJECTED,
+    );
+
+    return sendSuccess(
+      res,
+      MESSAGES.DOCUMENT_REJECTED,
+      undefined,
+      HttpStatusCode.OK,
+    );
+  }
 }

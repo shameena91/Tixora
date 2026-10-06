@@ -32,5 +32,5 @@ export const companyLocationSchema = new Schema(
       trim: true,
     },
   },
-  { _id: false }
+  { _id: false },
 );

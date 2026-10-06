@@ -3,13 +3,14 @@ import { MESSAGES } from "../../../../shared/constants/messages";
 import { AppErrors } from "../../../../shared/errors/AppErrors";
 import { IAccountRepository } from "../../domain/repositories/IAccountRepository";
 import { IAdminRegistration } from "../abstractions/IAdminRegistration";
-import { AdminRegistrationRequestDto } from "../validators/AdminRegistrationValidator";
+import { AdminRegistrationRequestDto } from "../dto/AdminregistrationRequestDto";
+
 
 export class AdminRegistration implements IAdminRegistration {
-  constructor(private readonly accountRepository: IAccountRepository) {}
+  constructor(private readonly _accountRepository: IAccountRepository) {}
 
   async execute(dto: AdminRegistrationRequestDto) {
-    const account = await this.accountRepository.findByEmail(dto.email);
+    const account = await this._accountRepository.findByEmail(dto.email);
 
     if (!account) {
       throw new AppErrors(
@@ -17,8 +18,20 @@ export class AdminRegistration implements IAdminRegistration {
         HttpStatusCode.BAD_REQUEST,
       );
     }
-
-    await this.accountRepository.updateAdminDetails(
+ const existingAccount =
+      await this._accountRepository.findByPhone(
+        dto.phoneNumber,
+      );
+        if (
+      existingAccount &&
+      existingAccount.id !== account.id
+    ) {
+      throw new AppErrors(
+        MESSAGES.PHONE_ALREADY_EXISTS,
+        HttpStatusCode.CONFLICT,
+      );
+    }
+    await this._accountRepository.updateAdminDetails(
       account.id,
       dto.firstName,
       dto.lastName,

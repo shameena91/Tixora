@@ -1,10 +1,23 @@
-export interface IBaseRepository<T, CreateData = T> {  
+import {
+  QueryFilter,
+  UpdateQuery,
+} from "mongoose";
+
+export interface IBaseRepository<T, CreateData = T> {
   create(data: CreateData): Promise<T>;
+
   findById(id: string): Promise<T | null>;
-  findAll(): Promise<T[]>;
+
+  findAll(
+    filter?: QueryFilter<T>,
+  ): Promise<T[]>;
+
+  findOne(
+    filter: QueryFilter<T>,
+  ): Promise<T | null>;
+
+  update(
+    filter: QueryFilter<T>,
+    data: UpdateQuery<T>,
+  ): Promise<T | null>;
 }
-
-
-
-//T=returndata and createData=givingData it takes createData abd return typr T if not explicitely
-// given the Type the given data will be T

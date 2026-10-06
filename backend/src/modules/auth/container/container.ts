@@ -36,6 +36,7 @@ import { Logout } from "../application/usecases/Logout";
 import { BaseRepository } from "../../../infrastructure/repositories/Baserepository";
 import { AccountModel } from "../infrastructure/database/models/AccountModel";
 import { AccountCreateData, AccountDocument } from "../application/mappers/Accountmapper";
+// import { AccountCreateData, AccountDocument } from "../application/mappers/Accountmapper";
 
 
 
@@ -48,7 +49,7 @@ const baseAccountRepository =
     AccountModel
   );
 
-const accountRepository =
+export const accountRepository =
   new AccountRepository(baseAccountRepository);
 
 const otpService = new OtpService(

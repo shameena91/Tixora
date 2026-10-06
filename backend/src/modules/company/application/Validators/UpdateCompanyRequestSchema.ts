@@ -17,9 +17,7 @@ export const updateCompanyRequestSchema = z.object({
 
   companyType: z.enum(CompanyType).optional(),
 
-  numberOfEmployees: z
-    .enum(EmployeeCountRange)
-    .optional(),
+  numberOfEmployees: z.enum(EmployeeCountRange).optional(),
 
   website: z.url().nullable().optional(),
 
@@ -27,20 +25,23 @@ export const updateCompanyRequestSchema = z.object({
 
   description: z.string().nullable().optional(),
 
-  location: z.object({
-    address: z.string().trim().min(1),
-    city: z.string().trim().min(1),
-    state: z.string().trim().min(1),
-    country: z.string().trim().min(1),
-    postalCode: z.string().trim().min(1),
-  }).optional(),
+  location: z
+    .object({
+      address: z.string().trim().min(1),
+      city: z.string().trim().min(1),
+      state: z.string().trim().min(1),
+      country: z.string().trim().min(1),
+      postalCode: z.string().trim().min(1),
+    })
+    .optional(),
 
-  documents: z.array(z.object({
-      type: z.string(),
-      url: z.string(),
-      status: z.string(),
-    })).optional(),
+  documents: z
+    .array(
+      z.object({
+        type: z.string(),
+        url: z.string(),
+        status: z.string(),
+      }),
+    )
+    .optional(),
 });
-
-export type UpdateCompanyRequestDto =
-  z.infer<typeof updateCompanyRequestSchema>;

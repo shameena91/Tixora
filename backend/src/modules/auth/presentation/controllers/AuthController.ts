@@ -19,25 +19,24 @@ import { ILogout } from "../../application/abstractions/ILogout";
 
 export class AuthController {
   constructor(
-    private readonly login: ILogin,
-    private readonly sendOtp: ISendRegistrationOtp,
-    private readonly verifyOtp: IVarifyOtp,
-    private readonly createPassword: ICreatePassword,
-    private readonly forgotPassword: IForgotPassword,
-    private readonly resetPassword: IResetPassword,
-    private readonly refreshAccessToken: IRefreshAccessToken,
-    private readonly adminRegistration: IAdminRegistration,
-    private readonly logout: ILogout
+    private readonly _login: ILogin,
+    private readonly _sendOtp: ISendRegistrationOtp,
+    private readonly _verifyOtp: IVarifyOtp,
+    private readonly _createPassword: ICreatePassword,
+    private readonly _forgotPassword: IForgotPassword,
+    private readonly _resetPassword: IResetPassword,
+    private readonly _refreshAccessToken: IRefreshAccessToken,
+    private readonly _adminRegistration: IAdminRegistration,
+    private readonly _logout: ILogout
   ) {}
 
-  // Login
   async loginRequest(
     req: Request,
     res: Response,
     next: NextFunction
   ) {
     try {
-      const result = await this.login.execute(req.body);
+      const result = await this._login.execute(req.body);
 
       res.cookie("refreshToken", result.refreshToken, {
         httpOnly: true,
@@ -62,14 +61,14 @@ console.log("mannn:",result.account.firstName)
     }
   }
 
-  // Send OTP
+
   async sendOtpRequest(
     req: Request,
     res: Response
   ) {
     const { email } = req.body;
 
-    await this.sendOtp.execute(email);
+    await this._sendOtp.execute(email);
 
     return sendSuccess(
       res,
@@ -79,14 +78,13 @@ console.log("mannn:",result.account.firstName)
     );
   }
 
-  // Verify OTP
   async verifyOtpRequest(
     req: Request,
     res: Response
   ) {
     const { email, otp, purpose } = req.body;
 
-    const isValid = await this.verifyOtp.execute({
+    const isValid = await this._verifyOtp.execute({
       email,
       otp,
       purpose,
@@ -108,12 +106,12 @@ console.log("mannn:",result.account.firstName)
     );
   }
 
-  // Create Password
+
   async createPasswordRequest(
     req: Request,
     res: Response
   ) {
-    await this.createPassword.execute({
+    await this._createPassword.execute({
       email: req.body.email,
       password: req.body.password,
       confirmPassword: req.body.confirmPassword,
@@ -127,12 +125,12 @@ console.log("mannn:",result.account.firstName)
     );
   }
 
-  // Forgot Password
+
   async forgotPasswordRequest(
     req: Request,
     res: Response
   ) {
-    await this.forgotPassword.execute(
+    await this._forgotPassword.execute(
       req.body.email
     );
 
@@ -144,12 +142,12 @@ console.log("mannn:",result.account.firstName)
     );
   }
 
-  // Verify Reset OTP
+
   async verifyResetOtpRequest(
     req: Request,
     res: Response
   ) {
-    const isValid = await this.verifyOtp.execute({
+    const isValid = await this._verifyOtp.execute({
       email: req.body.email,
       otp: req.body.otp,
       purpose: "forgot-password",
@@ -171,12 +169,12 @@ console.log("mannn:",result.account.firstName)
     );
   }
 
-  // Reset Password
+  
   async resetPasswordRequest(
     req: Request,
     res: Response
   ) {
-    await this.resetPassword.execute(
+    await this._resetPassword.execute(
       req.body.email,
       req.body.password,
       req.body.confirmPassword
@@ -190,7 +188,7 @@ console.log("mannn:",result.account.firstName)
     );
   }
 
-  // Refresh Access Token
+
   async refreshAccessTokenRequest(
     req: Request,
     res: Response
@@ -206,7 +204,7 @@ console.log("mannn:",result.account.firstName)
     }
 
     const result =
-      await this.refreshAccessToken.execute(
+      await this._refreshAccessToken.execute(
         refreshToken
       );
 // console.log("refresh tokeeeeeeeeee,",result)
@@ -222,7 +220,7 @@ console.log("mannn:",result.account.firstName)
     );
   }
 
-  // Admin Registration
+
   async adminRegistrationRequest(
     req: Request,
     res: Response
@@ -231,7 +229,7 @@ console.log("mannn:",result.account.firstName)
       adminRegistrationSchema.parse(req.body);
 
     const result =
-      await this.adminRegistration.execute(
+      await this._adminRegistration.execute(
         validatedData
       );
 
@@ -249,7 +247,7 @@ console.log("mannn:",result.account.firstName)
   next: NextFunction
 ) {
   
-    await this.logout.execute();
+    await this._logout.execute();
 
     res.clearCookie("refreshToken", {
       httpOnly: true,

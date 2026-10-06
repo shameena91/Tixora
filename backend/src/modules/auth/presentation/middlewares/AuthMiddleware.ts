@@ -3,7 +3,7 @@ import { ITokenService } from "../../application/ports/ITokenServices";
 
 export class AuthMiddleware{
     constructor(
-        private readonly tokenService:ITokenService
+        private readonly _tokenService:ITokenService
     ){}
 
     authenticate(req:Request,res:Response,next:NextFunction){
@@ -22,7 +22,7 @@ export class AuthMiddleware{
           message: "Invalid authorization header",
         });
     }
-         const payload = this.tokenService.verifyAccessToken(token);
+         const payload = this._tokenService.verifyAccessToken(token);
            req.user = payload;
             next() 
       }  

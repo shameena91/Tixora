@@ -2,11 +2,7 @@ import multer from "multer";
 
 const storage = multer.memoryStorage();
 
-const allowedMimeTypes = [
-  "application/pdf",
-  "image/jpeg",
-  "image/png",
-];
+const allowedMimeTypes = ["application/pdf", "image/jpeg", "image/png"];
 
 export const documentUpload = multer({
   storage,

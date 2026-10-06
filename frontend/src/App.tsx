@@ -1,22 +1,32 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import EmailVarification from "./modules/auth/pages/EmailVarification";
-import OtpVerification from "./modules/auth/pages/OtpVerification";
-import CreatePassword from "./modules/auth/pages/CreatePassword";
-import AdminRegister from "./modules/auth/pages/AdminRegister";
-import CompanyInformation from "./modules/company/pages/CompanyInformation";
-
-import CompanyDocuments from "./modules/company/pages/CompanyDocuments";
-import ReviewDeclaration from "./modules/company/pages/RevieDeclaration";
-import CompanyRegistrationSuccess from "./modules/company/pages/CompanyRegistrationSuccess";
-import CompanyLocation from "./modules/company/pages/CompanyLocation";
-import LoginPage from "./modules/auth/pages/LoginPage";
-import ForgotPassword from "./modules/auth/pages/ForgotPassword";
-
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./modules/auth/components/protectedRoute";
+import AdminRegister from "./modules/auth/pages/AdminRegister";
+import CreatePassword from "./modules/auth/pages/CreatePassword";
+import EmailVarification from "./modules/auth/pages/EmailVarification";
+import ForgotPassword from "./modules/auth/pages/ForgotPassword";
+import LoginPage from "./modules/auth/pages/LoginPage";
+import OtpVerification from "./modules/auth/pages/OtpVerification";
 import PasswordReset from "./modules/auth/pages/PasswordReset";
-import Dashbord from "./modules/dashbord/pages/CompanyDashbord";
-import SuperAdminDashbord from "./modules/superadmin/SuperAdminDashbord";
+import CheckStatus from "./modules/company/pages/CheckStatus";
+import CompanyAdminDashboard from "./modules/company/pages/CompanyAdminDashboard";
+import CompanyDocuments from "./modules/company/pages/CompanyDocuments";
+import CompanyInformation from "./modules/company/pages/CompanyInformation";
+import CompanyLocation from "./modules/company/pages/CompanyLocation";
+import CompanySubscriptionPlan from "./modules/company/pages/CompanySubscriptionPlan";
+import RegistrationSubmitted from "./modules/company/pages/RegistrationSubmitted";
+import ReviewDeclaration from "./modules/company/pages/RevieDeclaration";
+import SuperAdminLayout from "./modules/superadmin/layout/SuperAdminLayout";
+import Companies from "./modules/superadmin/pages/company/Companies";
+import CompanyDetails from "./modules/superadmin/pages/company/CompanyDetails";
+// import CompanyRequestDetails from "./modules/superadmin/pages/CompanyrequestDetails";
+import CompanyRequests from "./modules/superadmin/pages/companyRequests/CompanyRequests";
+import SubscriptionPlan from "./modules/superadmin/pages/subscription/SubscriptionPlan";
+import SuperAdminDashbord from "./modules/superadmin/pages/SuperAdminDashbord";
+// import ViewPlanDetail from "./modules/superadmin/pages/ViewPlanDetail";
+import Home from "./pages/Home";
+import ViewPlanDetail from "./modules/superadmin/pages/subscription/ViewPlanDetail";
+import CompanyRequestDetails from "./modules/superadmin/pages/companyRequests/CompanyrequestDetails";
+
 
 const App = () => {
   return (
@@ -32,20 +42,22 @@ const App = () => {
           element={<CompanyInformation />}
         />
         <Route
-          path="/register/company-register/location"
+          path="/register/company-register/:companyRequestId"
+          element={<CompanyInformation />}
+        />
+
+        <Route
+          path="/register/company-register/:companyRequestId/location"
           element={<CompanyLocation />}
         />
+
         <Route
-          path="/register/company-register/documents"
+          path="/register/company-register/:companyRequestId/documents"
           element={<CompanyDocuments />}
         />
         <Route
-          path="/register/company-register/review-declaration"
+          path="/register/company-register/:companyRequestId/review-declaration"
           element={<ReviewDeclaration />}
-        />
-        <Route
-          path="/register/company-register/success"
-          element={<CompanyRegistrationSuccess />}
         />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -59,14 +71,58 @@ const App = () => {
         />
 
         <Route
-          path="/dashboard"
+          path="/register/company-register/success"
+          element={<RegistrationSubmitted />}
+        />
+        <Route
+          path="/Company-admin/check-status"
           element={
             <ProtectedRoute>
-              <Dashbord />
+              <CheckStatus />
             </ProtectedRoute>
           }
         />
-      <Route path="/super-admin/dashbord" element={<SuperAdminDashbord/>}/>
+        <Route
+          path="/Company-admin/select-subscription"
+          element={
+            <ProtectedRoute>
+              <CompanySubscriptionPlan />
+            </ProtectedRoute>
+          }
+        />
+
+
+<Route
+  path="/Company-admin/dashboard"
+  element={
+    <ProtectedRoute>
+      <CompanyAdminDashboard />
+    </ProtectedRoute>
+  }
+/>
+        <Route
+          path="/super-admin"
+          element={
+            <ProtectedRoute>
+              <SuperAdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="dashbord" element={<SuperAdminDashbord />} />
+
+          <Route path="company-requests" element={<CompanyRequests />} />
+
+          <Route
+            path="company-requests/:companyRequestId"
+            element={<CompanyRequestDetails />}
+          />
+
+          <Route path="companies" element={<Companies/>} />
+          <Route path="companies/:companyId" element={<CompanyDetails/>} />
+
+          <Route path="subscription-plan" element={<SubscriptionPlan />} />
+          <Route path="subscription-plan/:id" element={<ViewPlanDetail />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

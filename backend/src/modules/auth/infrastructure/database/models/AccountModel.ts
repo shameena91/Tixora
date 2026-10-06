@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import {  AccountRole,AccountStatus, RegistrationStep } from "../../../domain/entities/Account";
-import { AccountDocument } from "../../../application/mappers/AccountMapper";
+import { AccountDocument } from "../../../application/mappers/Accountmapper";
 
 
 

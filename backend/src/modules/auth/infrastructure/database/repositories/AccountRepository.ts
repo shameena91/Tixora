@@ -1,6 +1,8 @@
 
 import {
   Account,
+  AccountRole,
+  AccountStatus,
   RegistrationStep,
 } from "../../../domain/entities/Account";
 import { IAccountRepository } from "../../../domain/repositories/IAccountRepository";
@@ -9,12 +11,12 @@ import {
   AccountCreateData,
   AccountDocument,
   AccountMapper,
-} from "../../../application/mappers/AccountMapper"
+} from "../../../application/mappers/Accountmapper"
 import { IBaseRepository } from "../../../../../shared/repository/IBaseRepository";
 
 export class AccountRepository implements IAccountRepository {
   constructor(
-    private readonly baseRepository: IBaseRepository<
+    private readonly _baseRepository: IBaseRepository<
       AccountDocument,
       AccountCreateData
     >,
@@ -22,7 +24,7 @@ export class AccountRepository implements IAccountRepository {
   async create(account: Account): Promise<Account> {
     const persistenceData = AccountMapper.toPersistence(account);
 
-    const accountDocument = await this.baseRepository.create(persistenceData);
+    const accountDocument = await this._baseRepository.create(persistenceData);
 
     return AccountMapper.toDomain(accountDocument);
   }
@@ -40,7 +42,7 @@ export class AccountRepository implements IAccountRepository {
   }
 
   async findById(id: string): Promise<Account | null> {
-    const accountDocument = await this.baseRepository.findById(id);
+    const accountDocument = await this._baseRepository.findById(id);
 
     if (!accountDocument) {
       return null;
@@ -48,7 +50,18 @@ export class AccountRepository implements IAccountRepository {
 
     return AccountMapper.toDomain(accountDocument);
   }
+async findByPhone(phone: string): Promise<Account | null> {
+  const accountDocument =
+    await AccountModel.findOne({
+      phone,
+    }).lean<AccountDocument>();
 
+  if (!accountDocument) {
+    return null;
+  }
+
+  return AccountMapper.toDomain(accountDocument);
+}
   async updateAdminDetails(
     id: string,
     firstName: string,
@@ -97,4 +110,27 @@ export class AccountRepository implements IAccountRepository {
       },
     );
   }
+
+  async findSuperAdmin():Promise<Account|null>{
+    const accountDocument=await AccountModel.findOne({role:AccountRole.SUPER_ADMIN
+
+    }).lean<AccountDocument>()
+    if(!accountDocument)
+    {
+      return null
+    }
+    return AccountMapper.toDomain(accountDocument)
+  }
+  async updateStatus(
+  id: string,
+  status: AccountStatus,
+): Promise<void> {
+  await this._baseRepository.update(
+    { _id: id },
+    {
+      status,
+      updatedAt: new Date(),
+    },
+  );
+}
 }

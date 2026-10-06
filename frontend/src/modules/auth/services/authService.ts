@@ -1,219 +1,201 @@
 import type {
   AdminRegistrationResponse,
-  CreatePasswordRequest, CreatePasswordResponse,
-  SendOtpRequest, VerifyOtpRequest, VerifyOtpResponse,
+  CreatePasswordRequest,
+  CreatePasswordResponse,
+  SendOtpRequest,
+  VerifyOtpRequest,
+  VerifyOtpResponse,
 } from "../types/auth.types";
+
 import type { AdminRegistrationData } from "../validators/adminRegistrationSchema";
-const API_URL= import.meta.env.VITE_API_BASE_URL; 
 
-export const sendVerificationOtp = async (
-  data: SendOtpRequest
-) => {
-  const response=await fetch(`${API_URL}/auth/send-otp`,
+import { AUTH_ROUTES } from "../../../shared/constants/apiRoutes";
 
-  {
-    method:"POST",
-      headers: {
+import { AUTH_MESSAGES } from "../../../shared/constants/messages";
+
+const API_URL = import.meta.env.VITE_API_BASE_URL;
+
+// Send Verification OTP
+
+export const sendVerificationOtp = async (data: SendOtpRequest) => {
+  const response = await fetch(`${API_URL}${AUTH_ROUTES.SEND_OTP}`, {
+    method: "POST",
+    headers: {
       "Content-Type": "application/json",
     },
-body:JSON.stringify(data)
+    body: JSON.stringify(data),
+  });
 
-  })
   const result = await response.json();
-  if(!response.ok)
-  {
-    throw new Error(result.message || "Failed to send OTP");
+
+  if (!response.ok) {
+    throw new Error(result.message || AUTH_MESSAGES.SEND_OTP_FAILED);
   }
-     return result;
+
+  return result;
 };
 
-
-
-
+// Verify OTP
 
 export const verifyOtp = async (
-  data: VerifyOtpRequest
+  data: VerifyOtpRequest,
 ): Promise<VerifyOtpResponse> => {
-  const response = await fetch(
-    `${API_URL}/auth/verify-otp`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }
-  );
+  const response = await fetch(`${API_URL}${AUTH_ROUTES.VERIFY_OTP}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
 
   const result = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      result.message || "OTP verification failed"
-    );
-  }
-
-  return result;
-};
-export const createPassword=async(
-  data:CreatePasswordRequest):Promise<CreatePasswordResponse>=>{
-   const response=await fetch(`${API_URL}/auth/create-password`,{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-    },body:JSON.stringify(data)
-   })
-   const result=await response.json()
-
-  if (!response.ok) {
-    throw new Error(
-      result.message || "Failed to create password"
-    );
-  }
-    return result;
-}
-
-
-export const sendForgotPasswordOtp = async (
-  data: SendOtpRequest
-) => {
-  const response = await fetch(
-    `${API_URL}/auth/forgot-password`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }
-  );
-
-  const result = await response.json();
-
-  if (!response.ok) {
-    throw new Error(
-      result.message || "Failed to send reset OTP"
-    );
+    throw new Error(result.message || AUTH_MESSAGES.OTP_VERIFICATION_FAILED);
   }
 
   return result;
 };
 
+// Create Password
 
+export const createPassword = async (
+  data: CreatePasswordRequest,
+): Promise<CreatePasswordResponse> => {
+  const response = await fetch(`${API_URL}${AUTH_ROUTES.CREATE_PASSWORD}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || AUTH_MESSAGES.CREATE_PASSWORD_FAILED);
+  }
+
+  return result;
+};
+
+// Send Forgot Password OTP
+
+export const sendForgotPasswordOtp = async (data: SendOtpRequest) => {
+  const response = await fetch(`${API_URL}${AUTH_ROUTES.FORGOT_PASSWORD}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || AUTH_MESSAGES.SEND_RESET_OTP_FAILED);
+  }
+
+  return result;
+};
+
+// Register Admin
 
 export const registerAdmin = async (
-  data: AdminRegistrationData & { email: string }
+  data: AdminRegistrationData & { email: string },
 ): Promise<AdminRegistrationResponse> => {
-
-  console.log("ADMIN REGISTER REQUEST:", data);
-  console.log(
-    "ADMIN REGISTER URL:",
-    `${API_URL}/auth/admin-register`
-  );
-
-  const response = await fetch(
-    `${API_URL}/auth/admin-register`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }
-  );
-
-  console.log("ADMIN REGISTER STATUS:", response.status);
+  const response = await fetch(`${API_URL}${AUTH_ROUTES.ADMIN_REGISTER}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
 
   const result = await response.json();
 
-  console.log(
-    "ADMIN REGISTER BACKEND RESPONSE:",
-    result
-  );
-
   if (!response.ok) {
-    throw new Error(
-      result.message || "Failed to register admin"
-    );
+    throw new Error(result.message || AUTH_MESSAGES.ADMIN_REGISTER_FAILED);
   }
 
   return result;
 };
 
-export const login=async(email:string,password:string)=>{
-  const response=await fetch(`${API_URL}/auth/login`,{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json"
+// Login
+
+export const login = async (email: string, password: string) => {
+  const response = await fetch(`${API_URL}${AUTH_ROUTES.LOGIN}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-    credentials:"include",
-    body:JSON.stringify({
-      email,password
-    })
-  })
+    credentials: "include",
+    body: JSON.stringify({
+      email,
+      password,
+    }),
+  });
 
-  const data=await response.json()
-
-  if(!response.ok)
-  {
- throw new Error(data.message || "Login failed");
-  }
-  return data;
-}
-
-export const logout=async()=>
-{
-  const response=await fetch(`${API_URL}/auth/logout`,{
-
-   method:"POST",
-    credentials:"include",
-   
-  })
-
-  const data=await response.json()
+  const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.message || "Logout failed");
+    throw new Error(data.message || AUTH_MESSAGES.LOGIN_FAILED);
   }
 
   return data;
-}
-export const refreshAccessToken = async () => {
-  const response = await fetch(`${API_URL}/auth/refresh`, {
+};
+
+// Logout
+
+export const logout = async () => {
+  const response = await fetch(`${API_URL}${AUTH_ROUTES.LOGOUT}`, {
     method: "POST",
     credentials: "include",
   });
 
   const data = await response.json();
-  console.log("when refresh",data)
 
   if (!response.ok) {
-    throw new Error(data.message || "Failed to refresh access token");
+    throw new Error(data.message || AUTH_MESSAGES.LOGOUT_FAILED);
   }
 
   return data;
 };
 
+// Refresh Access Token
+
+export const refreshAccessToken = async () => {
+  const response = await fetch(`${API_URL}${AUTH_ROUTES.REFRESH}`, {
+    method: "POST",
+    credentials: "include",
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || AUTH_MESSAGES.REFRESH_TOKEN_FAILED);
+  }
+
+  return data;
+};
+
+// Reset Password
+
 export const resetPassword = async (
-  data: CreatePasswordRequest
+  data: CreatePasswordRequest,
 ): Promise<CreatePasswordResponse> => {
-  const response = await fetch(
-    `${API_URL}/auth/reset-password`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }
-  );
+  const response = await fetch(`${API_URL}${AUTH_ROUTES.RESET_PASSWORD}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
 
   const result = await response.json();
 
   if (!response.ok) {
-    throw new Error(
-      result.message || "Failed to reset password"
-    );
+    throw new Error(result.message || AUTH_MESSAGES.RESET_PASSWORD_FAILED);
   }
 
   return result;

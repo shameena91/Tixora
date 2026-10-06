@@ -4,6 +4,7 @@ declare global {
       user?: {
         accountId: string;
         email: string;
+        role: AccountRole;
       };
     }
   }

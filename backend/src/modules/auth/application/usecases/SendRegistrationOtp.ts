@@ -7,12 +7,12 @@ import { ISendRegistrationOtp } from "../abstractions/ISendRegistrationOtp";
 
 export class SendRegistrationOtp implements ISendRegistrationOtp {
   constructor(
-    private readonly otpService: IOtpService,
-    private readonly accountRepository: IAccountRepository,
+    private readonly _otpService: IOtpService,
+    private readonly _accountRepository: IAccountRepository,
   ) {}
 
   async execute(email: string): Promise<void> {
-    const account = await this.accountRepository.findByEmail(email);
+    const account = await this._accountRepository.findByEmail(email);
 
     if (account?.emailVerified) {
       throw new AppErrors(
@@ -21,6 +21,6 @@ export class SendRegistrationOtp implements ISendRegistrationOtp {
       );
     }
 
-    await this.otpService.sendOtp(email, "registration");
+    await this._otpService.sendOtp(email, "registration");
   }
 }

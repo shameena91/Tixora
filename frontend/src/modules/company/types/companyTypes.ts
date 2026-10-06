@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 export interface CompanyInfo {
   companyName: string;
   registrationNumber: string;
@@ -53,7 +55,18 @@ export interface GetCompanyRequestResponse {
   message: string;
   data: CompanyRequest;
 }
-
+export interface UpdateCompanyRequestData {
+  companyName: string;
+  registrationNumber: string;
+  companyEmail: string;
+  phone: string;
+  yearEstablished: number | null;
+  companyType: string;
+  numberOfEmployees: string;
+  website: string | null;
+  logo: string | null;
+  description: string | null;
+}
 export type DocumentErrors  = {
   registrationCertificate?: string;
   taxDocument?: string;
@@ -67,3 +80,31 @@ export interface LocationData {
   country: string;
   postalCode: string;
 }
+
+
+export interface CompanyRequestContextType {
+  companyRequest: CompanyRequest | null;
+  companyRequestId: string | null;
+  loading: boolean;
+
+  setCompanyRequest: (
+    companyRequest: CompanyRequest
+  ) => void;
+
+  clearCompanyRequest: () => void;
+}
+
+export interface CompanyRequestProviderProps {
+  children: ReactNode;
+}
+
+export type CompanyRequestStatus="PENDING"|
+"MORE_INFO_REQUIRED"|
+"APPROVED"|
+"REJECTED"
+export interface CompanyRequestStatusProps {
+  companyRequestId:string;
+  status: CompanyRequestStatus;
+  reviewRemarks: string | null;
+}
+

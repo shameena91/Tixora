@@ -7,19 +7,20 @@ import { ITokenService } from "../ports/ITokenServices";
 
 export class RefreshAccessToken implements IRefreshAccessToken{
   constructor(
-    private readonly accountRepository: IAccountRepository,
-    private readonly tokenService: ITokenService,
+    private readonly _accountRepository: IAccountRepository,
+    private readonly _tokenService: ITokenService,
   ) {}
 
   async execute(refreshToken: string): Promise<RefreshAccessTokenResult> {
-    const payload = this.tokenService.verifyRefreshToken(refreshToken);
-    const account = await this.accountRepository.findById(payload.accountId);
+    const payload = this._tokenService.verifyRefreshToken(refreshToken);
+    const account = await this._accountRepository.findById(payload.accountId);
     if (!account) {
       throw new AppErrors(MESSAGES.ACCOUNT_NOT_FOUND, HttpStatusCode.NOT_FOUND);
     }
-    const accessToken = this.tokenService.generateAccessToken({
+    const accessToken = this._tokenService.generateAccessToken({
       accountId: account.id,
       email: account.email,
+      role:account.role
     });
     return {accessToken,account};
   }

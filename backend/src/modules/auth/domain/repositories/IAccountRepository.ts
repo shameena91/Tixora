@@ -1,9 +1,10 @@
-import { Account, RegistrationStep } from "../entities/Account";
+import { Account, AccountStatus, RegistrationStep } from "../entities/Account";
 
 export interface IAccountRepository {
   create(account: Account): Promise<Account>;
   findByEmail(email: string): Promise<Account | null>;
   findById(id: string): Promise<Account | null>;
+  findByPhone(phone: string): Promise<Account | null>;
   updateAdminDetails( id: string,
   firstName: string,
   lastName: string,
@@ -18,4 +19,10 @@ export interface IAccountRepository {
     id: string,
     passwordHash: string
   ): Promise<void>;
+
+  findSuperAdmin():Promise<Account|null>
+  updateStatus(
+  id: string,
+  status: AccountStatus,
+): Promise<void>;
 }

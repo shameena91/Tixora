@@ -1,3 +1,3 @@
 export interface ICompleteCompanyRegistration{
-    execute(accountId:string):Promise<void>
+    execute(accountId:string,companyrequestId:string):Promise<void>
 }
