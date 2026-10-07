@@ -3,7 +3,7 @@ import { companyController } from "../../container/container";
 import { authMiddleware } from "../../../auth/container/container";
 import { COMAPANY_ROUTES } from "../../../../shared/constants/route";
 import { authorizeRoles } from "../../../auth/presentation/middlewares/AutherizeRole";
-import { createSubScriptionController } from "../../../subScriptionPlans/container/Container";
+import { createSubScriptionController } from "../../../SubScriptionPlans/container/Container";
 import { AccountRole } from "../../../auth/domain/entities/Account";
 
  const router = Router();

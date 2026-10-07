@@ -6,11 +6,7 @@ import {
   SubscriptionCreateData,
   SubscriptionDocument,
 } from "../application/mappers/SubscriptionMapper";
-import {
-  SubscriptionPlanCreateData,
-  SubscriptionPlanDocument,
-} from "../application/mappers/SubscriptionPlanMapper";
-import { CreateSubscription } from "../application/usecases/company-subscription/CreateSubscription";
+
 import { CreateSubscriptionPlan } from "../application/usecases/subscription-plan/CreateSubscriptionPlan";
 import { DeletePlan } from "../application/usecases/subscription-plan/DeletePlan";
 import { GetAllSubscriptionPlan } from "../application/usecases/subscription-plan/GetAllSubscriptionPlan";
@@ -32,6 +28,9 @@ import {
   paymentRepository,
 } from "../../payments/container/Container";
 import { GetActiveSubscriptionPlans } from "../application/usecases/subscription-plan/GetActiveSubscriptionPlans";
+import { provisionTenant } from "../../tenant/container/Container";
+import { SubscriptionPlanCreateData, SubscriptionPlanDocument } from "../application/mappers/SubscriptionPlanMapper";
+import { CreateSubscription } from "../application/usecases/company-subscription/CreateSubscription";
 
 const router = Router();
 
@@ -95,6 +94,7 @@ const verifySubscriptionPayment = new VerifySubscriptionPayment(
   companyRepository,
   razorpayOrderService,
   paymentRepository,
+   provisionTenant,
 );
 
 const getCompanySubscription = new GetCompanySubscription(

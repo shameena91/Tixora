@@ -98,7 +98,7 @@ export const SUBSCRIPTION_PLAN_ROUTES = {
 
    SUBSCRIPTION_STATUS:"/subscriptions/my-subscription-status",
    VERIFY_PAYMENT:"/subscriptions/verify-payment",
-   GET_ACTIVE_PLANS:"/subscriptions/active",
+   GET_ACTIVE_PLANS:"/subscription-plans/active",
   
 
 

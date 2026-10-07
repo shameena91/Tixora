@@ -1,4 +1,4 @@
-import { BillingCycle, SubscriptionStatus } from "../../../subScriptionPlans/domain/entities/Subscription";
+import { BillingCycle, SubscriptionStatus } from "../../../SubScriptionPlans/domain/entities/Subscription";
 import { CompanyStatus } from "../../domain/entities/Company";
 import { CompanyLocation } from "../../domain/types/CompanyLocation";
 

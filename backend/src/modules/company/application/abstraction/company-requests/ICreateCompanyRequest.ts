@@ -1,5 +1,5 @@
 import { CompanyRequest } from "../../../domain/entities/CompanyRequest";
-import { CreateCompanyRequestDto } from "../../Validators/CreateCompanyRequestSchema";
+import { CreateCompanyRequestDto } from "../../dto/CreateCompanyDto";
 
 export interface ICreateCompanyRequest{
      execute(

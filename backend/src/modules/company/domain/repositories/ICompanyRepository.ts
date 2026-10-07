@@ -23,6 +23,7 @@ import {
   IBaseRepository,
   PaginatedResult,
 } from "../../../../shared/repository/IBaseRepository";
+import { CompanyCreateData } from "../../application/mappers/CompanyMapper";
 
 import {
   Company,
@@ -30,7 +31,7 @@ import {
 } from "../entities/Company";
 
 export interface ICompanyRepository
-  extends IBaseRepository<Company> {
+  extends IBaseRepository<Company, CompanyCreateData> {
 
   findAllBySearch(
     search?: string,

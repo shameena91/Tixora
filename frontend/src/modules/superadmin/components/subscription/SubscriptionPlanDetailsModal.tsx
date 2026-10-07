@@ -13,10 +13,9 @@ import {
   Trash2,
   Power,
 } from "lucide-react";
+import type { SubscriptionPlanDetails } from "../../../../redux/slices/subscriptionPlan/subscriptionPlanTypes";
 
-import type {
-  SubscriptionPlanDetails,
-} from "../../../../redux/slices/subscriptionPlanSlice";
+
 
 interface SubscriptionPlanDetailsModalProps {
   plan: SubscriptionPlanDetails | null;

@@ -4,10 +4,9 @@ import {
     Ticket,
     Users,
 } from "lucide-react";
+import type { SubScriptionListItems } from "../../../../redux/slices/subscriptionPlan/subscriptionPlanTypes";
 
-import type {
-    SubScriptionListItems,
-} from "../../../../redux/slices/subscriptionPlanSlice";
+
 
 interface SubscriptionPlanCardProps {
   plan: SubScriptionListItems;

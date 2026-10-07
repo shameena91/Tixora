@@ -8,7 +8,7 @@ import {
 import { X } from "lucide-react";
 
 import createSubscriptionPlanValidationSchema from "../../schema/CreateSubscriptionPlanModal";
-import type { SubscriptionPlanDetails } from "../../../../redux/slices/subscriptionPlanSlice";
+import type { SubscriptionPlanDetails } from "../../../../redux/slices/subscriptionPlan/subscriptionPlanTypes";
 
 export type CreateSubscriptionPlanFormData = {
   name: string;

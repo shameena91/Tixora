@@ -49,7 +49,7 @@ import { GetCompanyDetails } from "../application/usecases/company/GetCompanyDet
 import {
   subscriptionPlanRepository,
   subscriptionRepository,
-} from "../../subScriptionPlans/container/Container";
+} from "../../SubScriptionPlans/container/Container";
 import { GetCompanyAdmins } from "../application/usecases/company/GetCompanyAdmins";
 import { UpdateCompanyStatus } from "../application/usecases/company/UpdateCompanyStatus";
 

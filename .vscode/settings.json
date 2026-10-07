@@ -1,7 +1,7 @@
 {
     "python-envs.pythonProjects": [
         {
-            "path": "backend/src/modules/subScriptionPlans/presentation/controllers",
+            "path": "backend/src/modules/SubScriptionPlans/presentation/controllers",
             "envManager": "ms-python.python:venv",
             "packageManager": "ms-python.python:pip"
         }

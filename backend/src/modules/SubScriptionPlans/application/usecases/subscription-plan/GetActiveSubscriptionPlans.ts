@@ -1,6 +1,7 @@
 import { SubscriptionPlanStatus } from "../../../domain/entities/SubscriptionPlan";
-
 import { ISubscriptionPlanRepository } from "../../../domain/repositories/ISubscriptionPlanRepository";
+
+;
 import { IGetActiveSubscriptionPlans } from "../../abstraction/subscription-plan/IGetActiveSubscriptionPlans";
 import { SubScriptionListItems } from "../../dto/SubScriptionListItems";
 

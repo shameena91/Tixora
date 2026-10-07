@@ -5,6 +5,7 @@ import { ErrorCode } from "../../../../../shared/errors/ErrorCode";
 import { ICompanyRepository } from "../../../../company/domain/repositories/ICompanyRepository";
 import { IPaymentRepository } from "../../../../payments/domain/repositories/IPaymentRepository";
 import { PaymentStatus } from "../../../../payments/domain/types/PaymentStatus";
+import { IProvisionTenant } from "../../../../tenant/application/abstractions/IProvisionTenant";
 
 import {
   BillingCycle,
@@ -28,6 +29,7 @@ export class VerifySubscriptionPayment implements IVerifySubscriptionPayment {
     private readonly _razorpayOrderService: IRazorpayOrderService,
 
     private readonly _paymentRepository: IPaymentRepository,
+     private readonly _provisionTenant: IProvisionTenant,
   ) {}
 
   async execute(
@@ -113,9 +115,10 @@ export class VerifySubscriptionPayment implements IVerifySubscriptionPayment {
 
       startDate,
     );
+const createdSubscription =
+  await this._subscriptionRepository.create(subscription);
 
-    const createdSubscription =
-      await this._subscriptionRepository.create(subscription);
+await this._provisionTenant.execute(company.id);
 
     await this._paymentRepository.updatePaymentStatus(
       payment.id,
