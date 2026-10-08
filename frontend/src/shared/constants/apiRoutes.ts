@@ -110,5 +110,9 @@ export const COMPANY_ROUTE={
 
    GET_COMPANY_ADMINS: (companyId:string)=>`/companies/${companyId}/admin`,
    GET_BILLING_HISTORY:(companyId:string)=>`/companies/${companyId}/billingHistory`,
-UPDATE_COMPANY_STATUS:(companyId:string,)=>`/companies/${companyId}/status`
+UPDATE_COMPANY_STATUS:(companyId:string,)=>`/companies/${companyId}/status`,
+MY_COMPANY:"/companies/my-company",
+MY_COMPANY_DOCUMENTS:
+  "/companies/my-company/documents",
+
 } as const

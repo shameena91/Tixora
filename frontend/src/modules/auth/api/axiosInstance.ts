@@ -30,6 +30,16 @@ axiosInstance.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config as RetryAxiosRequestConfig;
+
+     console.log(
+    "API ERROR STATUS:",
+    error.response?.status,
+  );
+
+  console.log(
+    "API ERROR MESSAGE:",
+    error.response?.data?.message,
+  );
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&

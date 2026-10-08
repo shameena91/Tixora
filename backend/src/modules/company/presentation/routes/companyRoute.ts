@@ -18,6 +18,20 @@ router.get(
   }
 );
 router.get(
+
+   COMAPANY_ROUTES.GET_MY_COMPANY,
+ 
+  authorizeRoles(AccountRole.COMPANY_ADMIN),
+  companyController.getMyCompany.bind(companyController),
+);
+router.get(
+  COMAPANY_ROUTES.GET_MY_COMPANY_DOCUMENTS,
+  authorizeRoles(AccountRole.COMPANY_ADMIN),
+  companyController.getMyCompanyDocuments.bind(
+    companyController,
+  ),
+);
+router.get(
   COMAPANY_ROUTES.GET_BY_ID,
   
   async (req, res) => {
@@ -25,6 +39,7 @@ router.get(
     await companyController.GetCompany(req,res);
   }
 );
+
 
 
 

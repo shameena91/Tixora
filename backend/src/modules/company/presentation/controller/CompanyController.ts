@@ -14,6 +14,8 @@ import { IGetCompanyAdmins } from "../../application/abstraction/company/IGetCom
 import { IUpdateCompanyStatus } from "../../application/abstraction/company/IUpdateCompanyStatus";
 import { CompanyStatus } from "../../domain/entities/Company";
 import { PAGINATION } from "../../../../shared/constants/paginationConstatnt";
+import { IGetMyCompanyDetails } from "../../application/abstraction/company/IGetMyCompanyDetails";
+import { IGetMyCompanyDocuments } from "../../application/abstraction/company-requests/IGetMyCompanyDocuments.tsIGetMyCompanyDocuments";
 
 export class CompanyController {
   constructor(
@@ -21,6 +23,8 @@ export class CompanyController {
     private readonly _getCompanyDetails: IGetCompanyDetails,
     private readonly _getCompanyAdmin: IGetCompanyAdmins,
     private readonly _updateCompanyStatus: IUpdateCompanyStatus,
+     private readonly _getMyCompanyDetails: IGetMyCompanyDetails,
+       private readonly _getMyCompanyDocuments: IGetMyCompanyDocuments,
   ) {}
 
  async getAllCompanies(
@@ -123,4 +127,52 @@ const limit =
       HttpStatusCode.OK,
     );
   }
+async getMyCompany(req: Request, res: Response) {
+  const accountId = req.user?.accountId;
+
+
+  console.log("getMyCompany",accountId)
+  if (!accountId) {
+    return sendError(
+      res,
+      MESSAGES.UNAUTHORIZED,
+      HttpStatusCode.UNAUTHORIZED,
+    );
+  }
+
+  const company = await this._getMyCompanyDetails.execute(accountId);
+
+  return sendSuccess(
+    res,
+    MESSAGES.COMPANY_DETAILS_FETCHED,
+    company,
+    HttpStatusCode.OK,
+  );
+}
+  async getMyCompanyDocuments(
+  req: Request,
+  res: Response,
+) {
+  const accountId = req.user?.accountId;
+
+  if (!accountId) {
+    return sendError(
+      res,
+      MESSAGES.UNAUTHORIZED,
+      HttpStatusCode.UNAUTHORIZED,
+    );
+  }
+
+  const documents =
+    await this._getMyCompanyDocuments.execute(
+      accountId,
+    );
+
+  return sendSuccess(
+    res,
+     MESSAGES.COMPANY_DOCUMENTS_FETCHED,
+    documents,
+    HttpStatusCode.OK,
+  );
+}
 }

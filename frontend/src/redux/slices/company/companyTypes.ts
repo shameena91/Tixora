@@ -1,7 +1,16 @@
-// ------------------------------------
-// Company Location
-// ------------------------------------
 
+
+
+
+export interface CompanyDocument {
+  documentType: string;
+  fileName: string;
+}
+
+export interface MyCompanyDocuments {
+  companyRequestId: string;
+  documents: CompanyDocument[];
+}
 export interface CompanyLocation {
   address: string;
   city: string;
@@ -156,6 +165,7 @@ export interface CompanyState {
   companyListLimit: number;
   companyListTotalPages: number;
 
+
   // Company details
   companyDetails:
     | CompanyDetails
@@ -188,4 +198,7 @@ export interface CompanyState {
   // Company status state
   companyStatusLoading: boolean;
   companyStatusError: string | null;
+  companyDocuments: MyCompanyDocuments | null;
+companyDocumentsLoading: boolean;
+companyDocumentsError: string | null;
 }

@@ -8,7 +8,6 @@ import LoginPage from "./modules/auth/pages/LoginPage";
 import OtpVerification from "./modules/auth/pages/OtpVerification";
 import PasswordReset from "./modules/auth/pages/PasswordReset";
 import CheckStatus from "./modules/company/pages/CheckStatus";
-import CompanyAdminDashboard from "./modules/company/pages/CompanyAdminDashboard";
 import CompanyDocuments from "./modules/company/pages/CompanyDocuments";
 import CompanyInformation from "./modules/company/pages/CompanyInformation";
 import CompanyLocation from "./modules/company/pages/CompanyLocation";
@@ -26,6 +25,9 @@ import SuperAdminDashbord from "./modules/superadmin/pages/SuperAdminDashbord";
 import Home from "./pages/Home";
 import ViewPlanDetail from "./modules/superadmin/pages/subscription/ViewPlanDetail";
 import CompanyRequestDetails from "./modules/superadmin/pages/companyRequests/CompanyrequestDetails";
+import CompanyAdminLayout from "./modules/company-admin/layouts/CompanyAdminLayout";
+import CompanyAdminDashboard from "./modules/company-admin/pages/CompanyAdminDashboard";
+import CompanyProfile from "./modules/company-admin/pages/CompanyProfile";
 
 
 const App = () => {
@@ -75,7 +77,7 @@ const App = () => {
           element={<RegistrationSubmitted />}
         />
         <Route
-          path="/Company-admin/check-status"
+          path="/company-admin/check-status"
           element={
             <ProtectedRoute>
               <CheckStatus />
@@ -83,7 +85,7 @@ const App = () => {
           }
         />
         <Route
-          path="/Company-admin/select-subscription"
+          path="/company-admin/select-subscription"
           element={
             <ProtectedRoute>
               <CompanySubscriptionPlan />
@@ -93,13 +95,16 @@ const App = () => {
 
 
 <Route
-  path="/Company-admin/dashboard"
+  path="/company-admin"
   element={
     <ProtectedRoute>
-      <CompanyAdminDashboard />
+      <CompanyAdminLayout />
     </ProtectedRoute>
   }
-/>
+>
+  <Route path="dashboard" element={<CompanyAdminDashboard />} />
+  <Route path="company-information" element={<CompanyProfile/>} />
+  </Route>
         <Route
           path="/super-admin"
           element={
@@ -123,6 +128,10 @@ const App = () => {
           <Route path="subscription-plan" element={<SubscriptionPlan />} />
           <Route path="subscription-plan/:id" element={<ViewPlanDetail />} />
         </Route>
+
+
+
+        
       </Routes>
     </BrowserRouter>
   );

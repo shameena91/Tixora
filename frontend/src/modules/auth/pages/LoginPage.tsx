@@ -83,18 +83,18 @@ const LoginPage = () => {
         console.log("Fromlogin", companyRequest);
 
         if (companyRequest.data.status !== "APPROVED") {
-          navigate("/Company-admin/check-status");
+          navigate("/company-admin/check-status");
           return;
         }
 
         const subscription = await getMySubscriptionStatus();
         console.log("Fromlogins", subscription);
         if (subscription?.data?.status === "ACTIVE") {
-          navigate("/Company-admin/dashboard");
+          navigate("/company-admin/dashboard");
           return;
         }
 
-        navigate("/Company-admin/select-subscription");
+        navigate("/company-admin/select-subscription");
       }
     } catch (error) {
       console.error("Login error:", error);
