@@ -89,7 +89,7 @@ const CompanySubscriptionPlans = () => {
           "Subscription plan selected successfully",
         );
 
-        navigate("/Company-admin/dashboard");
+        navigate("/company-admin/dashboard");
 
         return;
       }
@@ -225,7 +225,7 @@ const CompanySubscriptionPlans = () => {
               );
 
               navigate(
-                "/Company-admin/dashboard",
+                "/company-admin/dashboard",
               );
             } catch (error) {
               console.error(

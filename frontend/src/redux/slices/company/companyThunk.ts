@@ -14,8 +14,10 @@ import type {
   CompanyAdminList,
   CompanyDetails,
   CompanyListPaginatedResponse,
+  MyCompanyDocuments,
   UpdateCompanyStatusResponse,
 } from "./companyTypes";
+import { getMyCompany, getMyCompanyDocuments } from "../../../modules/company-admin/services/companyAdminService";
 
 // ------------------------------------
 // Update Company Status
@@ -182,6 +184,9 @@ export const fetchCompanyThunk =
     },
   );
 
+
+
+
 // ------------------------------------
 // Fetch Billing History
 // ------------------------------------
@@ -214,6 +219,66 @@ export const fetchBillingHistory =
 
         return rejectWithValue(
           "Failed to fetch billing history",
+        );
+      }
+    },
+  );
+
+  export const fetchMyCompanyThunk =
+  createAsyncThunk<
+    CompanyDetails,
+    void,
+    { rejectValue: string }
+  >(
+    "company/getMyCompany",
+    async (
+      _,
+      { rejectWithValue },
+    ) => {
+      try {
+        const response =
+          await getMyCompany();
+
+        return response.data;
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          return rejectWithValue(
+            error.response?.data?.message ||
+              "Failed to fetch my company details",
+          );
+        }
+
+        return rejectWithValue(
+          "Failed to fetch my company details",
+        );
+      }
+    },
+  );
+
+
+export const fetchMyCompanyDocumentsThunk =
+  createAsyncThunk<
+    MyCompanyDocuments,
+    void,
+    { rejectValue: string }
+  >(
+    "company/getMyCompanyDocuments",
+    async (_, { rejectWithValue }) => {
+      try {
+        const response =
+          await getMyCompanyDocuments();
+
+        return response.data;
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          return rejectWithValue(
+            error.response?.data?.message ||
+              "Failed to fetch company documents",
+          );
+        }
+
+        return rejectWithValue(
+          "Failed to fetch company documents",
         );
       }
     },

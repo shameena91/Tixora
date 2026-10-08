@@ -1,7 +1,7 @@
 import { useContext } from "react";
 
 import { AuthContext } from "../../auth/context/AuthContext";
-import CompanyAdminNavbar from "../components/common/CompanyAdminnavbar";
+import CompanyAdminNavbar from "../../company-admin/componenets/common/CompanyAdminnavbar";
 
 const CompanyAdminDashboard = () => {
   const auth = useContext(AuthContext);

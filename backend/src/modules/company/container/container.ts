@@ -52,6 +52,8 @@ import {
 } from "../../SubScriptionPlans/container/Container";
 import { GetCompanyAdmins } from "../application/usecases/company/GetCompanyAdmins";
 import { UpdateCompanyStatus } from "../application/usecases/company/UpdateCompanyStatus";
+import { GetMyCompanyDetails } from "../application/usecases/company/GetMyCompanyDetails";
+import { GetMyCompanyDocuments } from "../application/usecases/companyRequests/GetMyCompanyDocuments";
 
 const baseCompanyRequestRepository = new BaseRepository(CompanyRequestModel);
 
@@ -172,6 +174,14 @@ const getCompanyDetails = new GetCompanyDetails(
   subscriptionPlanRepository,
   accountRepository,
 );
+const getMyCompanyDocuments =
+  new GetMyCompanyDocuments(
+    companyRequestRepository,
+  );
+export const getMyCompanyDetails=new GetMyCompanyDetails(
+  companyreopsitory,
+  getCompanyDetails
+)
 export const updateCompanyStatus = new UpdateCompanyStatus(companyreopsitory);
 export const companyRequestController = new CompanyRequestController(
   createCompanyRequest,
@@ -197,4 +207,6 @@ export const companyController = new CompanyController(
   getCompanyDetails,
   getCompanyAdmin,
   updateCompanyStatus,
+  getMyCompanyDetails,
+  getMyCompanyDocuments
 );

@@ -46,6 +46,9 @@ export const COMAPANY_ROUTES={
  GET_COMPANY_ADMIN:"/:companyId/admin",
  GET_PAYMENT_HISTORY:"/:companyId/billingHistory",
  UPDATE_STATUS: "/:companyId/status",
+ GET_MY_COMPANY:"/my-company",
+ GET_MY_COMPANY_DOCUMENTS:
+  "/my-company/documents",
 
 }
 export const SUBSCRIPTION_ROUTE_CONSTANTS={

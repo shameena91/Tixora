@@ -13,7 +13,7 @@ const RegistrationSubmitted = () => {
     navigate("/");
   };
 const handleCheckStatus=()=>{
-  navigate("/Company-admin/check-status")
+  navigate("/company-admin/check-status")
 }
  const searchParams = new URLSearchParams(window.location.search);
 const isResubmit = searchParams.get("resubmit") === "true";

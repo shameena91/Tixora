@@ -36,6 +36,8 @@ COMPANY_LIST_FETCHED:"companylist fetched",
   DOCUMENT_UPLOADED: "Document uploaded successfully",
 
   COMPANY_DOCUMENTS_SUBMITTED: "Company documents submitted successfully",
+  COMPANY_DOCUMENTS_FETCHED:
+  "Company documents fetched successfully.",
 
   COMPANY_REGISTRATION_SUBMITTED: "Company registration submitted successfully",
 

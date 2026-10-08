@@ -192,7 +192,7 @@ console.log("from staatus page",companyRequestId)
       }
 
       if (status === "APPROVED") {
-        navigate("/Company-admin/select-subscription");
+        navigate("/company-admin/select-subscription");
       }
     }}
     className="mt-6 rounded-lg bg-[#7146b8] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#6039a0]"

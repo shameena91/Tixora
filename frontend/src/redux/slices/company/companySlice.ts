@@ -7,6 +7,8 @@ import {
   fetchCompanyAdminThunk,
   fetchCompanyListsThunk,
   fetchCompanyThunk,
+  fetchMyCompanyDocumentsThunk,
+  fetchMyCompanyThunk,
   updateCompanyStatusThunk,
 } from "./companyThunk";
 
@@ -55,6 +57,9 @@ const initialState: CompanyState = {
   // Company status state
   companyStatusLoading: false,
   companyStatusError: null,
+  companyDocuments: null,
+companyDocumentsLoading: false,
+companyDocumentsError: null,
 };
 
 // ------------------------------------
@@ -337,7 +342,72 @@ const companySlice =
               action.payload ||
               "Failed to update company status";
           },
-        );
+        )
+        .addCase(
+  fetchMyCompanyThunk.pending,
+  (state) => {
+    state.companyDetailsLoading =
+      true;
+
+    state.companyDetailsError =
+      null;
+  },
+)
+
+.addCase(
+  fetchMyCompanyThunk.fulfilled,
+  (
+    state,
+    action,
+  ) => {
+    state.companyDetailsLoading =
+      false;
+
+    state.companyDetailsError =
+      null;
+
+    state.companyDetails =
+      action.payload;
+  },
+)
+
+.addCase(
+  fetchMyCompanyThunk.rejected,
+  (
+    state,
+    action,
+  ) => {
+    state.companyDetailsLoading =
+      false;
+
+    state.companyDetailsError =
+      action.payload ||
+      "Failed to fetch my company details";
+  },
+).addCase(
+  fetchMyCompanyDocumentsThunk.pending,
+  (state) => {
+    state.companyDocumentsLoading = true;
+    state.companyDocumentsError = null;
+  },
+)
+.addCase(
+  fetchMyCompanyDocumentsThunk.fulfilled,
+  (state, action) => {
+    state.companyDocumentsLoading = false;
+    state.companyDocumentsError = null;
+    state.companyDocuments = action.payload;
+  },
+)
+.addCase(
+  fetchMyCompanyDocumentsThunk.rejected,
+  (state, action) => {
+    state.companyDocumentsLoading = false;
+    state.companyDocumentsError =
+      action.payload ||
+      "Failed to fetch company documents";
+  },
+)
     },
   });
 

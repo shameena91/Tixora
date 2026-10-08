@@ -22,7 +22,7 @@ useEffect(() => {
     }
 
     if (auth?.role === "COMPANY_ADMIN") {
-      navigate("/Company-admin/check-status", { replace: true });
+      navigate("/company-admin/check-status", { replace: true });
       return;
     }
 
