@@ -30,7 +30,7 @@ export class UpdateSubscriptionPlan implements IUpdateSubscriptionPlan {
 
     const updatedSubscriptionPlan =
       await this._subscriptionPlanRepository.update(
-        { id },
+         {id} ,
         data,
       );
 

@@ -8,23 +8,22 @@ export class TenantProvisioningService implements ITenantProvisioningService {
     private readonly tenantDatabaseProvisioner: TenantDatabaseProvisioner,
   ) {}
 
-  async provision(companyId: string): Promise<string> {
-    const databaseName =
-      `tixora_tenant_${companyId}`;
+ async provision(companyId: string): Promise<string> {
+  const databaseName = `tixora_tenant_${companyId}`;
 
-    console.log(" Database name:", databaseName);
-    const connection =
-      await this.tenantDatabaseManager.connect(
-        databaseName,
-      );
+  console.log("Database name:", databaseName);
 
-    console.log(" Tenant database connected");
-    await this.tenantDatabaseProvisioner.provision(
-      connection,
-    );
+  const connection =
+    await this.tenantDatabaseManager.connect(databaseName);
 
-    await connection.close();
+  console.log("Tenant database connected");
 
-    return databaseName;
+  try {
+    await this.tenantDatabaseProvisioner.provision(connection);
+  } finally {
+    await this.tenantDatabaseManager.close(databaseName);
   }
+
+  return databaseName;
+}
 }

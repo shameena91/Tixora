@@ -67,3 +67,12 @@ export const SUBSCRIPTION_ROUTE_CONSTANTS={
 
 }
 
+
+export const DEPARTMENT_ROUTE_CONSTATNTS={
+  CREATE:"/",
+  GET_ALL:"/",
+  GET_DEPARTMENT:"/:departmentId",
+  UPDATE_STATUS:"/:departmentId/status",
+  UPDATE:"/:departmentId"
+  
+}

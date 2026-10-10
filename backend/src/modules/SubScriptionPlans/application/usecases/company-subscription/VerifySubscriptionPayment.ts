@@ -118,7 +118,7 @@ export class VerifySubscriptionPayment implements IVerifySubscriptionPayment {
 const createdSubscription =
   await this._subscriptionRepository.create(subscription);
 
-await this._provisionTenant.execute(company.id);
+await this._provisionTenant.execute(company.id,company.companyName);
 
     await this._paymentRepository.updatePaymentStatus(
       payment.id,

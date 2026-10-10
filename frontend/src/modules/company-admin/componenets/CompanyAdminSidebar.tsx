@@ -76,7 +76,7 @@ const CompanyAdminSidebar = ({
             />
 
             <NavItem
-              to="/departments"
+              to="/company-admin/departments"
               icon={FolderTree}
               label="Department Management"
               isCollapsed={isCollapsed}

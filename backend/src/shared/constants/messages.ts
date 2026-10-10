@@ -1,4 +1,6 @@
 export const MESSAGES = {
+
+  AUTHENTICATED_ID_MISING:"Authenticated account ID is missing",
   ACCOUNT_NOT_FOUND: "Account not found",
   INVALID_EMAIL_OR_PASSWORD: "Invalid Email or Password",
   PASSWORDS_DO_NOT_MATCH: "Passwords do not match",
@@ -61,6 +63,17 @@ COMPANY_LIST_FETCHED:"companylist fetched",
       SUBSCRIPTION_PLAN_UPDATED:"SubScription plan status updated successfully",
 
   SUBSCRIPTION_PLAN_NOT_ACTIVE:"Subscription plan Not Active",
-  SUBSCRIPTION_PLAN_LIST_FETCHED:"SubscriptionPlan List fetched successfully"
+  SUBSCRIPTION_PLAN_LIST_FETCHED:"SubscriptionPlan List fetched successfully",
+DEPARTMENT_CODE_ALREADY_EXISTS:
+  "Department code already exists.",
 
+DEPARTMENT_NAME_ALREADY_EXISTS:
+  "Department name already exists.",
+
+  DEPARTMENT_CREATED:"Department created",
+  DEPARTMENT_FETCHED:"Department Fetched",
+  DEPARTMENT_NOT_FOUND:"Deparment not founde",
+  DEPARTMENT_STATUS_UPDATED:"Department status updated",
+  DEPARTMENT_NAME_AND_CODE_EXIST:"Department name and code are required",
+  DEPARTMENT_UPDATED:"Department detaails updated"
 };

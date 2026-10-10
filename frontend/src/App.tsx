@@ -28,6 +28,8 @@ import CompanyRequestDetails from "./modules/superadmin/pages/companyRequests/Co
 import CompanyAdminLayout from "./modules/company-admin/layouts/CompanyAdminLayout";
 import CompanyAdminDashboard from "./modules/company-admin/pages/CompanyAdminDashboard";
 import CompanyProfile from "./modules/company-admin/pages/CompanyProfile";
+import DepartmentListPage from "./modules/department/pages/DepartmentListPage";
+import ViewDepartmentPage from "./modules/department/pages/ViewDepartmentPage";
 
 
 const App = () => {
@@ -104,6 +106,12 @@ const App = () => {
 >
   <Route path="dashboard" element={<CompanyAdminDashboard />} />
   <Route path="company-information" element={<CompanyProfile/>} />
+    <Route path="departments" element={<DepartmentListPage/>} />
+<Route
+  path="departments/:departmentId"
+  element={<ViewDepartmentPage />}
+/>
+  
   </Route>
         <Route
           path="/super-admin"

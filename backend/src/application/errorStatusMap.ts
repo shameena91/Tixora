@@ -16,6 +16,10 @@ export const errorStatusMap: Record<string, number> = {
   [ErrorCode.INVALID_PAYMENT_SIGNATURE]:HttpStatusCode.BAD_REQUEST,
   [ErrorCode.PAYMENT_NOT_FOUND]:HttpStatusCode.NOT_FOUND,
   [ErrorCode.COMPANY_ADMIN_NOT_FOUND]:HttpStatusCode.NOT_FOUND,
-  [ErrorCode.SUBSCRIPTION_PLAN_ALREADY_EXISTS]:HttpStatusCode.CONFLICT
-  
+  [ErrorCode.SUBSCRIPTION_PLAN_ALREADY_EXISTS]:HttpStatusCode.CONFLICT,
+  [ErrorCode.DEPARTMENT_CODE_ALREADY_EXISTS]: HttpStatusCode.CONFLICT,
+  [ErrorCode.DEPARTMENT_ALREADY_EXISTS]:HttpStatusCode.CONFLICT,
+
+  [ErrorCode.DEPARTMENT_NOT_FOUND]:HttpStatusCode.NOT_FOUND,
+  [ErrorCode.INVALID_INPUT]:HttpStatusCode.CONFLICT
 };
