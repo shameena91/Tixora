@@ -3,7 +3,7 @@ import { TenantDatabaseManager } from "../infrastructure/database/TenantDatabase
 import { TenantDatabaseProvisioner } from "../infrastructure/database/TenantDatabaseProvisioner";
 import { TenantProvisioningService } from "../infrastructure/services/TenantProvisioningService";
 
-const tenantDatabaseManager =
+export const tenantDatabaseManager =
   new TenantDatabaseManager();
 
 const tenantDatabaseProvisioner =

@@ -4,6 +4,8 @@ import companyRequestReducer from "../slices/companyRrequest/companyRequestSlice
 import subscriptionPlanReducer from "../slices/subscriptionPlan/subscriptionPlanSlice";
 import companylistReducer from "../slices/company/companySlice"
 import companySubscriptionReducer from "../slices/companySubscription/companySubscriptionSlice";
+
+import departmentReducer from "../slices/department/departmentSlice";
 export const store=configureStore({
     reducer:{
           superAdminDashboard: superAdminDashboardReducer,
@@ -11,6 +13,8 @@ export const store=configureStore({
            subscriptionPlan: subscriptionPlanReducer,
     company:companylistReducer,
     companySubscription: companySubscriptionReducer,
+    department: departmentReducer,
+  
         }
 })
 

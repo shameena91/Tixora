@@ -1,3 +1,3 @@
 export interface IProvisionTenant {
-  execute(companyId: string): Promise<string>;
+  execute(companyId: string,companyName:string): Promise<string>;
 }

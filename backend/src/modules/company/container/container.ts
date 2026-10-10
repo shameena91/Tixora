@@ -57,7 +57,7 @@ import { GetMyCompanyDocuments } from "../application/usecases/companyRequests/G
 
 const baseCompanyRequestRepository = new BaseRepository(CompanyRequestModel);
 
-const companyRequestRepository = new CompanyRequestRepository(
+export const companyRequestRepository = new CompanyRequestRepository(
   baseCompanyRequestRepository,
 );
 
@@ -69,7 +69,7 @@ const baseAccountRepository = new BaseRepository<
 const accountRepository = new AccountRepository(baseAccountRepository);
 const fileStorage = new S3FileStorage();
 
-const createCompanyRequest = new CreateCompanyRequest(
+export const createCompanyRequest = new CreateCompanyRequest(
   companyRequestRepository,
   accountRepository,
 );
@@ -78,9 +78,10 @@ const baseCompanyrepository = new BaseRepository<
   CompanyDocument,
   CompanyCreateData
 >(CompanyModel);
-const comapnyRepository = new CompanyRepository(baseCompanyrepository);
+export const comapnyRepository = new CompanyRepository(baseCompanyrepository);
+
 const createCompany = new CreateCompany(comapnyRepository);
-const approveCompanyRequest = new ApproveCompanyRequest(
+export const approveCompanyRequest = new ApproveCompanyRequest(
   companyRequestRepository,
   createCompany,
   createTimeline,
@@ -127,7 +128,7 @@ const completeCompanyRegistration = new CompleteCompanyRegistration(
   createTimeline,
 );
 
-const getCompanyRequest = new GetCompanyRequest(
+export const getCompanyRequest = new GetCompanyRequest(
   companyRequestRepository,
   accountRepository,
   fileStorage,

@@ -15,6 +15,7 @@ import subcsriptionPlanRoutes from "./modules/SubScriptionPlans/presentation/rou
 
 import subscriptionRoutes from "./modules/SubScriptionPlans/presentation/routes/subscriptionRoutes";
 import paymentRoutes from "./modules/payments/presentation/routes/PaymentRoutes"
+import departmentRoutes from "./modules/departments/presentation/routes/departmentRoutes";
 
 const app = express();
 
@@ -52,6 +53,7 @@ app.use(
 companyRoute
 );
 app.use("/api/companies", paymentRoutes);
+app.use("/api/departments", departmentRoutes);
 
 app.get("/health", (_req, res) => {
   res.status(200).json({

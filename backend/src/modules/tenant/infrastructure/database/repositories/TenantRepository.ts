@@ -1,16 +1,16 @@
 import { BaseRepository } from "../../../../../infrastructure/repositories/Baserepository";
 
-import { ITenantRepository } from "../../../domain/entities/repositories/ITenantrepository";
+import { ITenantRepository } from "../../../domain/repositories/ITenantrepository";
 
 import { Tenant } from "../../../domain/entities/Tenant";
 
 import {
-    TenantCreateData,
-    TenantMapper,
+  TenantCreateData,
+  TenantMapper,
 } from "../../../application/mappers/TenantMapper";
 
 import {
-    TenantDocument
+  TenantDocument
 } from "../models/TenantModel";
 
 export class TenantRepository
