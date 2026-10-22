@@ -21,5 +21,11 @@ export const errorStatusMap: Record<string, number> = {
   [ErrorCode.DEPARTMENT_ALREADY_EXISTS]:HttpStatusCode.CONFLICT,
 
   [ErrorCode.DEPARTMENT_NOT_FOUND]:HttpStatusCode.NOT_FOUND,
-  [ErrorCode.INVALID_INPUT]:HttpStatusCode.CONFLICT
+  [ErrorCode.INVALID_INPUT]:HttpStatusCode.CONFLICT,
+
+  [ErrorCode.CATEGORY_NOT_FOUND]: HttpStatusCode.NOT_FOUND,
+[ErrorCode.CATEGORY_ALREADY_EXISTS]: HttpStatusCode.CONFLICT,
+[ErrorCode.SUBSCRIPTION_NOT_FOUND]:HttpStatusCode.NOT_FOUND,
+[ErrorCode.DEPARTMENT_LIMIT_REACHED]:HttpStatusCode.CONFLICT
+
 };

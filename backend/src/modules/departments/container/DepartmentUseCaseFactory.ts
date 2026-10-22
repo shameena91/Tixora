@@ -10,6 +10,8 @@ import { tenantDatabaseManager } from "../../tenant/container/Container";
 import { GetDepartmentDetails } from "../application/usecases/GetDepartmentDetails";
 import { UpdateDepartmentStatus } from "../application/usecases/UpdateDepartmentStatus";
 import { UpdateDepartment } from "../application/usecases/UpdateDepartment";
+import { DepartmentLimitProvider } from "../application/usecases/DepartmentLimitProvider";
+import { subscriptionPlanRepository, subscriptionRepository } from "../../SubScriptionPlans/container/Container";
 
 export class DepartmentUseCaseFactory
   implements IDepartmentUseCaseFactory
@@ -34,10 +36,15 @@ export class DepartmentUseCaseFactory
       this._departmentRepositoryFactory.create(
         tenantConnection,
       );
-
+const departmentLimitProvider = new DepartmentLimitProvider(
+  subscriptionRepository,
+  subscriptionPlanRepository,
+);
     return {
       createDepartment: new CreateDepartment(
         departmentRepository,
+        departmentLimitProvider,
+        company.id
       ),
       getAllDepartment: new GetAllDepartment(
         departmentRepository,
@@ -47,6 +54,7 @@ export class DepartmentUseCaseFactory
 
       updateDepartmentStatus:new UpdateDepartmentStatus(departmentRepository),
       updateDepartment: new UpdateDepartment(departmentRepository),
+      
     };
   }
 }

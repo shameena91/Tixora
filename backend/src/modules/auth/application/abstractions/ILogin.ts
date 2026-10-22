@@ -1,9 +1,5 @@
-import { LoginRequestDto } from "../dto/LoginRequestDto";
+import { LoginRequestDto, LoginResponseDto } from "../dto/LoginRequestDto";
 
 export interface ILogin {
-  execute(data: LoginRequestDto): Promise<{
-    accessToken: string;
-    refreshToken: string;
-    account: any;
-  }>;
+  execute(data: LoginRequestDto): Promise<LoginResponseDto>;
 }

@@ -156,9 +156,6 @@ export const getCompanySubscription = async (id: string) => {
  
 
   const url = COMPANY_ROUTE.GET_COMPANY_SUBSCRIPTION(id);
-
-
-
   try {
     const response = await axiosInstance.get(url);
 

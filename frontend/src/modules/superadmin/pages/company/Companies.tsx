@@ -146,6 +146,8 @@ const handleLimitChange = (newLimit: number) => {
           <img
             src={logo}
             alt="Company logo"
+               loading="lazy"
+      decoding="async"
             className="h-10 w-10 rounded-lg object-cover"
           />
         ) : (

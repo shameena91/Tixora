@@ -91,6 +91,7 @@ export const selectSubscriptionPlan = async (
     SUBSCRIPTION_PLAN_ROUTES.SELECT_PLAN,
     data
   );
+  console.log("dataaaaaaa",data)
 console.log("Slsected sub:",response.data)
   return response.data;
 };
@@ -109,4 +110,27 @@ export const verifyPayment=async(data:VerifyPaymentData)=>{
 
   return response.data
 }
+
+export const updateFailedPayment = async (data: {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+}) => {
+  const response = await axiosInstance.post(
+    SUBSCRIPTION_PLAN_ROUTES.UPDATE_FAILED_PAYMENT,
+    data,
+  );
+
+  return response.data;
+};
+export const updateCancelledPayment = async (
+  razorpay_order_id: string,
+) => {
+  const response = await axiosInstance.post(
+   SUBSCRIPTION_PLAN_ROUTES.CANCEL_PAYMENT,
+    { razorpay_order_id },
+  );
+
+  return response.data;
+};
+
 

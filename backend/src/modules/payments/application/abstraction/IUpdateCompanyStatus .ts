@@ -1,5 +1,5 @@
 import { CompanyDetailsResponse } from "../../../company/application/dto/GetCompanyDto";
-import { Company, CompanyStatus } from "../../../company/domain/entities/Company";
+import { CompanyStatus } from "../../../company/domain/entities/Company";
 
 export interface IUpdateCompanyStatus {
   execute(

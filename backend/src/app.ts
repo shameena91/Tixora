@@ -16,6 +16,8 @@ import subcsriptionPlanRoutes from "./modules/SubScriptionPlans/presentation/rou
 import subscriptionRoutes from "./modules/SubScriptionPlans/presentation/routes/subscriptionRoutes";
 import paymentRoutes from "./modules/payments/presentation/routes/PaymentRoutes"
 import departmentRoutes from "./modules/departments/presentation/routes/departmentRoutes";
+import categoryRoutes from "./modules/category/presentation/routes/categoryRoutes";
+import invoiceRoutes from "./modules/invoice/presentation/routes/invoiceRoutes";
 
 const app = express();
 
@@ -54,6 +56,8 @@ companyRoute
 );
 app.use("/api/companies", paymentRoutes);
 app.use("/api/departments", departmentRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/invoices", invoiceRoutes);
 
 app.get("/health", (_req, res) => {
   res.status(200).json({

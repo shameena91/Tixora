@@ -7,6 +7,8 @@ export const createSubscriptionSchema = z.object({
     BillingCycle.MONTHLY,
     BillingCycle.YEARLY,
   ]),
+  isRenewal: z.boolean().optional().default(false),
+  isUpgrade: z.boolean().optional().default(false),
 });
 
 export type CreateSubscriptionDTO =

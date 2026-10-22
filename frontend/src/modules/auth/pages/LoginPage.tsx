@@ -80,6 +80,8 @@ const LoginPage = () => {
 
       if (response.data.role === "COMPANY_ADMIN") {
         const companyRequest = await getMyCompanyRequest();
+
+        
         console.log("Fromlogin", companyRequest);
 
         if (companyRequest.data.status !== "APPROVED") {
@@ -88,14 +90,24 @@ const LoginPage = () => {
         }
 
         const subscription = await getMySubscriptionStatus();
-        console.log("Fromlogins", subscription);
-        if (subscription?.data?.status === "ACTIVE") {
-          navigate("/company-admin/dashboard");
-          return;
-        }
+     const accessStatus =
+  subscription?.data?.subscriptionAccessStatus;
 
-        navigate("/company-admin/select-subscription");
-      }
+if (accessStatus === "NO_SUBSCRIPTION") {
+  navigate("/company-admin/select-subscription");
+  return;
+}
+
+if (
+  accessStatus === "ACTIVE" ||
+  accessStatus === "EXPIRED"
+) {
+  navigate("/company-admin/dashboard");
+  return;
+}
+
+navigate("/company-admin/select-subscription");
+}   
     } catch (error) {
       console.error("Login error:", error);
 

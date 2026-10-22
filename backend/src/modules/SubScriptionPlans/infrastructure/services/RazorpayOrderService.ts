@@ -23,6 +23,9 @@ export class RazorpayOrderService
       companyId: string;
       planId: string;
       billingCycle: "MONTHLY" | "YEARLY";
+      isRenewal?: string;
+      isUpgrade?: string;
+subscriptionId?: string;
     }
   ): Promise<{
     orderId: string;
@@ -44,6 +47,7 @@ export class RazorpayOrderService
       currency: order.currency,
     };
   }
+
 async getOrder(
   orderId: string,
 ): Promise<{
@@ -52,6 +56,9 @@ async getOrder(
     companyId: string;
     planId: string;
     billingCycle: "MONTHLY" | "YEARLY";
+    isRenewal?: string;
+    isUpgrade?: string;
+    subscriptionId?: string;
   };
 }> {
   const order =
@@ -60,6 +67,9 @@ async getOrder(
   const companyId = order.notes?.companyId;
   const planId = order.notes?.planId;
   const billingCycle = order.notes?.billingCycle;
+ const isRenewal = order.notes?.isRenewal;
+const isUpgrade = order.notes?.isUpgrade;
+const subscriptionId = order.notes?.subscriptionId;
 
   if (
     typeof companyId !== "string" ||
@@ -67,20 +77,28 @@ async getOrder(
     (billingCycle !== "MONTHLY" &&
       billingCycle !== "YEARLY")
   ) {
-    throw new Error(
-      "Invalid Razorpay order metadata",
-    );
+    throw new Error("Invalid Razorpay order metadata");
   }
 
   return {
-    orderId: order.id,
-    notes: {
-      companyId,
-      planId,
-      billingCycle,
-    },
-  };
+  orderId: order.id,
+  notes: {
+    companyId,
+    planId,
+    billingCycle,
+    ...(typeof isRenewal === "string"
+      ? { isRenewal }
+      : {}),
+    ...(typeof isUpgrade === "string"
+      ? { isUpgrade }
+      : {}),
+    ...(typeof subscriptionId === "string"
+      ? { subscriptionId }
+      : {}),
+  },
+};
 }
+
    verifyPayment(
     orderId: string,
     paymentId: string,
@@ -98,4 +116,26 @@ async getOrder(
 
     return generatedSignature === signature;
   }
+
+ 
+async getPaymentDetails(
+  paymentId: string,
+): Promise<{
+  orderId: string | null;
+  status: string;
+  paymentMethod: string;
+  createdAt: Date;
+
+}> {
+  const payment =
+    await this.razorpay.payments.fetch(paymentId);
+
+  return {
+    orderId: payment.order_id ?? null,
+    status: payment.status,
+    paymentMethod: payment.method,
+    createdAt: new Date(payment.created_at * 1000),
+  };
+}
+
 }

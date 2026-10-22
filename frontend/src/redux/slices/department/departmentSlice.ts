@@ -1,9 +1,9 @@
 
-import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
+import type { Department } from "../../../modules/company-admin/types/departmentTypes";
 import { createDepartmentThunk, getAllDepartmentsThunk, getDepartmentByIdThunk } from "./departmentThunk";
-import type { Department } from "../../../modules/department/types/departmentTypes";
 
 interface DepartmentState {
   departments: Department[];

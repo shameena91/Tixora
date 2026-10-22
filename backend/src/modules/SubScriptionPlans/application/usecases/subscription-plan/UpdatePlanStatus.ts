@@ -2,7 +2,7 @@ import { MESSAGES } from "../../../../../shared/constants/messages";
 import { AppErrors } from "../../../../../shared/errors/AppErrors";
 import { ErrorCode } from "../../../../../shared/errors/ErrorCode";
 import {
-  SubscriptionPlan,
+  
   SubscriptionPlanStatus,
 } from "../../../domain/entities/SubscriptionPlan";
 import { ISubscriptionPlanRepository } from "../../../domain/repositories/ISubscriptionPlanRepository";
@@ -21,7 +21,7 @@ export class UpdatePlanStatus implements IUpdatePlanStatus {
       throw new AppErrors(MESSAGES.PLAN_NOT_FOUND, ErrorCode.ACCOUNT_NOT_FOUND);
     }
 
-    const updatedSubscriptionPlan =
+  
       await this._subscriptionPlanRepository.updateStatus(id, status);
   }
 }

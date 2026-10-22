@@ -1,8 +1,8 @@
 
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import type { CreateDepartmentRequest, Department, DepartmentListResponse } from "../../../modules/department/types/departmentTypes";
-import { createDepartment, getAllDepartments, getDepartmentById } from "../../../modules/department/services/DepartmentServices";
 import axios from "axios";
+import { createDepartment, getAllDepartments, getDepartmentById } from "../../../modules/company-admin/services/department/DepartmentServices";
+import type { CreateDepartmentRequest, Department, DepartmentListResponse } from "../../../modules/company-admin/types/departmentTypes";
 
 export const createDepartmentThunk = createAsyncThunk<
   Awaited<ReturnType<typeof createDepartment>>,

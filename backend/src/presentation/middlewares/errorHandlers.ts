@@ -1,9 +1,10 @@
+
 import { NextFunction, Request, Response } from "express";
 import multer from "multer";
+import { z, ZodError } from "zod";
+
 import { HttpStatusCode } from "../../shared/constants/httpStattusCode.js";
 import { AppErrors } from "../../shared/errors/AppErrors.js";
-
-import { z, ZodError } from "zod";
 import { errorStatusMap } from "../../application/errorStatusMap.js";
 
 export const errorHandler = (
@@ -30,17 +31,15 @@ export const errorHandler = (
   }
 
   if (error instanceof ZodError) {
-     console.log("🔥🔥 ZOD ERROR REACHED GLOBAL HANDLER");
-  console.log("ZOD ERROR:", error);
-  console.log("ZOD ISSUES:", error.issues);
     res.status(HttpStatusCode.BAD_REQUEST).json({
       success: false,
-      message:  error.issues[0]?.message || "Validation failed",
+      message: error.issues[0]?.message || "Validation failed",
       errors: z.treeifyError(error),
     });
 
     return;
   }
+
   if (error instanceof AppErrors) {
     const statusCode =
       typeof error.errorCode === "number"
@@ -60,6 +59,6 @@ export const errorHandler = (
 
   res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).json({
     success: false,
-    message: "Internal server errorttt",
+    message: "Internal server error",
   });
 };

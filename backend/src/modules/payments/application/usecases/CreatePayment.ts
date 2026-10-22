@@ -1,6 +1,7 @@
+
 import type { IPaymentRepository } from "../../domain/repositories/IPaymentRepository";
 import { PaymentStatus } from "../../domain/types/PaymentStatus";
-import { ICreatePayment  } from "../abstraction/ICreatePayment";
+import { ICreatePayment } from "../abstraction/ICreatePayment";
 import type {
   CreatePaymentRequestDto,
   CreatePaymentResponseDto,
@@ -14,21 +15,26 @@ export class CreatePayment implements ICreatePayment {
   async execute(
     data: CreatePaymentRequestDto,
   ): Promise<CreatePaymentResponseDto> {
-    const payment =
-      await this._paymentRepository.create({
-        companyId: data.companyId,
-        subscriptionId: data.subscriptionId,
-        planId: data.planId,
+     console.log("CreatePayment executed");
+  const paymentDate = new Date();
 
-        amount: data.amount,
-        billingCycle: data.billingCycle,
+  console.log("Generated payment date:", paymentDate);
+    const payment = await this._paymentRepository.create({
+      companyId: data.companyId,
+      subscriptionId: data.subscriptionId,
+      planId: data.planId,
 
-        razorpayOrderId: data.razorpayOrderId,
-        razorpayPaymentId: null,
+      amount: data.amount,
+      billingCycle: data.billingCycle,
 
-        status: PaymentStatus.PENDING,
-        paymentDate: null,
-      });
+      razorpayOrderId: data.razorpayOrderId,
+      razorpayPaymentId: null,
+
+      paymentMethod: null,
+
+      status: PaymentStatus.PENDING,
+      paymentDate
+    });
 
     return {
       id: payment.id,
@@ -42,8 +48,9 @@ export class CreatePayment implements ICreatePayment {
       billingCycle: payment.billingCycle,
 
       razorpayOrderId: payment.razorpayOrderId,
-      razorpayPaymentId:
-        payment.razorpayPaymentId,
+      razorpayPaymentId: payment.razorpayPaymentId,
+
+      paymentMethod: payment.paymentMethod,
 
       status: payment.status,
       paymentDate: payment.paymentDate,

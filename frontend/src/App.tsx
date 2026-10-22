@@ -22,14 +22,17 @@ import CompanyRequests from "./modules/superadmin/pages/companyRequests/CompanyR
 import SubscriptionPlan from "./modules/superadmin/pages/subscription/SubscriptionPlan";
 import SuperAdminDashbord from "./modules/superadmin/pages/SuperAdminDashbord";
 // import ViewPlanDetail from "./modules/superadmin/pages/ViewPlanDetail";
-import Home from "./pages/Home";
-import ViewPlanDetail from "./modules/superadmin/pages/subscription/ViewPlanDetail";
-import CompanyRequestDetails from "./modules/superadmin/pages/companyRequests/CompanyrequestDetails";
 import CompanyAdminLayout from "./modules/company-admin/layouts/CompanyAdminLayout";
 import CompanyAdminDashboard from "./modules/company-admin/pages/CompanyAdminDashboard";
-import CompanyProfile from "./modules/company-admin/pages/CompanyProfile";
-import DepartmentListPage from "./modules/department/pages/DepartmentListPage";
-import ViewDepartmentPage from "./modules/department/pages/ViewDepartmentPage";
+import CompanyProfile from "./modules/company-admin/pages/companyprofile/CompanyProfile";
+import DepartmentListPage from "./modules/company-admin/pages/department/DepartmentListPage";
+import ViewDepartmentPage from "./modules/company-admin/pages/department/ViewDepartmentPage";
+import CompanyRequestDetails from "./modules/superadmin/pages/companyRequests/CompanyrequestDetails";
+import ViewPlanDetail from "./modules/superadmin/pages/subscription/ViewPlanDetail";
+import Home from "./pages/Home";
+import CategoryManagementPage from "./modules/company-admin/pages/category/CategoryManagementPage";
+import CategoryDetailsPage from "./modules/company-admin/pages/category/CategoryDetailsPage";
+import CompanySubscriptionPage from "./modules/company-admin/pages/subscription/CompanySubscriptionPage";
 
 
 const App = () => {
@@ -111,7 +114,21 @@ const App = () => {
   path="departments/:departmentId"
   element={<ViewDepartmentPage />}
 />
-  
+  <Route
+  path="categories"
+  element={<CategoryManagementPage />}
+/>
+
+<Route
+    path="categories/:categoryId"
+    element={<CategoryDetailsPage />}
+  />
+
+  <Route
+  path="subscription"
+  element={<CompanySubscriptionPage />}
+/>
+
   </Route>
         <Route
           path="/super-admin"

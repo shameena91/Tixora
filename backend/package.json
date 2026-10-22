@@ -6,7 +6,8 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
@@ -23,12 +24,15 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.9.1",
     "multer": "^2.2.0",
-    "nodemailer": "^9.0.5",
+    "node-cron": "^4.6.0",
+    "nodemailer": "^10.1.6",
+    "pdfkit": "^0.20.2",
     "razorpay": "^2.9.8",
     "redis": "^6.2.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
@@ -36,8 +40,12 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.2.0",
     "@types/node": "^26.2.0",
-    "@types/nodemailer": "^8.0.1",
+    "@types/node-cron": "^3.0.11",
+    "@types/pdfkit": "^0.17.6",
+    "eslint": "^10.13.0",
+    "globals": "^17.13.0",
     "tsx": "^4.23.11",
-    "typescript": "^7.0.2"
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.2"
   }
 }

@@ -1,8 +1,6 @@
 
 
 import { IBaseRepository } from "../../../../shared/repository/IBaseRepository";
-import { DepartmentCreateData } from "../../application/mappers/DepartmentMapper";
-import { DepartmentDocument } from "../../infrastructure/database/modals/DepartmentModal";
 import { Department } from "../entities/department";
 
 
@@ -22,5 +20,5 @@ export interface IDepartmentRepository extends
   total: number;
 }>;
 
-
+countAll(): Promise<number>;
 }

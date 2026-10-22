@@ -13,9 +13,9 @@ const Pagination: React.FC<PaginationProps> = ({
   page,
   totalPages,
   total,
-  limit,
+ 
   onPageChange,
-  onLimitChange,
+ 
 }) => {
   if (total === 0) {
     return null;

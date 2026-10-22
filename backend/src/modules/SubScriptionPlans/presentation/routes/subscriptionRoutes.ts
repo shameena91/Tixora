@@ -7,6 +7,7 @@ import { AccountRole } from "../../../auth/domain/entities/Account";
 import { createSubScriptionController } from "../../container/Container";
 
 import { SUBSCRIPTION_ROUTE_CONSTANTS } from "../../../../shared/constants/route";
+import { paymentController } from "../../../payments/container/Container";
 
 const router = Router();
 
@@ -30,4 +31,29 @@ router.post(
   authorizeRoles(AccountRole.COMPANY_ADMIN),
   createSubScriptionController.verifyPayment.bind(createSubScriptionController),
 );
+
+
+router.get(
+  SUBSCRIPTION_ROUTE_CONSTANTS.MY_SUBSCRIPTION_PLAN,
+  authorizeRoles(AccountRole.COMPANY_ADMIN),
+  createSubScriptionController.getMySubscriptionPlan.bind(
+    createSubScriptionController,
+  ),
+);
+router.post(
+  SUBSCRIPTION_ROUTE_CONSTANTS.UPDATE_FAILED_PAYMENT,
+  authorizeRoles(AccountRole.COMPANY_ADMIN),
+  createSubScriptionController.updateFailedPayment.bind(
+    createSubScriptionController,
+  ),
+);
+
+router.post(
+  SUBSCRIPTION_ROUTE_CONSTANTS.CANCEL_PAYMENT,
+  authorizeRoles(AccountRole.COMPANY_ADMIN),
+ paymentController.cancelPayment.bind(
+    paymentController,
+  ),
+);
+
 export default router;

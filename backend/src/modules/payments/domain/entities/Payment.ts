@@ -1,5 +1,11 @@
 import { PaymentStatus } from "../types/PaymentStatus";
 
+export enum PaymentMethod {
+  CARD = "CARD",
+  NETBANKING = "NETBANKING",
+  WALLET = "WALLET",
+}
+
 export interface Payment {
   id: string;
   paymentId: string;
@@ -15,7 +21,7 @@ export interface Payment {
   razorpayPaymentId: string | null;
 
   status: PaymentStatus;
-
+ paymentMethod: PaymentMethod | null;
 paymentDate: Date | null;
 
   createdAt: Date;

@@ -1,6 +1,6 @@
-import { Payment } from "../../domain/entities/Payment";
-import { PaymentStatus } from "../../domain/types/PaymentStatus";
 
+import { Payment, PaymentMethod } from "../../domain/entities/Payment";
+import { PaymentStatus } from "../../domain/types/PaymentStatus";
 
 import { Types } from "mongoose";
 
@@ -19,6 +19,8 @@ export interface PaymentDocument {
   razorpayOrderId: string;
   razorpayPaymentId: string | null;
 
+  paymentMethod: PaymentMethod | null;
+
   status: PaymentStatus;
 
   paymentDate: Date | null;
@@ -29,7 +31,7 @@ export interface PaymentDocument {
 
 export interface PaymentCreateData {
   companyId: string;
- subscriptionId: string | null;
+  subscriptionId: string | null;
   planId: string;
 
   amount: number;
@@ -38,17 +40,19 @@ export interface PaymentCreateData {
   razorpayOrderId: string;
   razorpayPaymentId: string | null;
 
+  paymentMethod: PaymentMethod | null;
+
   status: PaymentStatus;
   paymentDate: Date | null;
 }
+
 export interface PaymentDocumentCreateData
   extends PaymentCreateData {
   paymentId: string;
 }
+
 export class PaymentMapper {
-  static toDomain(
-    document: PaymentDocument,
-  ): Payment {
+  static toDomain(document: PaymentDocument): Payment {
     return {
       id: document._id.toString(),
       paymentId: document.paymentId,
@@ -61,8 +65,9 @@ export class PaymentMapper {
       billingCycle: document.billingCycle,
 
       razorpayOrderId: document.razorpayOrderId,
-      razorpayPaymentId:
-        document.razorpayPaymentId,
+      razorpayPaymentId: document.razorpayPaymentId,
+
+      paymentMethod: document.paymentMethod,
 
       status: document.status,
 

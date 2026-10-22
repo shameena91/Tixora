@@ -1,6 +1,7 @@
 import { MESSAGES } from "../../../../../shared/constants/messages";
 import { AppErrors } from "../../../../../shared/errors/AppErrors";
 import { ErrorCode } from "../../../../../shared/errors/ErrorCode";
+
 import { ICompanyRepository } from "../../../domain/repositories/ICompanyRepository";
 import { IGetCompanyDetails } from "../../abstraction/company/IgetCompanyDetails";
 import { IGetMyCompanyDetails } from "../../abstraction/company/IGetMyCompanyDetails";
@@ -23,4 +24,7 @@ const company=await this._companyRepository.findByAccountId(accountId)
     }
 return await this._getCompanydetails.execute(company.id)
     }
+
+
+   
 }

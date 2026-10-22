@@ -9,15 +9,18 @@ import {
 import type { IDepartmentRepository } from "../../domain/repositories/IDepartmentRepository";
 import { createDepartmentSchema } from "../../presentation/validator/createDepartmentValidator";
 import type { ICreateDepartment } from "../abstarction/ICreateDepartment";
+import { IDepartmentLimitProvider } from "../abstarction/IDepartmentLimitProvider";
 import type {
   CreateDepartmentRequestDto,
   CreateDepartmentResponseDto,
 } from "../dtos/CreateDepartmentDto";
-import { DepartmentMapper } from "../mappers/DepartmentMapper";
+
 
 export class CreateDepartment implements ICreateDepartment {
   constructor(
     private readonly _departmentRepository: IDepartmentRepository,
+    private readonly _departmentLimitProvider:IDepartmentLimitProvider,
+     private readonly _companyId: string,
   ) {}
 
   async execute(
@@ -30,6 +33,23 @@ export class CreateDepartment implements ICreateDepartment {
     const code = validatedData.code.trim().toUpperCase();
     const name = validatedData.name.trim();
 
+const departmentLimit =
+  await this._departmentLimitProvider.getDepartmentLimit(
+    this._companyId,
+  );
+
+const currentCount =
+  await this._departmentRepository.countAll();
+
+  if (
+  departmentLimit !== null &&
+  currentCount >= departmentLimit
+) {
+  throw new AppErrors(
+    MESSAGES.DEPARTMENT_LIMIT_REACHED,
+    ErrorCode.DEPARTMENT_LIMIT_REACHED,
+  );
+}
 
     const existingByCode =
       await this._departmentRepository.findByCode(code);

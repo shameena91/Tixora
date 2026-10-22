@@ -73,6 +73,10 @@ export const SUBSCRIPTION_PLAN_ROUTES = {
   SUBSCRIPTION_STATUS: "/subscriptions/my-subscription-status",
   VERIFY_PAYMENT: "/subscriptions/verify-payment",
   GET_ACTIVE_PLANS: "/subscription-plans/active",
+ GET_MY_SUBSCRIPTION: "/subscriptions/my-subscription-plan",
+ UPDATE_FAILED_PAYMENT: "/subscriptions/update-failed-payment",
+ CANCEL_PAYMENT:"/subscriptions/cancel-payment"
+  
 } as const;
 
 export const COMPANY_ROUTE = {
@@ -92,3 +96,9 @@ export const DEPARTMENT_ROUTES = {
   BY_ID: (id: string) => `/departments/${id}`,
   UPDATE_STATUS: (id: string) => `/departments/${id}/status`,
 } as const;
+export const INVOICE_ROUTES = {
+  GET_ALL: "/invoices",
+  GET_BY_ID: (invoiceId: string) => `/invoices/${invoiceId}`,
+  GET_PDF: (invoiceId: string) => `/invoices/${invoiceId}/pdf`,
+  GET_DOWNLOAD:(invoiceId: string) => `/invoices/${invoiceId}/download`,
+};

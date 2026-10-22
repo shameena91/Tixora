@@ -9,6 +9,7 @@ import {
   updateCompanyStatus,
 } from "../../../modules/superadmin/services/superadminServices";
 
+import { getMyCompany, getMyCompanyDocuments } from "../../../modules/company-admin/services/companyprofile/companyProfileService";
 import type {
   BillingHistoryType,
   CompanyAdminList,
@@ -17,7 +18,6 @@ import type {
   MyCompanyDocuments,
   UpdateCompanyStatusResponse,
 } from "./companyTypes";
-import { getMyCompany, getMyCompanyDocuments } from "../../../modules/company-admin/services/companyAdminService";
 
 // ------------------------------------
 // Update Company Status
