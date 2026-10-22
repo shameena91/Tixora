@@ -13,12 +13,7 @@ import {
 } from "../../auth/application/mappers/Accountmapper";
 import { AccountModel } from "../../auth/infrastructure/database/models/AccountModel";
 import { AccountRepository } from "../../auth/infrastructure/database/repositories/AccountRepository";
-import {
-  NotificationCreateData,
-  NotificationDocument,
-} from "../../notification/application/mapper/NotificationMappers";
-import { NotificationModel } from "../../notification/infrastructure/models/NotifiationModel";
-import { NotificationRepository } from "../../notification/infrastructure/repository/NotificationRepository";
+
 import { GetAllCompanyRequests } from "../application/usecases/companyRequests/GetAllCompanyRequests";
 import { GetCompanyRequest } from "../application/usecases/companyRequests/GetCompanyRequest";
 import { SubmitCompanyDocuments } from "../application/usecases/companyRequests/SubmitCompanyDocuments";
@@ -67,7 +62,7 @@ const baseAccountRepository = new BaseRepository<
 >(AccountModel);
 
 const accountRepository = new AccountRepository(baseAccountRepository);
-const fileStorage = new S3FileStorage();
+export const fileStorage = new S3FileStorage();
 
 export const createCompanyRequest = new CreateCompanyRequest(
   companyRequestRepository,
@@ -110,14 +105,14 @@ const updateCompanyLocation = new UpdateCompanyLocation(
   accountRepository,
 );
 
-const baseNotificationRepository = new BaseRepository<
-  NotificationDocument,
-  NotificationCreateData
->(NotificationModel);
+// const baseNotificationRepository = new BaseRepository<
+//   NotificationDocument,
+//   NotificationCreateData
+// >(NotificationModel);
 
-const notificationRepository = new NotificationRepository(
-  baseNotificationRepository,
-);
+// const notificationRepository = new NotificationRepository(
+//   baseNotificationRepository,
+// );
 // const createNotification =
 // // new CreateNotification(
 // //   notificationRepository
@@ -160,15 +155,15 @@ const updateCompanyDocumentStatus = new UpdateCompanyDocumentStatusUseCase(
   companyRequestRepository,
   createTimeline,
 );
-const companyreopsitory = new CompanyRepository(baseCompanyrepository);
+
 
 const getCompanyAdmin = new GetCompanyAdmins(
-  companyreopsitory,
+  comapnyRepository,
   accountRepository,
 );
-const getCompanies = new GetCompanies(companyreopsitory, fileStorage);
+const getCompanies = new GetCompanies(comapnyRepository, fileStorage);
 const getCompanyDetails = new GetCompanyDetails(
-  companyreopsitory,
+  comapnyRepository,
 
   fileStorage,
   subscriptionRepository,
@@ -180,10 +175,10 @@ const getMyCompanyDocuments =
     companyRequestRepository,
   );
 export const getMyCompanyDetails=new GetMyCompanyDetails(
-  companyreopsitory,
+  comapnyRepository,
   getCompanyDetails
 )
-export const updateCompanyStatus = new UpdateCompanyStatus(companyreopsitory);
+export const updateCompanyStatus = new UpdateCompanyStatus(comapnyRepository);
 export const companyRequestController = new CompanyRequestController(
   createCompanyRequest,
   approveCompanyRequest,

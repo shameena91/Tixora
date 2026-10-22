@@ -1,3 +1,11 @@
+
+export type SubscriptionAccessStatus =
+   | "PENDING"
+  | "ACTIVE"
+  | "SCHEDULED"
+  | "UPGRADED"
+  | "CANCELLED"
+  | "EXPIRED";
 export interface VerifyPaymentResponse {
   success: boolean;
   message: string;
@@ -18,10 +26,7 @@ export interface GetCompanySubscriptionItemDto {
   amount:number
   billingCycle: "MONTHLY" | "YEARLY";
   status:
-    | "PENDING"
-    | "ACTIVE"
-    | "CANCELLED"
-    | "EXPIRED";
+   SubscriptionAccessStatus
   startDate: string;
   endDate: string | null;
   createdAt: string;
@@ -29,6 +34,7 @@ export interface GetCompanySubscriptionItemDto {
 }
 
 export interface GetCompanySubscriptionDataDto {
+subscriptionAccessStatus: SubscriptionAccessStatus;
   currentSubscription: GetCompanySubscriptionItemDto | null;
   subscriptionHistory: GetCompanySubscriptionItemDto[];
 }
@@ -44,10 +50,7 @@ export type MySubscription = {
   planId: string;
   billingCycle: "MONTHLY" | "YEARLY";
   status:
-    | "PENDING"
-    | "ACTIVE"
-    | "CANCELLED"
-    | "EXPIRED";
+    SubscriptionAccessStatus
   startDate: string;
   endDate: string | null;
   createdAt: string;
@@ -56,6 +59,8 @@ export type MySubscription = {
 export type SelectSubscriptionPlanData = {
   planId: string;
   billingCycle: "MONTHLY" | "YEARLY";
+  isRenewal?: boolean;
+  isUpgrade?:boolean
 };
 
 export interface SelectSubscriptionPlanResponseDto {
@@ -68,4 +73,27 @@ export interface SelectSubscriptionPlanResponseDto {
     currency: string;
     status: "PENDING" | "ACTIVE";
   };
+}
+
+
+
+export interface Invoice {
+  id: string;
+  invoiceNumber: string;
+  companyId: string;
+ 
+  companyName: string;
+  planName: string;
+  billingCycle: "MONTHLY" | "YEARLY";
+  amount: number;
+  currency: string;
+  paymentDate: string;
+  paymentMethod: string;
+  paymentStatus: string;
+  createdAt: string;
+}
+
+export interface GetCompanyInvoicesResponseDto {
+  invoices: Invoice[];
+  total: number;
 }

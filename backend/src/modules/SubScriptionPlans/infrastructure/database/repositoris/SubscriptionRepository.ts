@@ -11,6 +11,7 @@ import {
 } from "../../../application/mappers/SubscriptionMapper";
 
 import {
+ 
   Subscription,
   SubscriptionStatus,
 } from "../../../domain/entities/Subscription";
@@ -36,15 +37,17 @@ export class SubscriptionRepository
   // -------------------------
 
   async create(
-    data: SubscriptionCreateData,
-  ): Promise<Subscription> {
-    const subscriptionDocument =
-      await this._baseRepository.create(data);
-
-    return SubscriptionMapper.toDomain(
-      subscriptionDocument,
+  subscription: Subscription,
+): Promise<Subscription> {
+  const subscriptionDocument =
+    await this._baseRepository.create(
+      SubscriptionMapper.toPersistence(subscription),
     );
-  }
+
+  return SubscriptionMapper.toDomain(
+    subscriptionDocument,
+  );
+}
 
   async findById(
     id: string,
@@ -130,9 +133,10 @@ export class SubscriptionRepository
     companyId: string,
   ): Promise<Subscription[]> {
     const documents =
-      await this._baseRepository.findAll({
-        companyId,
-      });
+      await this._baseRepository.findAll(
+      { companyId },
+      { createdAt: -1 },
+    );
 
     return documents.map(
       (document) =>
@@ -161,6 +165,9 @@ export class SubscriptionRepository
       status?: SubscriptionStatus;
       startDate?: Date;
       endDate?: Date | null;
+      razorpayOrderId?: string | null;
+    // planId?: string;
+    // billingCycle?: BillingCycle;
     },
   ): Promise<Subscription> {
     const document =
@@ -189,4 +196,79 @@ export class SubscriptionRepository
 
     return SubscriptionMapper.toDomain(document);
   }
+
+async expireActiveSubscriptions(
+  currentDate: Date,
+): Promise<number> {
+  const result = await SubscriptionModel.updateMany(
+    {
+      status: SubscriptionStatus.ACTIVE,
+      endDate: {
+        $ne: null,
+        $lte: currentDate,
+      },
+    },
+    {
+      $set: {
+        status: SubscriptionStatus.EXPIRED,
+        updatedAt: currentDate,
+      },
+    },
+  ).exec();
+
+  return result.modifiedCount;
+}
+// async findDueScheduledSubscriptions(
+//   currentDate: Date,
+// ): Promise<Subscription[]> {
+//   const documents = await SubscriptionModel.find({
+//     status: SubscriptionStatus.SCHEDULED,
+//     startDate: {
+//       $lte: currentDate,
+//     },
+//   })
+//     .sort({ startDate: 1 })
+//     .lean<SubscriptionDocument[]>()
+//     .exec();
+
+//   return documents.map(
+//     (document) => SubscriptionMapper.toDomain(document),
+//   );
+// }
+async findActiveByCompanyId(
+  companyId: string,
+): Promise<Subscription | null> {
+  const document = await SubscriptionModel.findOne({
+    companyId,
+    status: SubscriptionStatus.ACTIVE,
+  })
+    .sort({ createdAt: -1 })
+    .lean<SubscriptionDocument>()
+    .exec();
+
+  if (!document) {
+    return null;
+  }
+
+  return SubscriptionMapper.toDomain(document);
+}
+
+async activateScheduledSubscriptions(
+  currentDate: Date,
+): Promise<number> {
+  const result = await SubscriptionModel.updateMany(
+    {
+      status: SubscriptionStatus.SCHEDULED,
+      startDate: { $lte: currentDate },
+    },
+    {
+      $set: {
+        status: SubscriptionStatus.ACTIVE,
+        updatedAt: currentDate,
+      },
+    },
+  ).exec();
+
+  return result.modifiedCount;
+}
 }

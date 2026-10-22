@@ -1,4 +1,4 @@
-import { number, z } from "zod";
+import {  z } from "zod";
 
 export const adminRegistrationSchema = z.object({
   email: z.email("Invalid email format").trim(),

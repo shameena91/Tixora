@@ -23,6 +23,8 @@ const StatusBadge = ({
 
       case "INACTIVE":
                         return "bg-red-50 text-red-600 border-red-100";
+                              case "FAILED":
+                        return "bg-red-50 text-red-600 border-red-100";
 
       case "EXPIRED":
       case "REJECTED":

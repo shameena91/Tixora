@@ -31,7 +31,8 @@ export class GetPaymentHistory
       status:
         payment.status,
 
-      paymentId:payment.paymentId
+      paymentId:payment.paymentId,
+       paymentMethod: payment.paymentMethod,
     }));
   }
 }

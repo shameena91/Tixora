@@ -1,4 +1,4 @@
-import mongoose, { Schema, model } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import { NotificationType } from "../../domain/entities/Notification";
 import { NotificationDocument } from "../../application/mapper/NotificationMappers";
 

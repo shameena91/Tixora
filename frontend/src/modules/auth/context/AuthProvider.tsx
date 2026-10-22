@@ -16,6 +16,10 @@ const [role, setRole] = useState<UserRole | null>(null);
         const restoreSession=async()=>{
             try {
                 const response=await refreshAccessToken()
+                console.log("SESSION RESTORED:", {
+  role: response.data.role,
+  name: response.data.name,
+});
                 setAccessToken(response.data.accessToken)
                 storeAccessToken(response.data.accessToken);
                  setUserName(response.data.name);

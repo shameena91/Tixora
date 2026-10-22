@@ -7,5 +7,6 @@ export interface IVerifySubscriptionPayment {
     orderId: string,
     paymentId: string,
     signature: string,
+    
   ): Promise<VerifySubscriptionPaymentResponseDto>;
 }

@@ -64,16 +64,34 @@ COMPANY_LIST_FETCHED:"companylist fetched",
 
   SUBSCRIPTION_PLAN_NOT_ACTIVE:"Subscription plan Not Active",
   SUBSCRIPTION_PLAN_LIST_FETCHED:"SubscriptionPlan List fetched successfully",
+  SUBSCRIPTION_NOT_FOUND:"Subscription Notfound",
 DEPARTMENT_CODE_ALREADY_EXISTS:
   "Department code already exists.",
 
 DEPARTMENT_NAME_ALREADY_EXISTS:
   "Department name already exists.",
-
   DEPARTMENT_CREATED:"Department created",
   DEPARTMENT_FETCHED:"Department Fetched",
   DEPARTMENT_NOT_FOUND:"Deparment not founde",
   DEPARTMENT_STATUS_UPDATED:"Department status updated",
   DEPARTMENT_NAME_AND_CODE_EXIST:"Department name and code are required",
-  DEPARTMENT_UPDATED:"Department detaails updated"
+  DEPARTMENT_UPDATED:"Department detaails updated",
+  DEPARTMENT_LIMIT_REACHED:"Department limit reached",
+
+CATEGORY_CREATED: "Category created successfully",
+CATEGORIES_FETCHED: "Categories fetched successfully",
+CATEGORY_UPDATED: "Category updated successfully",
+CATEGORY_STATUS_UPDATED: "Category status updated successfully",
+CATEGORY_NOT_FOUND: "Category not found",
+CATEGORY_NAME_REQUIRED: "Category name is required",
+CATEGORY_NAME_ALREADY_EXISTS: "Category name already exists in this department",
+
+
+
+
+
+
+
+
+
 };

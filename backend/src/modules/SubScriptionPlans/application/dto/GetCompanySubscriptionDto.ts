@@ -1,3 +1,15 @@
+import {
+  BillingCycle,
+  SubscriptionStatus,
+} from "../../domain/entities/Subscription";
+
+export type SubscriptionAccessStatus =
+  | "NO_SUBSCRIPTION"
+  | "ACTIVE"
+  | "EXPIRED"
+  | "CANCELLED"
+  | "PENDING";
+
 export interface GetCompanySubscriptionItemDto {
   id: string;
   companyId: string;
@@ -7,9 +19,8 @@ export interface GetCompanySubscriptionItemDto {
 
   amount: number;
 
-  billingCycle: "MONTHLY" | "YEARLY";
-
-  status: "PENDING" | "ACTIVE" | "CANCELLED" | "EXPIRED";
+  billingCycle: BillingCycle;
+  status: SubscriptionStatus;
 
   startDate: Date;
   endDate: Date | null;
@@ -18,6 +29,8 @@ export interface GetCompanySubscriptionItemDto {
 }
 
 export interface GetCompanySubscriptionResponseDto {
+  subscriptionAccessStatus?: SubscriptionAccessStatus;
+
   currentSubscription: GetCompanySubscriptionItemDto | null;
 
   subscriptionHistory: GetCompanySubscriptionItemDto[];

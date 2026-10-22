@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import { authorizeRoles } from "../../../auth/presentation/middlewares/AutherizeRole";
 import { AccountRole } from "../../../auth/domain/entities/Account";
-import { COMAPANY_ROUTES } from "../../../../shared/constants/route";
+import { COMAPANY_ROUTES} from "../../../../shared/constants/route";
 import { paymentController } from "../../container/Container";
 
 const router = Router();

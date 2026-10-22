@@ -15,6 +15,8 @@ import { IgetCompanySubscription } from "../../application/abstraction/company-s
 import { IVerifySubscriptionPayment } from "../../application/abstraction/company-subscription/IVerifySubscriptionPayment";
 import { ICreateSubscription } from "../../application/abstraction/company-subscription/ICreateSubscription";
 import { createSubscriptionSchema } from "../validator/CreateSubscriptionValidator";
+import { IUpdateFailedPayment } from "../../../payments/application/abstraction/IUpdateFailedPayment";
+import { IGetMySubscriptionPlan } from "../../application/abstraction/company-subscription/IGetMySubscriptionPlan";
 
 export class SubscriptionController {
   constructor(
@@ -22,11 +24,13 @@ export class SubscriptionController {
     private readonly _getMySubscription: IGetMySubscriptionStatus,
     private readonly _verifySubscriptionPayment: IVerifySubscriptionPayment,
     private readonly _getCompanySubscription: IgetCompanySubscription,
+  private readonly _updateFailedPayment: IUpdateFailedPayment,
+    private readonly _getMySubscriptionPlan: IGetMySubscriptionPlan,
   ) {}
 
   async createSubscription(req: Request, res: Response) {
     const data = createSubscriptionSchema.parse(req.body);
-
+console.log("boddddd",data)
     const accountId = req.user?.accountId;
 
     if (!accountId) {
@@ -37,6 +41,10 @@ export class SubscriptionController {
       accountId,
       data.planId,
       data.billingCycle,
+     
+  data.isRenewal,
+  data.isUpgrade, 
+ 
     );
 
     const message =
@@ -109,4 +117,76 @@ export class SubscriptionController {
       HttpStatusCode.OK,
     );
   }
+
+async getMySubscriptionPlan(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  const accountId = req.user?.accountId;
+
+  if (typeof accountId !== "string" || !accountId) {
+    sendError(
+      res,
+      MESSAGES.AUTHENTICATED_ID_MISING,
+      HttpStatusCode.UNAUTHORIZED,
+    );
+    return;
+  }
+
+  const plan = await this._getMySubscriptionPlan.execute(accountId);
+
+  if (!plan) {
+    sendError(
+      res,
+      MESSAGES.SUBSCRIPTION_PLAN_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+    return;
+  }
+
+  sendSuccess(
+    res,
+    MESSAGES.PLAN_FETCHED_SUCCESSFULLY,
+    plan,
+    HttpStatusCode.OK,
+  );
+}
+
+async updateFailedPayment(req: Request, res: Response) {
+  const accountId = req.user?.accountId;
+
+  if (!accountId) {
+    return sendError(
+      res,
+      MESSAGES.UNAUTHORIZED,
+      HttpStatusCode.UNAUTHORIZED,
+    );
+  }
+
+  const { razorpay_order_id, razorpay_payment_id } = req.body;
+
+  if (
+    typeof razorpay_order_id !== "string" ||
+    typeof razorpay_payment_id !== "string"
+  ) {
+    return sendError(
+      res,
+      "Invalid payment details",
+      HttpStatusCode.BAD_REQUEST,
+    );
+  }
+
+  await this._updateFailedPayment.execute(
+    accountId,
+    razorpay_order_id,
+    razorpay_payment_id,
+  );
+
+  return sendSuccess(
+    res,
+    "Failed payment status updated",
+    null,
+    HttpStatusCode.OK,
+  );
+}
 }

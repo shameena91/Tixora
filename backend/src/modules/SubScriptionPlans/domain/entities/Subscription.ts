@@ -1,10 +1,11 @@
 export enum SubscriptionStatus {
   PENDING = "PENDING",
   ACTIVE = "ACTIVE",
+  SCHEDULED = "SCHEDULED",
+  UPGRADED = "UPGRADED",
   CANCELLED = "CANCELLED",
   EXPIRED = "EXPIRED",
 }
-
 export enum BillingCycle {
   MONTHLY = "MONTHLY",
   YEARLY = "YEARLY",

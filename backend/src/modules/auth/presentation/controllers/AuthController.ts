@@ -30,36 +30,39 @@ export class AuthController {
     private readonly _logout: ILogout
   ) {}
 
-  async loginRequest(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const result = await this._login.execute(req.body);
+ 
+async loginRequest(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const result = await this._login.execute(req.body);
 
-      res.cookie("refreshToken", result.refreshToken, {
-        httpOnly: true,
-        secure: env.nodeEnv === "production",
-        sameSite: "lax",
-        maxAge: env.maxAge
-      });
-      const userName=`${result.account.firstName} ${result.account.lastName}`
-console.log("mannn:",result.account.firstName)
-      return sendSuccess(
-        res,
-        "Login successful",
-        {
-      name: userName,
-      role:result.account.role,
-          accessToken: result.accessToken,
-        },
-        HttpStatusCode.OK
-      );
-    } catch (error) {
-      next(error);
-    }
+    res.cookie("refreshToken", result.refreshToken, {
+      httpOnly: true,
+      secure: env.nodeEnv === "production",
+      sameSite: "lax",
+      maxAge: env.maxAge,
+    });
+
+    const userName = `${result.account.firstName} ${result.account.lastName}`;
+
+    return sendSuccess(
+      res,
+      "Login successful",
+      {
+        name: userName,
+        role: result.account.role,
+        accessToken: result.accessToken,
+      },
+      HttpStatusCode.OK
+    );
+  } catch (error) {
+    next(error);
   }
+}
+
 
 
   async sendOtpRequest(
@@ -241,25 +244,27 @@ console.log("mannn:",result.account.firstName)
     );
   }
 // Logout
-  async logoutRequest(
+
+async logoutRequest(
   req: Request,
-  res: Response,
-  next: NextFunction
+  res: Response
 ) {
-  
-    await this._logout.execute();
+  await this._logout.execute();
 
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: env.nodeEnv === "production",
-      sameSite: "lax",
-    });
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: env.nodeEnv === "production",
+    sameSite: "lax",
+  });
 
-
-    return sendSuccess(res,"Logged out successfully",HttpStatusCode.OK)
-   
- 
+  return sendSuccess(
+    res,
+    "Logged out successfully",
+    undefined,
+    HttpStatusCode.OK
+  );
 }
+
 }
 
 

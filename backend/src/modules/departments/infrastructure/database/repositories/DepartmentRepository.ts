@@ -80,7 +80,9 @@ export class DepartmentRepository
 
     return document ? DepartmentMapper.toDomain(document) : null;
   }
-
+async countAll(): Promise<number> {
+  return this._departmentModel.countDocuments({}).exec();
+}
   // async findAllBySearch(search?: string): Promise<Department[]> {
   //   const filter = search?.trim()
   //     ? {

@@ -15,13 +15,5 @@ export class Department {
     public updatedAt: Date,
   ) {}
 
-  public activate(): void {
-    this.status = DepartmentStatus.ACTIVE;
-    this.updatedAt = new Date();
-  }
-
-  public deactivate(): void {
-    this.status = DepartmentStatus.INACTIVE;
-    this.updatedAt = new Date();
-  }
+ 
 }

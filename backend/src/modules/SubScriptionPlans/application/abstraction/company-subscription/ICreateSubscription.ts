@@ -1,10 +1,12 @@
-import { BillingCycle } from "../../../domain/entities/Subscription";
+import {  Subscription } from "../../../domain/entities/Subscription";
 import { CreateSubscriptionResponseDto } from "../../dto/CreateSubscriptionResponseDto";
 
 export interface ICreateSubscription {
-  execute(
-    accountId: string,
-    planId: string,
-    billingCycle: BillingCycle,
-  ): Promise<CreateSubscriptionResponseDto>;
+ execute(
+  accountId: string,
+  planId: string,
+  billingCycle: Subscription["billingCycle"],
+  isRenewal?: boolean,
+   isUpgrade?: boolean,
+): Promise<CreateSubscriptionResponseDto>;
 }

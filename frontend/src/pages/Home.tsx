@@ -10,6 +10,8 @@ import Testimonials from "../components/home/Testimonal";
 
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../modules/auth/context/AuthContext";
+import { getMySubscriptionStatus } from "../modules/company-admin/services/subscription/SubscriptionService";
+import { getMyCompanyRequest } from "../modules/company/Services/CompanyRequestService";
 
 const Home = () => {
 
@@ -17,19 +19,68 @@ const Home = () => {
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
 useEffect(() => {
-    if (auth?.isInitializing) {
+  if (auth?.isInitializing) {
+    return;
+  }
+
+  const redirectUser = async () => {
+    if (!auth?.accessToken || !auth.role) {
       return;
     }
 
-    if (auth?.role === "COMPANY_ADMIN") {
-      navigate("/company-admin/check-status", { replace: true });
-      return;
-    }
-
-    if (auth?.role === "SUPER_ADMIN") {
+    if (auth.role === "SUPER_ADMIN") {
       navigate("/super-admin/dashbord", { replace: true });
+      return;
     }
-  }, [auth?.isInitializing, auth?.role, navigate]);
+
+    if (auth.role === "COMPANY_ADMIN") {
+      try {
+        const companyRequest = await getMyCompanyRequest();
+
+        if (companyRequest.data.status !== "APPROVED") {
+          navigate("/company-admin/check-status", {
+            replace: true,
+          });
+          return;
+        }
+
+        const subscription = await getMySubscriptionStatus();
+        const accessStatus =
+          subscription?.data?.subscriptionAccessStatus;
+
+        if (accessStatus === "NO_SUBSCRIPTION") {
+          navigate("/company-admin/select-subscription", {
+            replace: true,
+          });
+          return;
+        }
+
+        if (
+          accessStatus === "ACTIVE" ||
+          accessStatus === "EXPIRED"
+        ) {
+          navigate("/company-admin/dashboard", {
+            replace: true,
+          });
+          return;
+        }
+
+        navigate("/company-admin/select-subscription", {
+          replace: true,
+        });
+      } catch (error) {
+        console.error("Failed to check company access:", error);
+      }
+    }
+  };
+
+  void redirectUser();
+}, [
+  auth?.isInitializing,
+  auth?.accessToken,
+  auth?.role,
+  navigate,
+]);
 
   if (auth?.isInitializing) {
     return <div>Loading...</div>;

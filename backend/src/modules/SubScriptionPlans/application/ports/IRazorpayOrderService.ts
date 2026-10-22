@@ -6,6 +6,9 @@ export interface IRazorpayOrderService {
       companyId: string;
       planId: string;
       billingCycle: "MONTHLY" | "YEARLY";
+       isRenewal?: string;
+       isUpgrade?: string;
+  subscriptionId?: string;
     }
   ): Promise<{
     orderId: string;
@@ -20,6 +23,9 @@ export interface IRazorpayOrderService {
       companyId: string;
       planId: string;
       billingCycle: "MONTHLY" | "YEARLY";
+           isRenewal?: string;
+           isUpgrade?: string;
+  subscriptionId?: string;
     };
   }>;
   verifyPayment(
@@ -27,4 +33,12 @@ export interface IRazorpayOrderService {
     paymentId: string,
     signature: string,
   ): boolean;
+  getPaymentDetails(
+  paymentId: string,
+): Promise<{
+  orderId: string | null;
+  status: string;
+  paymentMethod: string;
+   createdAt: Date;
+}>;
 }

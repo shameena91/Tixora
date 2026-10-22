@@ -60,7 +60,7 @@ export class JwtTokenService implements ITokenService {
     
     };
 
-  } catch (error) {
+  } catch {
     throw new AppErrors(
       MESSAGES.INVALID_REFRESH_TOKEN,
       HttpStatusCode.UNAUTHORIZED

@@ -1,3 +1,5 @@
+import { PaymentMethod } from "../../domain/entities/Payment";
+
 export interface CreatePaymentRequestDto {
   companyId: string;
   subscriptionId: string;
@@ -7,14 +9,18 @@ export interface CreatePaymentRequestDto {
   billingCycle: "MONTHLY" | "YEARLY";
 
   razorpayOrderId: string;
+  paymentDate:Date
 }
+
+
+
 
 export interface CreatePaymentResponseDto {
   id: string;
   paymentId: string;
 
   companyId: string;
-  subscriptionId: string|null;
+  subscriptionId: string | null;
   planId: string;
 
   amount: number;
@@ -23,7 +29,9 @@ export interface CreatePaymentResponseDto {
   razorpayOrderId: string;
   razorpayPaymentId: string | null;
 
-  status: "PENDING" | "SUCCESS" | "FAILED";
+  paymentMethod: PaymentMethod | null;
+
+  status: "PENDING" | "SUCCESS" | "FAILED"|"CANCELLED";
 
   paymentDate: Date | null;
 

@@ -63,6 +63,9 @@ export const SUBSCRIPTION_ROUTE_CONSTANTS={
  MY_SUBSCRIPTION_STATUS: "/my-subscription-status",
  VERIFY_PAYMENT:"/verify-payment",
  GET_ACTIVE_PLANS: "/active",
+ MY_SUBSCRIPTION_PLAN: "/my-subscription-plan",
+ UPDATE_FAILED_PAYMENT: "/update-failed-payment",
+ CANCEL_PAYMENT: "/cancel-payment",
 
 
 }
@@ -76,3 +79,22 @@ export const DEPARTMENT_ROUTE_CONSTATNTS={
   UPDATE:"/:departmentId"
   
 }
+
+export const CATEGORY_ROUTE_CONSTANTS={
+CREATE:"/:departmentId",
+GET_ALL:"/",
+
+  GET_CATEGORY:"/:categoryId",
+  UPDATE_STATUS:"/:categoryId/status",
+  UPDATE:"/:categoryId"
+
+}
+
+
+
+export const INVOICE_ROUTE_CONSTANTS = {
+  GET_ALL: "/",
+  GET_BY_ID: "/:invoiceId",
+  GET_PDF: "/:invoiceId/pdf",
+ GET_DOWNLOAD: "/:invoiceId/download",
+} as const;

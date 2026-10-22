@@ -120,9 +120,7 @@ export class SubscriptionPlanRepository
     );
   }
 
-  // -------------------------
-  // SubscriptionPlan-specific
-  // -------------------------
+ 
 
   async findAllByStatus(
     status?: SubscriptionPlanStatus,
