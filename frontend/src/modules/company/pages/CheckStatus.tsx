@@ -37,10 +37,12 @@ return (
     />
 
     <CompanyRequestStatus
-    companyRequestId={companyRequest.companyRequestId}
-      status={companyRequest.status}
-      reviewRemarks={companyRequest.reviewRemarks}
-    />
+  companyRequestId={companyRequest.companyRequestId}
+  status={companyRequest.status}
+  reviewRemarks={companyRequest.reviewRemarks}
+  companyDocuments={companyRequest.companyDocuments}
+  rejectionReason={companyRequest.rejectionReason}
+/>
   </>
 );
    

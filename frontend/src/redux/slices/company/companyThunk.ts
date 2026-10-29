@@ -9,13 +9,15 @@ import {
   updateCompanyStatus,
 } from "../../../modules/superadmin/services/superadminServices";
 
-import { getMyCompany, getMyCompanyDocuments } from "../../../modules/company-admin/services/companyprofile/companyProfileService";
+import { getMyCompany, getMyCompanyDocuments, submitCompanyChangeRequest, submitCompanyDocumentChangeRequest } from "../../../modules/company-admin/services/companyprofile/companyProfileService";
 import type {
   BillingHistoryType,
   CompanyAdminList,
+  CompanyChangeRequestResponse,
   CompanyDetails,
   CompanyListPaginatedResponse,
   MyCompanyDocuments,
+  SubmitCompanyChangeRequestPayload,
   UpdateCompanyStatusResponse,
 } from "./companyTypes";
 
@@ -279,6 +281,66 @@ export const fetchMyCompanyDocumentsThunk =
 
         return rejectWithValue(
           "Failed to fetch company documents",
+        );
+      }
+    },
+    
+  );
+
+
+
+
+
+export const submitCompanyChangeRequestThunk =
+  createAsyncThunk<
+    CompanyChangeRequestResponse,
+    SubmitCompanyChangeRequestPayload,
+    { rejectValue: string }
+  >(
+    "company/submitCompanyChangeRequest",
+    async (payload, { rejectWithValue }) => {
+      try {
+        const response =
+          await submitCompanyChangeRequest(payload);
+
+        return response.data;
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          return rejectWithValue(
+            error.response?.data?.message ||
+              "Failed to submit company change request",
+          );
+        }
+
+        return rejectWithValue(
+          "Failed to submit company change request",
+        );
+      }
+    },
+  );
+export const submitCompanyDocumentChangeThunk =
+  createAsyncThunk<
+    CompanyChangeRequestResponse,
+    FormData,
+    { rejectValue: string }
+  >(
+    "company/submitCompanyDocumentChange",
+    async (formData, { rejectWithValue }) => {
+      try {
+        const response =
+          await submitCompanyDocumentChangeRequest(formData);
+
+        return response.data;
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          return rejectWithValue(
+            error.response?.data?.message ||
+              "Failed to submit company document change request",
+          );
+        }
+
+        return rejectWithValue(
+          "Failed to submit company document change request",
         );
       }
     },

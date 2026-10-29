@@ -89,6 +89,12 @@ export const COMPANY_ROUTE = {
     `/companies/${companyId}/status`,
   MY_COMPANY: "/companies/my-company",
   MY_COMPANY_DOCUMENTS: "/companies/my-company/documents",
+   COMPANY_PROFILE_CHANGE_REQUEST : "/companies/profile-change-requests",
+  COMPANY_DOCUMENT_CHANGE_REQUEST:  "/companies/document-change-requests"
+
+
+
+
 } as const;
 
 export const DEPARTMENT_ROUTES = {
@@ -101,4 +107,20 @@ export const INVOICE_ROUTES = {
   GET_BY_ID: (invoiceId: string) => `/invoices/${invoiceId}`,
   GET_PDF: (invoiceId: string) => `/invoices/${invoiceId}/pdf`,
   GET_DOWNLOAD:(invoiceId: string) => `/invoices/${invoiceId}/download`,
+};
+
+
+export const COMPANY_CHANGE_REQUEST_ROUTES = {
+  BASE: "/companies/update-requests",
+
+  BY_ID: (requestId: string) =>
+    `/companies/update-requests/${requestId}`,
+
+  PROFILE_REVIEW: (requestId: string) =>
+    `/companies/update-requests/${requestId}/profile-review`,
+
+  DOCUMENT_REVIEW: (requestId: string) =>
+    `/companies/update-requests/${requestId}/document-review`,
+ SEND_OTP:`/companies/email-change/send-otp`,
+ VERIFY_OTP: "/companies/email-change/verify-otp",
 };

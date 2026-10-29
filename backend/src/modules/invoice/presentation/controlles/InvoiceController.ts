@@ -65,21 +65,25 @@ export class InvoiceController {
     );
   }
 
-  async getCompanyInvoices(req: Request, res: Response) {
-    const accountId = req.user!.accountId
+async getCompanyInvoices(req: Request, res: Response) {
+  const accountId = req.user!.accountId;
 
-    
+  const page = Number(req.query.page ?? 1);
+  const limit = Number(req.query.limit ?? 10);
 
-    const invoices = await this._getCompanyInvoices.execute(accountId);
+  const invoices = await this._getCompanyInvoices.execute(
+    accountId,
+    page,
+    limit,
+  );
 
-    return sendSuccess(
-      res,
-      "Company invoices fetched successfully",
-      invoices,
-      HttpStatusCode.OK,
-    );
-  }
-
+  return sendSuccess(
+    res,
+    "Company invoices fetched successfully",
+    invoices,
+    HttpStatusCode.OK,
+  );
+}
   
 async getInvoicePdf(req: Request, res: Response) {
   const { invoiceId } = req.params;
@@ -92,6 +96,7 @@ if (typeof invoiceId !== "string" || !invoiceId.trim()) {
     "Invalid invoice ID",
     HttpStatusCode.BAD_REQUEST,
   );
+  
 }
   if (!accountId) {
     return sendError(

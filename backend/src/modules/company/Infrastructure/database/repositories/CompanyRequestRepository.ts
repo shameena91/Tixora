@@ -330,4 +330,78 @@ export class CompanyRequestRepository
       companyRequestDocument,
     );
   }
+
+async findAllPaginated(
+  page: number,
+  limit: number,
+  search?: string,
+  status?: CompanyRequestStatus,
+  accountIds?: string[],
+): Promise<{
+  data: CompanyRequest[];
+  total: number;
+}> {
+  const skip = (page - 1) * limit;
+  const trimmedSearch = search?.trim();
+
+  const filter: Record<string, unknown> = {};
+
+  if (trimmedSearch) {
+    filter.$or = [
+      {
+        companyName: {
+          $regex: trimmedSearch,
+          $options: "i",
+        },
+      },
+      {
+        requestId: {
+          $regex: trimmedSearch,
+          $options: "i",
+        },
+      },
+    ];
+
+    if (accountIds !== undefined) {
+      if (accountIds.length === 0) {
+        return {
+          data: [],
+          total: 0,
+        };
+      }
+
+      filter.$or = [
+        ...filter.$or as Record<string, unknown>[],
+        {
+          accountId: {
+            $in: accountIds,
+          },
+        },
+      ];
+    }
+  }
+
+  if (status) {
+    filter.status = status;
+  }
+
+  const [documents, total] = await Promise.all([
+    CompanyRequestModel.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean<CompanyRequestDocument[]>()
+      .exec(),
+
+    CompanyRequestModel.countDocuments(filter).exec(),
+  ]);
+
+  return {
+    data: documents.map((document) =>
+      CompanyRequestMapper.toDomain(document),
+    ),
+    total,
+  };
+}
+
 }

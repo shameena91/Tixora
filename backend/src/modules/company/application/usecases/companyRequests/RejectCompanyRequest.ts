@@ -12,44 +12,44 @@ export class RejectCompanyRequest implements IRejectCompanyRequest {
     private readonly _companyrequestRepository: ICompanyRequestRepository,
     private readonly _createTimeline: ICreateTimeline,
   ) {}
-  async execute(id: string): Promise<CompanyRequest> {
-    const companyRequest = await this._companyrequestRepository.findById(id);
+ 
+async execute(
+  id: string,
+  rejectionReason: string,
+): Promise<CompanyRequest> {
+  const companyRequest =
+    await this._companyrequestRepository.findById(id);
 
-    if (!companyRequest) {
-      throw new AppErrors(
-        MESSAGES.COMPANY_REQUEST_NOT_FOUND,
-        ErrorCode.COMPANY_REQUEST_NOT_FOUND,
-      );
-    }
-
-    companyRequest.reject();
-
-    const updatedCompanyRequest =
-      await this._companyrequestRepository.updateStatus(
-        id,
-        companyRequest.status,
-        null,
-        new Date(),
-        null,
-        null,
-      );
-
-    await this._createTimeline.execute({
-      entityType: TimelineEntityType.COMPANY_REQUEST,
-
-      entityId: companyRequest.id,
-
-      action: "REJECTED",
-
-      description: "Company request rejected",
-
-      performedBy: null,
-
-      metadata: null,
-
-      createdAt: new Date(),
-    });
-
-    return updatedCompanyRequest;
+  if (!companyRequest) {
+    throw new AppErrors(
+      MESSAGES.COMPANY_REQUEST_NOT_FOUND,
+      ErrorCode.COMPANY_REQUEST_NOT_FOUND,
+    );
   }
+
+  companyRequest.reject();
+
+  const updatedCompanyRequest =
+await this._companyrequestRepository.updateStatus(
+  id,
+  companyRequest.status,
+  null,
+  new Date(),
+  null,
+  rejectionReason.trim(),
+);
+
+  await this._createTimeline.execute({
+    entityType: TimelineEntityType.COMPANY_REQUEST,
+    entityId: companyRequest.id,
+    action: "REJECTED",
+    description: `Company request rejected. Reason: ${rejectionReason}`,
+    performedBy: null,
+    metadata: null,
+    createdAt: new Date(),
+  });
+
+  return updatedCompanyRequest;
+}
+
 }

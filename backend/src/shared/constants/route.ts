@@ -49,6 +49,21 @@ export const COMAPANY_ROUTES={
  GET_MY_COMPANY:"/my-company",
  GET_MY_COMPANY_DOCUMENTS:
   "/my-company/documents",
+  CREATE_PROFILE_CHANGE_REQUEST: "/profile-change-requests",
+  CREATE_DOCUMENT_CHANGE_REQUEST: "/document-change-requests",
+  GET_COMPANY_CHANGE_REQUESTS: "/update-requests",
+  GET_COMPANY_CHANGE_REQUEST_BY_ID:
+  "/update-requests/:requestId",
+
+
+REVIEW_COMPANY_PROFILE_CHANGE_REQUEST:
+  "/update-requests/:requestId/profile-review",
+
+REVIEW_COMPANY_DOCUMENT_CHANGE_REQUEST:
+  "/update-requests/:requestId/document-review",
+  SEND_COMPANY_EMAIL_CHANGE_OTP:"/email-change/send-otp",
+  VERIFY_COMPANY_EMAIL_CHANGE_OTP:
+  "/email-change/verify-otp",
 
 }
 export const SUBSCRIPTION_ROUTE_CONSTANTS={

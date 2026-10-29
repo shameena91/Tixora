@@ -96,9 +96,19 @@ console.log("Slsected sub:",response.data)
   return response.data;
 };
 
-export const getMySubscriptionStatus = async () => {
+
+export const getMySubscriptionStatus = async (
+  page?: number,
+  limit?: number,
+) => {
   const response = await axiosInstance.get(
-    SUBSCRIPTION_PLAN_ROUTES.SUBSCRIPTION_STATUS
+    SUBSCRIPTION_PLAN_ROUTES.SUBSCRIPTION_STATUS,
+    {
+      params: {
+        ...(page !== undefined && { page }),
+        ...(limit !== undefined && { limit }),
+      },
+    },
   );
 
   return response.data;

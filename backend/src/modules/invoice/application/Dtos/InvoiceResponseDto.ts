@@ -20,4 +20,9 @@ export interface InvoiceResponseDto {
 export interface GetAllInvoicesResponseDto {
   invoices: InvoiceResponseDto[];
   total: number;
+  pagination: {
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
 }

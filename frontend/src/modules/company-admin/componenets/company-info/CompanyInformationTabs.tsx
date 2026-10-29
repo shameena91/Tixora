@@ -10,6 +10,7 @@ const CompanyInformationTabs = ({
   const tabs = [
     "Company Information",
     "Verification & Documents",
+    "Company Requests"
     
   ];
 

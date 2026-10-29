@@ -1,14 +1,30 @@
 
 import axiosInstance from "../../auth/api/axiosInstance";
-import { COMPANY_REQUEST_ROUTES, COMPANY_ROUTE } from "../../../shared/constants/apiRoutes";
+import { COMPANY_CHANGE_REQUEST_ROUTES, COMPANY_REQUEST_ROUTES, COMPANY_ROUTE } from "../../../shared/constants/apiRoutes";
+import type { CompanyRequestStatus } from "../../company/types/companyTypes";
+import type { CompanyChangeRequestFilters, ReviewDocumentChangePayload, ReviewProfileChangePayload } from "../../../redux/slices/companyRrequest/companyRequestTypes";
 
-export const getAllCompanyRequests = async () => {
+interface GetAllCompanyRequestsParams {
+  page: number;
+  limit: number;
+  search?: string;
+  status?: CompanyRequestStatus;
+}
+
+export const getAllCompanyRequests = async (
+  params: GetAllCompanyRequestsParams,
+) => {
   const response = await axiosInstance.get(
-    COMPANY_REQUEST_ROUTES.BASE
+    COMPANY_REQUEST_ROUTES.BASE,
+    {
+      params,
+    },
   );
 
   return response.data;
 };
+
+
 
 export const getCompanyRequestById = async (
   companyRequestId: string
@@ -30,11 +46,14 @@ export const approveCompanyRequest = async (
   return response.data;
 };
 
+
 export const rejectCompanyRequest = async (
-  companyRequestId: string
+  companyRequestId: string,
+  rejectionReason: string,
 ) => {
   const response = await axiosInstance.patch(
-    COMPANY_REQUEST_ROUTES.REJECT(companyRequestId)
+    COMPANY_REQUEST_ROUTES.REJECT(companyRequestId),
+    { rejectionReason },
   );
 
   return response.data;
@@ -96,19 +115,25 @@ export const verifyCompanyDocument = async (
   return response.data;
 };
 
+
 export const rejectCompanyDocument = async (
   companyRequestId: string,
-  documentType: string
+  documentType: string,
+  rejectionReason: string,
 ) => {
   const response = await axiosInstance.patch(
     COMPANY_REQUEST_ROUTES.DOCUMENT_REJECT(
       companyRequestId,
-      documentType
-    )
+      documentType,
+    ),
+    {
+      rejectionReason,
+    },
   );
 
   return response.data;
 };
+
 
 
 
@@ -152,22 +177,23 @@ console.log("service",companyId)
   return response.data;
 };
 
-export const getCompanySubscription = async (id: string) => {
- 
-
+export const getCompanySubscription = async (
+  id: string,
+  page: number,
+  limit: number,
+) => {
   const url = COMPANY_ROUTE.GET_COMPANY_SUBSCRIPTION(id);
-  try {
-    const response = await axiosInstance.get(url);
 
-  
+  try {
+    const response = await axiosInstance.get(url, {
+      params: { page, limit },
+    });
 
     return response.data;
   } catch (error) {
-    console.log(" SERVICE ERROR:", error);
+    console.log("SERVICE ERROR:", error);
     throw error;
   }
-
-  
 };
 export const getCompanyAdmins=async (companyId:string)=>{
 
@@ -196,3 +222,76 @@ export const updateCompanyStatus=async (companyId:string,
 
   return response.data
 }
+
+
+
+export const getCompanyChangeRequests = (
+  params: CompanyChangeRequestFilters,
+) => {
+  return axiosInstance.get(
+    COMPANY_CHANGE_REQUEST_ROUTES.BASE,
+    {
+      params: {
+        page: params.page,
+        limit: params.limit,
+        search: params.search,
+        status: params.status,
+        changeType: params.changeType,
+      },
+    },
+  );
+};
+
+// Get update request details
+
+export const getCompanyChangeRequestById = (
+  requestId: string,
+) => {
+  return axiosInstance.get(
+    COMPANY_CHANGE_REQUEST_ROUTES.BY_ID(requestId),
+  );
+};
+
+// Review one profile field
+
+export const reviewCompanyProfileChangeRequest = (
+  payload: ReviewProfileChangePayload,
+) => {
+  const { requestId, ...data } = payload;
+
+  return axiosInstance.patch(
+    COMPANY_CHANGE_REQUEST_ROUTES.PROFILE_REVIEW(requestId),
+    data,
+  );
+};
+
+
+
+export const reviewCompanyDocumentChangeRequest = (
+  payload: ReviewDocumentChangePayload,
+) => {
+  const { requestId, ...data } = payload;
+console.log("payload",payload)
+  return axiosInstance.patch(
+    COMPANY_CHANGE_REQUEST_ROUTES.DOCUMENT_REVIEW(requestId),
+    data,
+  );
+};
+
+
+export const sendCompanyEmailChangeOtp = (email: string) => {
+  return axiosInstance.post(COMPANY_CHANGE_REQUEST_ROUTES.SEND_OTP,
+    { email },
+  );
+};
+
+
+export const verifyCompanyEmailChangeOtp = (data: {
+  email: string;
+  otp: string;
+}) => {
+  return axiosInstance.post(
+    COMPANY_CHANGE_REQUEST_ROUTES.VERIFY_OTP,
+    data,
+  );
+};

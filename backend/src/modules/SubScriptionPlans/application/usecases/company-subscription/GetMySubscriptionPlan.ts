@@ -24,7 +24,7 @@ export class GetMySubscriptionPlan implements IGetMySubscriptionPlan  {
     }
 
     const subscription =
-      await this._subscriptionRepository.findByCompanyId(company.id);
+      await this._subscriptionRepository.findActiveByCompanyId(company.id);
 
     if (!subscription) {
       return null;

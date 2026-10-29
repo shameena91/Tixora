@@ -77,9 +77,10 @@ const LoginPage = () => {
         navigate("/super-admin/dashbord");
         return;
       }
-
+console.log("response.data.role",response.data.role)
       if (response.data.role === "COMPANY_ADMIN") {
         const companyRequest = await getMyCompanyRequest();
+        console.log("companyRequest",companyRequest)
 
         
         console.log("Fromlogin", companyRequest);
@@ -90,6 +91,8 @@ const LoginPage = () => {
         }
 
         const subscription = await getMySubscriptionStatus();
+console.log("subscription",subscription)
+
      const accessStatus =
   subscription?.data?.subscriptionAccessStatus;
 

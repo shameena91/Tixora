@@ -9,6 +9,8 @@ import {
   fetchCompanyThunk,
   fetchMyCompanyDocumentsThunk,
   fetchMyCompanyThunk,
+  submitCompanyChangeRequestThunk,
+  submitCompanyDocumentChangeThunk,
   updateCompanyStatusThunk,
 } from "./companyThunk";
 
@@ -23,7 +25,7 @@ import type {
 const initialState: CompanyState = {
   // Company list
   companyList: [],
-
+CompanyChangeRequest:null,
   companyListTotal: 0,
   companyListPage: 1,
   companyListLimit: 3,
@@ -60,6 +62,11 @@ const initialState: CompanyState = {
   companyDocuments: null,
 companyDocumentsLoading: false,
 companyDocumentsError: null,
+CompanyChangeRequestLoading:false,
+CompanyChangeRequestError:null,
+documentChangeRequestLoading: false,
+documentChangeRequestError: null,
+documentChangeRequest: null,
 };
 
 // ------------------------------------
@@ -408,6 +415,62 @@ const companySlice =
       "Failed to fetch company documents";
   },
 )
+
+
+
+
+.addCase(
+  submitCompanyChangeRequestThunk.pending,
+  (state) => {
+    state.CompanyChangeRequestLoading = true;
+    state.CompanyChangeRequestError = null;
+  },
+)
+.addCase(
+  submitCompanyChangeRequestThunk.fulfilled,
+  (state, action) => {
+    state.CompanyChangeRequestLoading = false;
+    state.CompanyChangeRequestError = null;
+    state.CompanyChangeRequest = action.payload;
+  },
+)
+.addCase(
+  submitCompanyChangeRequestThunk.rejected,
+  (state, action) => {
+    state.CompanyChangeRequestLoading = false;
+    state.CompanyChangeRequestError =
+      action.payload ??
+      "Failed to submit company change request";
+  },
+)
+
+
+.addCase(
+  submitCompanyDocumentChangeThunk.pending,
+  (state) => {
+    state.documentChangeRequestLoading = true;
+    state.documentChangeRequestError = null;
+  },
+)
+.addCase(
+  submitCompanyDocumentChangeThunk.fulfilled,
+  (state, action) => {
+    state.documentChangeRequestLoading = false;
+    state.documentChangeRequest = action.payload;
+  },
+)
+.addCase(
+  submitCompanyDocumentChangeThunk.rejected,
+  (state, action) => {
+    state.documentChangeRequestLoading = false;
+    state.documentChangeRequestError =
+      action.payload ?? "Failed to submit document change request";
+  },
+)
+
+
+
+
     },
   });
 

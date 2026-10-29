@@ -97,4 +97,15 @@ export interface ICompanyRequestRepository
     id: string,
     documents: CompanyDocument[],
   ): Promise<CompanyRequest>;
+
+    findAllPaginated(
+    page: number,
+    limit: number,
+    search?: string,
+    status?: CompanyRequestStatus,
+    accountIds?: string[],
+  ): Promise<{
+    data: CompanyRequest[];
+    total: number;
+  }>;
 }

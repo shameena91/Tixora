@@ -42,7 +42,7 @@ import { AccountCreateData, AccountDocument } from "../application/mappers/Accou
 
 const emailService = new EmailNodemailerService();
 
-const otpStore = new RedisOtpStore();
+export const otpStore = new RedisOtpStore();
 
 const baseAccountRepository =
   new BaseRepository<AccountDocument, AccountCreateData>(
@@ -52,7 +52,7 @@ const baseAccountRepository =
 export const accountRepository =
   new AccountRepository(baseAccountRepository);
 
-const otpService = new OtpService(
+export const otpService = new OtpService(
   otpStore,
   emailService
 );

@@ -17,15 +17,16 @@ import BillingHistory from "../../componenets/subscription/BillingHistory";
 
 type SubscriptionTab = "overview" | "billing";
 
-
 const CompanySubscriptionPage = () => {
   const [activeTab, setActiveTab] =
     useState<SubscriptionTab>("overview");
 
-
-
   const [notice, setNotice] = useState("");
   const [currentTime] = useState(() => Date.now());
+
+  // Server-side pagination
+  const [page, setPage] = useState(1);
+  const limit = 3;
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -37,13 +38,20 @@ const CompanySubscriptionPage = () => {
     error,
   } = useAppSelector((state) => state.companySubscription);
 
+  // Fetch subscription status and the requested history page
   useEffect(() => {
-    dispatch(getMySubscriptionStatusThunk());
+    dispatch(
+      getMySubscriptionStatusThunk({
+        page,
+        limit,
+      }),
+    );
+  }, [dispatch, page]);
+
+  // Fetch the plan separately; don't refetch it when the page changes
+  useEffect(() => {
     dispatch(getMySubscriptionPlanThunk());
   }, [dispatch]);
-
- 
- 
 
   if (loading && !myPlan && !mySubscription) {
     return (
@@ -66,12 +74,19 @@ const CompanySubscriptionPage = () => {
           Unable to load subscription
         </h2>
 
-        <p className="mt-2 text-sm text-red-600">{error}</p>
+        <p className="mt-2 text-sm text-red-600">
+          {error}
+        </p>
 
         <button
           type="button"
           onClick={() => {
-            dispatch(getMySubscriptionStatusThunk());
+            dispatch(
+              getMySubscriptionStatusThunk({
+                page,
+                limit,
+              }),
+            );
             dispatch(getMySubscriptionPlanThunk());
           }}
           className="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700"
@@ -98,7 +113,9 @@ const CompanySubscriptionPage = () => {
         </p>
 
         {error && (
-          <p className="mt-3 text-sm text-red-600">{error}</p>
+          <p className="mt-3 text-sm text-red-600">
+            {error}
+          </p>
         )}
       </div>
     );
@@ -113,6 +130,8 @@ const CompanySubscriptionPage = () => {
   const subscriptionHistory =
     mySubscription.subscriptionHistory ?? [];
 
+  const pagination = mySubscription.pagination;
+
   const subscriptionEndTime = currentSubscription?.endDate
     ? new Date(currentSubscription.endDate).getTime()
     : null;
@@ -123,18 +142,18 @@ const CompanySubscriptionPage = () => {
 
   const isExpired =
     subscriptionEndTime !== null &&
-    currentTime !== null &&
     subscriptionEndTime <= currentTime;
 
   const isRenewalDue =
     subscriptionEndTime !== null &&
-    currentTime !== null &&
-    subscriptionEndTime - currentTime <= oneDayInMilliseconds;
+    subscriptionEndTime - currentTime <=
+      oneDayInMilliseconds;
 
   const showRenewButton =
     isPaidPlan &&
     (isExpired ||
-      (currentSubscription?.status === "ACTIVE" && isRenewalDue));
+      (currentSubscription?.status === "ACTIVE" &&
+        isRenewalDue));
 
   return (
     <div className="min-h-full space-y-6 bg-slate-50/60 pb-8">
@@ -159,10 +178,9 @@ const CompanySubscriptionPage = () => {
             type="button"
             onClick={() => {
               setNotice("");
-            
-  navigate(
-    "/company-admin/select-subscription?mode=upgrade"
-  );
+              navigate(
+                "/company-admin/select-subscription?mode=upgrade",
+              );
             }}
             className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
           >
@@ -170,24 +188,21 @@ const CompanySubscriptionPage = () => {
             Upgrade Plan
           </button>
 
-
-{showRenewButton && (
-  <button
-    type="button"
-    onClick={() => {
-      setNotice("");
-
-      navigate(
-        "/company-admin/select-subscription?mode=renew",
-      );
-    }}
-    className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
-  >
-    <span aria-hidden="true">↻</span>
-    Renew Subscription
-  </button>
-)}
-
+          {showRenewButton && (
+            <button
+              type="button"
+              onClick={() => {
+                setNotice("");
+                navigate(
+                  "/company-admin/select-subscription?mode=renew",
+                );
+              }}
+              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
+            >
+              <span aria-hidden="true">↻</span>
+              Renew Subscription
+            </button>
+          )}
         </div>
       </section>
 
@@ -249,13 +264,12 @@ const CompanySubscriptionPage = () => {
           onSelectPlan={() =>
             navigate("/company-admin/select-subscription")
           }
+          pagination={pagination}
+          onPageChange={setPage}
         />
       ) : (
         <BillingHistory />
       )}
-
-      {/* Renewal confirmation modal */}
-     
     </div>
   );
 };

@@ -19,7 +19,9 @@ export class UpdateCompanyRequest implements IUpdateCompanyRequest {
         ErrorCode.COMPANY_REQUEST_NOT_FOUND,
       );
     }
-    if (companyRequest.status !== CompanyRequestStatus.MORE_INFO_REQUIRED) {
+    if (companyRequest.status !== CompanyRequestStatus.MORE_INFO_REQUIRED && 
+      companyRequest.status !== CompanyRequestStatus.PENDING && 
+      companyRequest.status !== CompanyRequestStatus.REJECTED ) {
       throw new AppErrors(
         MESSAGES.COMPANY_REQUEST_CANNOT_BE_UPDATED,
         ErrorCode.COMPANY_REQUEST_CANNOT_BE_UPDATED,

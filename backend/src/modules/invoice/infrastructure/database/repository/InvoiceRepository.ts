@@ -8,7 +8,7 @@ import {
 
 import { Invoice } from "../../../domain/entities/Invoice";
 import { IInvoiceRepository } from "../../../domain/repositories/IInvoiceRepository";
-import { InvoiceDocument } from "../modals/InvoiceModal";
+import { InvoiceDocument, InvoiceModel } from "../modals/InvoiceModal";
 
 export class InvoiceRepository implements IInvoiceRepository {
   constructor(
@@ -40,19 +40,28 @@ export class InvoiceRepository implements IInvoiceRepository {
     } as InvoiceMapperData);
   }
 
-  async findByCompanyId(companyId: string): Promise<Invoice[]> {
-    const documents = await this._baseRepository.findAll(
-      { companyId } as Partial<InvoiceDocument>,
-      { createdAt: -1 },
-    );
 
-    return documents.map((document) =>
-      InvoiceMapper.toEntity({
-        ...document,
-        _id: String(document._id),
-      } as InvoiceMapperData),
-    );
-  }
+async findByCompanyId(
+  companyId: string,
+  page: number,
+  limit: number,
+): Promise<Invoice[]> {
+  const documents = await InvoiceModel.find({ companyId })
+    .sort({ createdAt: -1 })
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .exec();
+
+  return documents.map((document) =>
+    InvoiceMapper.toEntity({
+      ...document.toObject(),
+      _id: String(document._id),
+    } as InvoiceMapperData),
+  );
+}
+async countByCompanyId(companyId: string): Promise<number> {
+  return InvoiceModel.countDocuments({ companyId }).exec();
+}
 
 async findByPaymentId(
   paymentId: string,

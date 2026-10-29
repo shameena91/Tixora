@@ -10,7 +10,10 @@ import {
   GetCompanySubscriptionResponseDto,
 } from "../../dto/GetCompanySubscriptionDto";
 
-import { SubscriptionStatus } from "../../../domain/entities/Subscription";
+import {
+  Subscription,
+  SubscriptionStatus,
+} from "../../../domain/entities/Subscription";
 
 export class GetMySubscriptionStatus
   implements IGetMySubscriptionStatus
@@ -23,8 +26,9 @@ export class GetMySubscriptionStatus
 
   async execute(
     accountId: string,
+    page: number,
+    limit: number,
   ): Promise<GetCompanySubscriptionResponseDto | null> {
-    // 1. Find company
     const company =
       await this._companyRepository.findByAccountId(accountId);
 
@@ -34,70 +38,51 @@ export class GetMySubscriptionStatus
 
     const currentDate = new Date();
 
-    // 2. Fetch all subscription records
+    // Fetch all records for subscription status transitions.
     let subscriptions =
       await this._subscriptionRepository.findAllByCompanyId(
         company.id,
       );
 
-    // 3. Expire active subscriptions whose end date has passed
+    // Expire active and scheduled subscriptions when their periods end.
     for (const subscription of subscriptions) {
       const hasExpired =
-        subscription.status === SubscriptionStatus.ACTIVE &&
+        (subscription.status === SubscriptionStatus.ACTIVE ||
+          subscription.status === SubscriptionStatus.SCHEDULED) &&
         subscription.endDate !== null &&
         subscription.endDate.getTime() <= currentDate.getTime();
 
       if (hasExpired) {
         await this._subscriptionRepository.updateSubscription(
           subscription.id,
-          {
-            status: SubscriptionStatus.EXPIRED,
-          },
+          { status: SubscriptionStatus.EXPIRED },
         );
       }
     }
 
-    // 4. Expire scheduled subscriptions whose periods have already ended
-    for (const subscription of subscriptions) {
-      const scheduledPeriodHasExpired =
-        subscription.status === SubscriptionStatus.SCHEDULED &&
-        subscription.startDate.getTime() <= currentDate.getTime() &&
-        subscription.endDate !== null &&
-        subscription.endDate.getTime() <= currentDate.getTime();
+    // Refresh records after expiry transitions.
+    subscriptions =
+      await this._subscriptionRepository.findAllByCompanyId(
+        company.id,
+      );
 
-      if (scheduledPeriodHasExpired) {
-        await this._subscriptionRepository.updateSubscription(
-          subscription.id,
-          {
-            status: SubscriptionStatus.EXPIRED,
-          },
-        );
-      }
-    }
-
-    // 5. Check whether a valid active subscription exists
     const hasValidActiveSubscription = subscriptions.some(
       (subscription) =>
         subscription.status === SubscriptionStatus.ACTIVE &&
         subscription.startDate.getTime() <= currentDate.getTime() &&
-        (
-          subscription.endDate === null ||
-          subscription.endDate.getTime() > currentDate.getTime()
-        ),
+        (subscription.endDate === null ||
+          subscription.endDate.getTime() > currentDate.getTime()),
     );
 
-    // 6. If no active subscription exists, activate the next
-    // scheduled subscription whose start date has arrived
+    // Activate the next eligible scheduled subscription when needed.
     if (!hasValidActiveSubscription) {
       const scheduledSubscription = subscriptions
         .filter(
           (subscription) =>
             subscription.status === SubscriptionStatus.SCHEDULED &&
             subscription.startDate.getTime() <= currentDate.getTime() &&
-            (
-              subscription.endDate === null ||
-              subscription.endDate.getTime() > currentDate.getTime()
-            ),
+            (subscription.endDate === null ||
+              subscription.endDate.getTime() > currentDate.getTime()),
         )
         .sort(
           (a, b) =>
@@ -107,77 +92,87 @@ export class GetMySubscriptionStatus
       if (scheduledSubscription) {
         await this._subscriptionRepository.updateSubscription(
           scheduledSubscription.id,
-          {
-            status: SubscriptionStatus.ACTIVE,
-          },
+          { status: SubscriptionStatus.ACTIVE },
         );
       }
     }
 
-    // 7. Fetch updated records once, after status transitions
+    // Refresh all records for current subscription and access status.
     subscriptions =
       await this._subscriptionRepository.findAllByCompanyId(
         company.id,
       );
 
-    // 8. Prepare subscription history items
-    const subscriptionItems: GetCompanySubscriptionItemDto[] =
-      await Promise.all(
-        subscriptions.map(async (subscription) => {
-          const plan =
-            await this._subscriptionPlanRepository.findById(
-              subscription.planId,
-            );
+    const currentSubscriptionEntity =
+      subscriptions
+        .filter(
+          (subscription) =>
+            subscription.status === SubscriptionStatus.ACTIVE &&
+            subscription.startDate.getTime() <= currentDate.getTime() &&
+            (subscription.endDate === null ||
+              subscription.endDate.getTime() > currentDate.getTime()),
+        )
+        .sort(
+          (a, b) =>
+            b.createdAt.getTime() - a.createdAt.getTime(),
+        )[0] ?? null;
 
-          const amount =
-            subscription.billingCycle === "MONTHLY"
-              ? plan?.monthlyPrice
-              : plan?.yearlyPrice;
+    // Fetch only the requested history page from the repository.
+    const [historyPage, totalCount] = await Promise.all([
+      this._subscriptionRepository.findAllByCompanyId(
+        company.id,
+        page,
+        limit,
+      ),
+      this._subscriptionRepository.countByCompanyId(company.id),
+    ]);
 
-          return {
-            id: subscription.id,
-            companyId: subscription.companyId,
-            planId: subscription.planId,
-            planName: plan?.name ?? "-",
-            amount: amount ?? 0,
-            billingCycle: subscription.billingCycle,
-            status: subscription.status,
-            startDate: subscription.startDate,
-            endDate: subscription.endDate,
-            createdAt: subscription.createdAt,
-            updatedAt: subscription.updatedAt,
-          };
-        }),
-      );
+    const mapSubscription = async (
+      subscription: Subscription,
+    ): Promise<GetCompanySubscriptionItemDto> => {
+      const plan =
+        await this._subscriptionPlanRepository.findById(
+          subscription.planId,
+        );
 
-    // 9. Sort history newest first
-    const sortedSubscriptions = [...subscriptionItems].sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() -
-        new Date(a.createdAt).getTime(),
-    );
+      const amount =
+        subscription.billingCycle === "MONTHLY"
+          ? plan?.monthlyPrice
+          : plan?.yearlyPrice;
 
-    // 10. Find the currently valid active subscription
-    const currentSubscription =
-      sortedSubscriptions.find(
-        (subscription) =>
-          subscription.status === SubscriptionStatus.ACTIVE &&
-          new Date(subscription.startDate).getTime() <=
-            currentDate.getTime() &&
-          (
-            subscription.endDate === null ||
-            new Date(subscription.endDate).getTime() >
-              currentDate.getTime()
-          ),
-      ) ?? null;
+      return {
+        id: subscription.id,
+        companyId: subscription.companyId,
+        planId: subscription.planId,
+        planName: plan?.name ?? "-",
+        amount: amount ?? 0,
+        billingCycle: subscription.billingCycle,
+        status: subscription.status,
+        startDate: subscription.startDate,
+        endDate: subscription.endDate,
+        createdAt: subscription.createdAt,
+        updatedAt: subscription.updatedAt,
+      };
+    };
 
-    // 11. Determine company access status
-    const latestRelevantSubscription =
-      sortedSubscriptions.find(
+    const [subscriptionHistory, currentSubscription] =
+      await Promise.all([
+        Promise.all(historyPage.map(mapSubscription)),
+        currentSubscriptionEntity
+          ? mapSubscription(currentSubscriptionEntity)
+          : Promise.resolve(null),
+      ]);
+
+    const latestRelevantSubscription = [...subscriptions]
+      .filter(
         (subscription) =>
           subscription.status !== SubscriptionStatus.UPGRADED &&
           subscription.status !== SubscriptionStatus.SCHEDULED,
-      ) ?? null;
+      )
+      .sort(
+        (a, b) =>
+          b.createdAt.getTime() - a.createdAt.getTime(),
+      )[0] ?? null;
 
     let subscriptionAccessStatus:
       GetCompanySubscriptionResponseDto["subscriptionAccessStatus"];
@@ -185,31 +180,33 @@ export class GetMySubscriptionStatus
     if (currentSubscription) {
       subscriptionAccessStatus = "ACTIVE";
     } else if (
-      latestRelevantSubscription?.status ===
-      SubscriptionStatus.EXPIRED
+      latestRelevantSubscription?.status === SubscriptionStatus.EXPIRED
     ) {
       subscriptionAccessStatus = "EXPIRED";
     } else if (
-      latestRelevantSubscription?.status ===
-      SubscriptionStatus.CANCELLED
+      latestRelevantSubscription?.status === SubscriptionStatus.CANCELLED
     ) {
       subscriptionAccessStatus = "CANCELLED";
     } else if (
-      latestRelevantSubscription?.status ===
-      SubscriptionStatus.PENDING
+      latestRelevantSubscription?.status === SubscriptionStatus.PENDING
     ) {
       subscriptionAccessStatus = "PENDING";
-    } else if (sortedSubscriptions.length === 0) {
+    } else if (subscriptions.length === 0) {
       subscriptionAccessStatus = "NO_SUBSCRIPTION";
     } else {
       subscriptionAccessStatus = "PENDING";
     }
 
-    // 12. Return current subscription and complete history
     return {
       subscriptionAccessStatus,
       currentSubscription,
-      subscriptionHistory: sortedSubscriptions,
+      subscriptionHistory,
+      pagination: {
+        page,
+        limit,
+        totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+      },
     };
   }
 }

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 
 import {
   Building2,
@@ -6,7 +7,7 @@ import {
   Lock,
   Mail,
   MapPin,
- 
+  Pencil,
   Phone,
   Tags,
   Users,
@@ -16,7 +17,6 @@ import type { CompanyDetails } from "../../../../redux/slices/company/companyTyp
 
 interface CompanyInformationTableProps {
   company: CompanyDetails;
-
   onEdit: (
     field: {
       key: string;
@@ -24,38 +24,39 @@ interface CompanyInformationTableProps {
     },
     value: string,
   ) => void;
-  
+  onRequestChange: () => void;
 }
 
 const CompanyInformationTable = ({
   company,
-
-  //  onRequestChange,
+  onEdit,
+  onRequestChange,
 }: CompanyInformationTableProps) => {
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-  {/* Header */}
-  <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
-    <div>
-      <h3 className="text-lg font-semibold text-slate-900">
-        Company Information
-      </h3>
+      {/* Header */}
+      <div className="flex flex-col gap-4 border-b border-slate-200 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900">
+            Company Information
+          </h3>
 
-      <p className="mt-1 text-sm text-slate-500">
-        View and manage your company profile information.
-      </p>
-    </div>
+          <p className="mt-1 text-sm text-slate-500">
+            View and manage your company profile information.
+          </p>
+        </div>
 
-    {/* <button
-      type="button"
-    onClick={onRequestChange}
-      className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
-    >
-      <Pencil className="h-4 w-4" />
-      Request Change
-    </button> */}
-  </div>
+        <button
+          type="button"
+          onClick={onRequestChange}
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
+        >
+          <Pencil className="h-4 w-4" />
+          Request Change
+        </button>
+      </div>
 
+      {/* Company Information Table */}
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-left">
           <thead>
@@ -68,9 +69,9 @@ const CompanyInformationTable = ({
                 Information
               </th>
 
-              {/* <th className="px-6 py-3.5 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <th className="px-6 py-3.5 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
                 Editability
-              </th> */}
+              </th>
             </tr>
           </thead>
 
@@ -90,9 +91,9 @@ const CompanyInformationTable = ({
                 </InformationValue>
               </td>
 
-              {/* <td className="px-6 py-4 text-right">
+              <td className="px-6 py-4 text-right">
                 <ApprovalRequired />
-              </td> */}
+              </td>
             </tr>
 
             {/* Registration Number */}
@@ -105,15 +106,17 @@ const CompanyInformationTable = ({
               </td>
 
               <td className="px-6 py-4">
-                <span className="font-mono text-sm font-semibold text-slate-800">
+                <InformationValue>
                   {company.registrationNumber || "Not provided"}
-                </span>
+                </InformationValue>
               </td>
 
-             
+              <td className="px-6 py-4 text-right">
+                <ApprovalRequired />
+              </td>
             </tr>
 
-            {/* Company Email */}
+            {/* Email - Direct Edit */}
             <tr className="transition-colors hover:bg-slate-50/50">
               <td className="px-6 py-4">
                 <FieldLabel
@@ -128,22 +131,22 @@ const CompanyInformationTable = ({
                 </InformationValue>
               </td>
 
-              {/* <td className="px-6 py-4 text-right">
+              <td className="px-6 py-4 text-right">
                 <EditButton
                   onClick={() =>
                     onEdit(
                       {
-                        key: "email",
+                        key: "companyEmail",
                         label: "Email",
                       },
-                      company.companyEmail,
+                      company.companyEmail ?? "",
                     )
                   }
                 />
-              </td> */}
+              </td>
             </tr>
 
-            {/* Phone */}
+            {/* Phone - Direct Edit */}
             <tr className="transition-colors hover:bg-slate-50/50">
               <td className="px-6 py-4">
                 <FieldLabel
@@ -158,7 +161,7 @@ const CompanyInformationTable = ({
                 </InformationValue>
               </td>
 
-              {/* <td className="px-6 py-4 text-right">
+              <td className="px-6 py-4 text-right">
                 <EditButton
                   onClick={() =>
                     onEdit(
@@ -166,11 +169,11 @@ const CompanyInformationTable = ({
                         key: "phone",
                         label: "Phone",
                       },
-                      company.phone,
+                      company.phone ?? "",
                     )
                   }
                 />
-              </td> */}
+              </td>
             </tr>
 
             {/* Company Type */}
@@ -188,17 +191,17 @@ const CompanyInformationTable = ({
                 </InformationValue>
               </td>
 
-              {/* <td className="px-6 py-4 text-right">
+              <td className="px-6 py-4 text-right">
                 <ApprovalRequired />
-              </td> */}
+              </td>
             </tr>
 
-            {/* Employees */}
+            {/* Employee Range */}
             <tr className="transition-colors hover:bg-slate-50/50">
               <td className="px-6 py-4">
                 <FieldLabel
                   icon={<Users className="h-4 w-4" />}
-                  label="Employees"
+                  label="Employee Range"
                 />
               </td>
 
@@ -208,9 +211,9 @@ const CompanyInformationTable = ({
                 </InformationValue>
               </td>
 
-              {/* <td className="px-6 py-4 text-right">
+              <td className="px-6 py-4 text-right">
                 <ApprovalRequired />
-              </td> */}
+              </td>
             </tr>
 
             {/* Year Established */}
@@ -228,12 +231,12 @@ const CompanyInformationTable = ({
                 </InformationValue>
               </td>
 
-              {/* <td className="px-6 py-4 text-right">
+              <td className="px-6 py-4 text-right">
                 <ApprovalRequired />
-              </td> */}
+              </td>
             </tr>
 
-            {/* Website */}
+            {/* Website - Direct Edit */}
             <tr className="transition-colors hover:bg-slate-50/50">
               <td className="px-6 py-4">
                 <FieldLabel
@@ -246,7 +249,7 @@ const CompanyInformationTable = ({
                 {company.website ? (
                   <a
                     href={
-                      company.website.startsWith("http")
+                      /^https?:\/\//i.test(company.website)
                         ? company.website
                         : `https://${company.website}`
                     }
@@ -257,13 +260,13 @@ const CompanyInformationTable = ({
                     {company.website}
                   </a>
                 ) : (
-                  <span className="text-sm font-semibold text-slate-400">
+                  <InformationValue>
                     Not provided
-                  </span>
+                  </InformationValue>
                 )}
               </td>
 
-              {/* <td className="px-6 py-4 text-right">
+              <td className="px-6 py-4 text-right">
                 <EditButton
                   onClick={() =>
                     onEdit(
@@ -275,10 +278,10 @@ const CompanyInformationTable = ({
                     )
                   }
                 />
-              </td> */}
+              </td>
             </tr>
 
-            {/* Status */}
+            {/* Status - System Controlled */}
             <tr className="transition-colors hover:bg-slate-50/50">
               <td className="px-6 py-4">
                 <FieldLabel
@@ -290,10 +293,10 @@ const CompanyInformationTable = ({
               <td className="px-6 py-4">
                 <StatusValue status={company.status} />
               </td>
-{/* 
+
               <td className="px-6 py-4 text-right">
                 <SystemControlled />
-              </td> */}
+              </td>
             </tr>
 
             {/* Address */}
@@ -311,9 +314,9 @@ const CompanyInformationTable = ({
                 </InformationValue>
               </td>
 
-              {/* <td className="px-6 py-4 text-right">
+              <td className="px-6 py-4 text-right">
                 <ApprovalRequired />
-              </td> */}
+              </td>
             </tr>
 
             {/* City */}
@@ -332,7 +335,7 @@ const CompanyInformationTable = ({
               </td>
 
               <td className="px-6 py-4 text-right">
-                {/* <ApprovalRequired /> */}
+                <ApprovalRequired />
               </td>
             </tr>
 
@@ -351,9 +354,9 @@ const CompanyInformationTable = ({
                 </InformationValue>
               </td>
 
-              {/* <td className="px-6 py-4 text-right">
+              <td className="px-6 py-4 text-right">
                 <ApprovalRequired />
-              </td> */}
+              </td>
             </tr>
 
             {/* Country */}
@@ -371,9 +374,9 @@ const CompanyInformationTable = ({
                 </InformationValue>
               </td>
 
-              {/* <td className="px-6 py-4 text-right">
+              <td className="px-6 py-4 text-right">
                 <ApprovalRequired />
-              </td> */}
+              </td>
             </tr>
 
             {/* Postal Code */}
@@ -391,9 +394,9 @@ const CompanyInformationTable = ({
                 </InformationValue>
               </td>
 
-              {/* <td className="px-6 py-4 text-right">
+              <td className="px-6 py-4 text-right">
                 <ApprovalRequired />
-              </td> */}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -407,7 +410,7 @@ const CompanyInformationTable = ({
 ========================================================= */
 
 interface InformationValueProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 const InformationValue = ({
@@ -425,7 +428,7 @@ const InformationValue = ({
 ========================================================= */
 
 interface FieldLabelProps {
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
 }
 
@@ -450,27 +453,27 @@ const FieldLabel = ({
    APPROVAL REQUIRED
 ========================================================= */
 
-// const ApprovalRequired = () => {
-//   return (
-//     <span className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700">
-//       <Lock className="h-3.5 w-3.5" />
-//       Approval Required
-//     </span>
-//   );
-// };
+const ApprovalRequired = () => {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700">
+      <Lock className="h-3.5 w-3.5" />
+      Approval Required
+    </span>
+  );
+};
 
 /* =========================================================
    SYSTEM CONTROLLED
 ========================================================= */
 
-// const SystemControlled = () => {
-//   return (
-//     <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-500">
-//       <Lock className="h-3.5 w-3.5" />
-//       System Controlled
-//     </span>
-//   );
-// };
+const SystemControlled = () => {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-500">
+      <Lock className="h-3.5 w-3.5" />
+      System Controlled
+    </span>
+  );
+};
 
 /* =========================================================
    STATUS
@@ -494,24 +497,24 @@ const StatusValue = ({
    EDIT BUTTON
 ========================================================= */
 
-// interface EditButtonProps {
-//   onClick: () => void;
-// }
+interface EditButtonProps {
+  onClick: () => void;
+}
 
-// const EditButton = ({
-//   onClick,
-// }: EditButtonProps) => {
-//   return (
-//     <button
-//       type="button"
-//       onClick={onClick}
-//       className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-blue-50 hover:text-blue-600"
-//       title="Edit"
-//     >
-//       <Pencil className="h-4 w-4" />
-//     </button>
-//   );
-// };
+const EditButton = ({
+  onClick,
+}: EditButtonProps) => {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-blue-50 hover:text-blue-600"
+      title="Edit"
+      aria-label="Edit field"
+    >
+      <Pencil className="h-4 w-4" />
+    </button>
+  );
+};
 
 export default CompanyInformationTable;
-

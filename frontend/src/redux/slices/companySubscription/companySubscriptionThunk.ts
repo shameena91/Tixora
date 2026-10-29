@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import type {  GetCompanyInvoicesResponseDto, GetCompanySubscriptionDataDto, GetCompanySubscriptionResponseDto, SelectSubscriptionPlanData, SelectSubscriptionPlanResponseDto, VerifyPaymentResponse } from "./companySubscriptionTypes";
+import type {   GetCompanyInvoicesResponseDto, GetCompanySubscriptionDataDto, GetCompanySubscriptionResponseDto, SelectSubscriptionPlanData, SelectSubscriptionPlanResponseDto, VerifyPaymentResponse } from "./companySubscriptionTypes";
 import type { VerifyPaymentData } from "../../../modules/superadmin/types/PaymentType";
 import axios from "axios";
 import {  getMySubscriptionStatus,  selectSubscriptionPlan, verifyPayment } from "../../../modules/superadmin/services/subscriptionPlanServices";
@@ -13,34 +13,41 @@ import { getCompanyInvoices, getMySubscriptionPlan } from "../../../modules/comp
 
 
 
+interface GetCompanySubscriptionParams {
+  companyId: string;
+  page: number;
+  limit: number;
+}
 
-export const getCompanySubscriptionThunk = 
-createAsyncThunk<GetCompanySubscriptionResponseDto ,
-string,{ rejectValue: string }>(
+export const getCompanySubscriptionThunk = createAsyncThunk<
+  GetCompanySubscriptionResponseDto,
+  GetCompanySubscriptionParams,
+  { rejectValue: string }
+>(
   "companySubscription/getCompanySubscription",
-  async (companyId, { rejectWithValue }) => {
+  async ({ companyId, page, limit }, { rejectWithValue }) => {
     try {
+      const response = await getCompanySubscription(
+        companyId,
+        page,
+        limit,
+      );
 
-        console.log("thunk")
-        const response =await getCompanySubscription(companyId);
-        console.log("dataaaaaaaaaaaa",response.data)
-        return response
-
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          return rejectWithValue(
-            error.response?.data?.message ||
-              "Failed to select subscription plan"
-          );
-        }
-
+      return response;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
         return rejectWithValue(
-          "Failed to select subscription plan"
+          error.response?.data?.message ||
+            "Failed to fetch company subscription",
         );
       }
+
+      return rejectWithValue(
+        "Failed to fetch company subscription",
+      );
     }
-  );
-  
+  },
+);
 
 
 
@@ -103,16 +110,23 @@ console.log("getMySubscriptionPlanThunk",response.data)
   );
 
 
+
 export const getMySubscriptionStatusThunk =
   createAsyncThunk<
     GetCompanySubscriptionDataDto | null,
-    void,
+    { page?: number; limit?: number } | undefined,
     { rejectValue: string }
   >(
     "subscriptionPlan/getMySubscriptionStatus",
-    async (_, { rejectWithValue }) => {
+    async (
+      { page = 1, limit = 10 } = {},
+      { rejectWithValue },
+    ) => {
       try {
-        const response = await getMySubscriptionStatus();
+        const response = await getMySubscriptionStatus(
+          page,
+          limit,
+        );
 
         return response.data;
       } catch (error) {
@@ -160,23 +174,24 @@ export const verifyPaymentThunk =
   
 export const getCompanyInvoicesThunk = createAsyncThunk<
   GetCompanyInvoicesResponseDto,
-  void,
+  { page: number; limit: number },
   { rejectValue: string }
 >(
   "companySubscription/getCompanyInvoices",
-  async (_, { rejectWithValue }) => {
+  async ({ page, limit }, { rejectWithValue }) => {
     try {
-      const response = await getCompanyInvoices();
+      const response = await getCompanyInvoices(page, limit);
+
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         return rejectWithValue(
           error.response?.data?.message ||
-            "Failed to fetch billing history",
+            "Failed to fetch invoices",
         );
       }
 
-      return rejectWithValue("Failed to fetch billing history");
+      return rejectWithValue("Failed to fetch invoices");
     }
   },
 );

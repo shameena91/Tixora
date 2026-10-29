@@ -3,13 +3,14 @@ import DataTable from "../../../../components/common/Datatable";
 import type {
   GetCompanySubscriptionItemDto,
   SubscriptionAccessStatus,
+  SubscriptionPaginationDto,
 } from "../../../../redux/slices/companySubscription/companySubscriptionTypes";
 
 // Adjust this import path to match your existing DataTable file location.
 
 
 type SubscriptionOverviewProps = {
-  subscriptionAccessStatus: SubscriptionAccessStatus;
+  subscriptionAccessStatus: SubscriptionAccessStatus|null;
 
   mySubscription: GetCompanySubscriptionItemDto | null;
 
@@ -26,8 +27,10 @@ type SubscriptionOverviewProps = {
     ticketLimit: number | null;
     automaticTicketAssignment: boolean;
     slaManagement: boolean;
+    
   } | null;
-
+  pagination: SubscriptionPaginationDto;
+  onPageChange: (page: number) => void;
   onSelectPlan: () => void;
 };
 
@@ -37,13 +40,16 @@ const SubscriptionOverview = ({
   subscriptionHistory,
   myPlan,
   onSelectPlan,
+   pagination,
+  onPageChange,
+  
 }: SubscriptionOverviewProps) => {
 
   console.log("MyPLAB",myPlan)
   const isActive =
     subscriptionAccessStatus === "ACTIVE" &&
     mySubscription !== null;
-
+console.log(" mySubscription,", mySubscription)
   const isExpired =
     subscriptionAccessStatus === "EXPIRED";
 
@@ -494,6 +500,36 @@ console.log("myPlan:", myPlan);
             </div>
           )}
         </div>
+        <div className="mt-4 flex items-center justify-between gap-3 border-t border-gray-100 pt-4">
+  <p className="text-sm text-gray-500">
+    {pagination.totalCount === 0
+      ? "No records"
+      : `Page ${pagination.page} of ${pagination.totalPages} · ${pagination.totalCount} records`}
+  </p>
+
+  <div className="flex gap-2">
+    <button
+      type="button"
+      disabled={pagination.page <= 1}
+      onClick={() => onPageChange(pagination.page - 1)}
+      className="rounded-lg border px-4 py-2 text-sm disabled:opacity-50"
+    >
+      Previous
+    </button>
+
+    <button
+      type="button"
+      disabled={
+        pagination.totalPages === 0 ||
+        pagination.page >= pagination.totalPages
+      }
+      onClick={() => onPageChange(pagination.page + 1)}
+      className="rounded-lg border px-4 py-2 text-sm disabled:opacity-50"
+    >
+      Next
+    </button>
+  </div>
+</div>
       </section>
     </div>
   );

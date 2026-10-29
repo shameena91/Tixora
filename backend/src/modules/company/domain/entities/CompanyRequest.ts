@@ -109,31 +109,11 @@ public resubmit(): void {
   this.status = CompanyRequestStatus.PENDING;
   this.updatedAt = new Date();
 }
-  // verifyDocument(documentType: CompanyDocumentType): void {
-  //   const document = this.documents.find(
-  //     (document) => document.documentType === documentType,
-  //   );
 
-  //   if (!document) {
-  //     throw new Error("Document not found");
-  //   }
-
-  //   document.verificationStatus = DocumentVerificationStatus.VERIFIED;
-  // }
-  //   rejectDocument(documentType: CompanyDocumentType): void {
-  //   const document = this.documents.find(
-  //     (document) => document.documentType === documentType,
-  //   );
-
-  //   if (!document) {
-  //     throw new Error("Document not found");
-  //   }
-
-  //   document.verificationStatus = DocumentVerificationStatus.REJECTED;
-  // }
-  updateDocumentStatus(
+updateDocumentStatus(
   documentType: CompanyDocumentType,
   status: DocumentVerificationStatus,
+  rejectionReason: string | null = null,
 ): void {
   const document = this.documents.find(
     (document) => document.documentType === documentType,
@@ -144,6 +124,10 @@ public resubmit(): void {
   }
 
   document.verificationStatus = status;
+  document.rejectionReason =
+    status === DocumentVerificationStatus.REJECTED
+      ? rejectionReason
+      : null;
 }
 }
 
