@@ -18,21 +18,14 @@ export enum DocumentVerificationStatus {
     public readonly fileKey: string,
     public readonly fileUrl: string,
     public readonly uploadedAt: Date,
+    
+    public rejectionReason: string | null = null,
     public verificationStatus: DocumentVerificationStatus =
       DocumentVerificationStatus.PENDING
   ) {}
 
   
-  // verify(): void {
-  //   this.verificationStatus =
-  //     DocumentVerificationStatus.VERIFIED;
-  // }
-
-  // reject(): void {
-  //   this.verificationStatus =
-  //     DocumentVerificationStatus.REJECTED;
-  // }
-}
+ }
 
 
 

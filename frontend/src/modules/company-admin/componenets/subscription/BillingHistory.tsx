@@ -23,17 +23,26 @@ import {
 const BillingHistory = () => {
   const dispatch = useAppDispatch();
 
-  const { invoices, invoiceLoading, invoiceError } =
-    useAppSelector((state) => state.companySubscription);
+  const {
+    invoices,
+    invoiceLoading,
+    invoiceError,
+    invoiceTotal,
+    invoicePagination,
+  } = useAppSelector((state) => state.companySubscription);
+
+  const [page, setPage] = useState(1);
+
+  const limit =
+    Number(import.meta.env.VITE_INVOICE_PAGE_LIMIT) || 3;
 
   const [downloadingInvoiceId, setDownloadingInvoiceId] =
     useState<string | null>(null);
 
   useEffect(() => {
-    dispatch(getCompanyInvoicesThunk());
-  }, [dispatch]);
+    dispatch(getCompanyInvoicesThunk({ page, limit }));
+  }, [dispatch, page, limit]);
 
-  // View Invoice
   const handleViewInvoice = async (invoiceId: string) => {
     try {
       const response = await getInvoicePdfUrl(invoiceId);
@@ -51,7 +60,6 @@ const BillingHistory = () => {
     }
   };
 
-  // Download Invoice
   const handleDownloadInvoice = async (invoiceId: string) => {
     try {
       setDownloadingInvoiceId(invoiceId);
@@ -80,7 +88,6 @@ const BillingHistory = () => {
     }
   };
 
-  // Format Date
   const formatDate = (date: string) => {
     if (!date) return "—";
 
@@ -97,14 +104,12 @@ const BillingHistory = () => {
     });
   };
 
-  // Format Amount
   const formatAmount = (amount: number, currency: string) =>
     new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency: currency || "INR",
     }).format(amount);
 
-  // Table Columns
   const columns: DataTableColumn<Invoice>[] = [
     {
       header: "Invoice ID",
@@ -165,7 +170,6 @@ const BillingHistory = () => {
 
         return (
           <div className="flex items-center gap-2">
-            {/* View Invoice */}
             <button
               type="button"
               onClick={() => handleViewInvoice(invoiceId)}
@@ -177,7 +181,6 @@ const BillingHistory = () => {
               <Eye size={18} />
             </button>
 
-            {/* Download Invoice */}
             <button
               type="button"
               onClick={() => handleDownloadInvoice(invoiceId)}
@@ -205,13 +208,14 @@ const BillingHistory = () => {
     },
   ];
 
+  const totalPages = invoicePagination?.totalPages ?? 0;
+
   return (
     <section className="space-y-5 rounded-2xl border border-indigo-100 bg-white p-6 shadow-sm">
       <div>
         <h2 className="text-lg font-bold text-gray-900">
           Billing History
         </h2>
-
         <p className="mt-1 text-sm text-gray-500">
           View your subscription payments and invoices.
         </p>
@@ -219,10 +223,7 @@ const BillingHistory = () => {
 
       {invoiceLoading ? (
         <div className="flex items-center justify-center gap-2 py-10 text-sm text-gray-500">
-          <LoaderCircle
-            size={18}
-            className="animate-spin"
-          />
+          <LoaderCircle size={18} className="animate-spin" />
           Loading billing history...
         </div>
       ) : invoiceError ? (
@@ -234,7 +235,39 @@ const BillingHistory = () => {
           No billing records available.
         </p>
       ) : (
-        <DataTable data={invoices} columns={columns} />
+        <>
+          <DataTable data={invoices} columns={columns} />
+
+          <div className="flex flex-col gap-3 border-t border-gray-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-gray-500">
+              Total invoices: {invoiceTotal}
+            </p>
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                type="button"
+                disabled={page <= 1 || invoiceLoading}
+                onClick={() => setPage((current) => current - 1)}
+                className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Previous
+              </button>
+
+              <span className="whitespace-nowrap text-sm text-gray-600">
+                Page {page} of {totalPages}
+              </span>
+
+              <button
+                type="button"
+                disabled={page >= totalPages || invoiceLoading}
+                onClick={() => setPage((current) => current + 1)}
+                className="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </>
       )}
     </section>
   );

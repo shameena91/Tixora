@@ -14,10 +14,11 @@ import {
 
 import { IUpdateCompanyDocumentStatusUseCase } from "../../abstraction/company-requests/IUpdateCompanyDocumentStatusUseCase";
 
-export class UpdateCompanyDocumentStatusUseCase implements IUpdateCompanyDocumentStatusUseCase {
+export class UpdateCompanyDocumentStatusUseCase
+  implements IUpdateCompanyDocumentStatusUseCase
+{
   constructor(
     private readonly _companyRequestRepository: ICompanyRequestRepository,
-
     private readonly _createTimeline: ICreateTimeline,
   ) {}
 
@@ -25,6 +26,7 @@ export class UpdateCompanyDocumentStatusUseCase implements IUpdateCompanyDocumen
     companyRequestId: string,
     documentType: CompanyDocumentType,
     status: DocumentVerificationStatus,
+    rejectionReason?: string,
   ): Promise<void> {
     const companyRequest =
       await this._companyRequestRepository.findById(companyRequestId);
@@ -36,43 +38,50 @@ export class UpdateCompanyDocumentStatusUseCase implements IUpdateCompanyDocumen
       );
     }
 
-    companyRequest.updateDocumentStatus(documentType, status);
+    if (
+      status === DocumentVerificationStatus.REJECTED &&
+      !rejectionReason?.trim()
+    ) {
+      throw new Error("Rejection reason is required");
+    }
+
+    const normalizedReason =
+      status === DocumentVerificationStatus.REJECTED
+        ? rejectionReason!.trim()
+        : null;
+
+    companyRequest.updateDocumentStatus(
+      documentType,
+      status,
+      normalizedReason,
+    );
 
     await this._companyRequestRepository.updateDocuments(
       companyRequestId,
       companyRequest.documents,
     );
 
-
-    let action: string | null = null;
-    let description = "";
-
-    if (status === DocumentVerificationStatus.VERIFIED) {
-      action = "DOCUMENT_VERIFIED";
-      description = "Company document verified";
-    }
-
-    if (status === DocumentVerificationStatus.REJECTED) {
-      action = "DOCUMENT_REJECTED";
-      description = "Company document rejected";
-    }
+    const action =
+      status === DocumentVerificationStatus.VERIFIED
+        ? "DOCUMENT_VERIFIED"
+        : status === DocumentVerificationStatus.REJECTED
+          ? "DOCUMENT_REJECTED"
+          : null;
 
     if (action) {
       await this._createTimeline.execute({
         entityType: TimelineEntityType.COMPANY_REQUEST,
-
         entityId: companyRequest.id,
-
         action,
-
-        description,
-
+        description:
+          status === DocumentVerificationStatus.VERIFIED
+            ? "Company document verified"
+            : "Company document rejected",
         performedBy: null,
-
         metadata: {
           documentType,
+          ...(normalizedReason ? { rejectionReason: normalizedReason } : {}),
         },
-
         createdAt: new Date(),
       });
     }

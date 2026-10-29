@@ -110,9 +110,7 @@ export class SubscriptionRepository
     return SubscriptionMapper.toDomain(document);
   }
 
-  // -------------------------
-  // Subscription-specific
-  // -------------------------
+ 
 
   async findByCompanyId(
     companyId: string,
@@ -129,21 +127,38 @@ export class SubscriptionRepository
     return SubscriptionMapper.toDomain(document);
   }
 
-  async findAllByCompanyId(
-    companyId: string,
-  ): Promise<Subscription[]> {
-    const documents =
-      await this._baseRepository.findAll(
-      { companyId },
-      { createdAt: -1 },
-    );
+async findAllByCompanyId(
+  companyId: string,
+  page?: number,
+  limit?: number,
+): Promise<Subscription[]> {
+  const skip =
+    page !== undefined && limit !== undefined
+      ? (page - 1) * limit
+      : undefined;
 
-    return documents.map(
-      (document) =>
-        SubscriptionMapper.toDomain(document),
-    );
+  let query = SubscriptionModel.find({ companyId })
+    .sort({ createdAt: -1 });
+
+  if (skip !== undefined && limit !== undefined) {
+    query = query.skip(skip).limit(limit);
   }
 
+  const documents = await query.lean().exec();
+
+  return documents.map((document) =>
+    SubscriptionMapper.toDomain(document),
+  );
+}
+
+
+async countByCompanyId(
+  companyId: string,
+): Promise<number> {
+  return SubscriptionModel.countDocuments({
+    companyId,
+  }).exec();
+}
   async findByRazorpayOrderId(
     razorpayOrderId: string,
   ): Promise<Subscription | null> {
@@ -166,8 +181,7 @@ export class SubscriptionRepository
       startDate?: Date;
       endDate?: Date | null;
       razorpayOrderId?: string | null;
-    // planId?: string;
-    // billingCycle?: BillingCycle;
+   
     },
   ): Promise<Subscription> {
     const document =
@@ -218,23 +232,7 @@ async expireActiveSubscriptions(
 
   return result.modifiedCount;
 }
-// async findDueScheduledSubscriptions(
-//   currentDate: Date,
-// ): Promise<Subscription[]> {
-//   const documents = await SubscriptionModel.find({
-//     status: SubscriptionStatus.SCHEDULED,
-//     startDate: {
-//       $lte: currentDate,
-//     },
-//   })
-//     .sort({ startDate: 1 })
-//     .lean<SubscriptionDocument[]>()
-//     .exec();
 
-//   return documents.map(
-//     (document) => SubscriptionMapper.toDomain(document),
-//   );
-// }
 async findActiveByCompanyId(
   companyId: string,
 ): Promise<Subscription | null> {

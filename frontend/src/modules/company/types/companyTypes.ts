@@ -108,3 +108,22 @@ export interface CompanyRequestStatusProps {
   reviewRemarks: string | null;
 }
 
+
+export interface CompanyDocumentProps {
+  documentType: string;
+  fileName: string;
+  fileUrl: string;
+  fileKey: string;
+  uploadedAt: string;
+  verificationStatus: string;
+  rejectionReason: string | null;
+}
+
+export interface CompanyRequestStatusProps {
+  companyRequestId: string;
+  status: CompanyRequestStatus;
+  reviewRemarks: string | null;
+  rejectionReason: string | null;
+  companyDocuments: CompanyDocumentProps[];
+}
+

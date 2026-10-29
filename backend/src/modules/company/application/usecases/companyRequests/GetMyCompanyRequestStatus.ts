@@ -21,6 +21,8 @@ export class GetMyCompanyRequestStatus implements IGetMyCompanyRequestStatus {
     return {
       companyRequestId: companyRequest.id,
       status: companyRequest.status,
+      companyDocuments:companyRequest.documents,
+      rejectionReason:companyRequest.rejectionReason,
       reviewRemarks: companyRequest.reviewRemarks,
     };
   }

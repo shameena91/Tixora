@@ -49,6 +49,22 @@ import { GetCompanyAdmins } from "../application/usecases/company/GetCompanyAdmi
 import { UpdateCompanyStatus } from "../application/usecases/company/UpdateCompanyStatus";
 import { GetMyCompanyDetails } from "../application/usecases/company/GetMyCompanyDetails";
 import { GetMyCompanyDocuments } from "../application/usecases/companyRequests/GetMyCompanyDocuments";
+import { CompanyProfileChangeCreateData } from "../application/mappers/CompanyProfileChangeMapper";
+import { CompanyDocumentChangeCreateData } from "../application/mappers/CompanyDocumentChnageMapper";
+import { CompanyChangeRequestModel } from "../Infrastructure/database/models/CompanyChangeRequestModel";
+import { CompanyChangeRequestDocument } from "../Infrastructure/database/Schemas/CompanyChangeRequestSchema";
+import { CompanyChangeRequestRepository } from "../Infrastructure/database/repositories/CompanyChangeRequestRepository";
+import { CreateCompanyProfileChangeRequest } from "../application/usecases/companyUpdaterequests/CreateCompanyProfileChangeRequest";
+import { CompanyChangeRequestController } from "../presentation/controller/CompanyChangeRequestController";
+import { CreateCompanyDocumentChangeRequest } from "../application/usecases/companyUpdaterequests/CreateCompanyDocumentChangeRequest";
+import { GetCompanyChangeRequests } from "../application/usecases/companyUpdaterequests/GetCompanyChangeRequests";
+import { GetCompanyChangeRequestById } from "../application/usecases/companyUpdaterequests/GetCompanyChangeRequestById";
+import { ReviewCompanyDocumentChangeRequest } from "../application/usecases/companyUpdaterequests/ReviewCompanyDocumentChangeRequest";
+import { ReviewCompanyProfileChangeRequest } from "../application/usecases/companyUpdaterequests/ReviewCompanyProfileChangeRequest";
+import { companyRepository } from "../../payments/container/Container";
+import { SendCompanyEmailChangeOtp } from "../application/usecases/companyUpdaterequests/SendCompanyEmailChangeOtp";
+import { otpService, otpStore } from "../../auth/container/container";
+import { VerifyCompanyEmailChangeOtp } from "../application/usecases/companyUpdaterequests/VerifyCompanyEmailChangeOtp";
 
 const baseCompanyRequestRepository = new BaseRepository(CompanyRequestModel);
 
@@ -104,7 +120,19 @@ const updateCompanyLocation = new UpdateCompanyLocation(
   companyRequestRepository,
   accountRepository,
 );
+type CompanyChangeRequestCreateData =
+  | CompanyProfileChangeCreateData
+  | CompanyDocumentChangeCreateData;
 
+const baseCompanyChangeRequestRepository = new BaseRepository<
+  CompanyChangeRequestDocument,
+  CompanyChangeRequestCreateData
+>(CompanyChangeRequestModel);
+
+export const companyChangeRequestRepository =
+  new CompanyChangeRequestRepository(
+    baseCompanyChangeRequestRepository,
+  );
 // const baseNotificationRepository = new BaseRepository<
 //   NotificationDocument,
 //   NotificationCreateData
@@ -174,10 +202,52 @@ const getMyCompanyDocuments =
   new GetMyCompanyDocuments(
     companyRequestRepository,
   );
+
+  export const createCompanyProfileChangeRequest =
+  new CreateCompanyProfileChangeRequest(
+    comapnyRepository,
+    companyChangeRequestRepository,
+  );
 export const getMyCompanyDetails=new GetMyCompanyDetails(
   comapnyRepository,
   getCompanyDetails
 )
+
+const getCompanyChangeRequestById =
+  new GetCompanyChangeRequestById(
+    companyChangeRequestRepository,
+    comapnyRepository,
+    accountRepository,
+    fileStorage,
+  );
+const getCompanyChangeRequests =
+  new GetCompanyChangeRequests(
+    companyChangeRequestRepository,
+    
+    companyRepository,
+      accountRepository,
+  
+  );
+
+const sendCompanyEmailChangeOtp =
+  new SendCompanyEmailChangeOtp(otpService);
+
+const reviewCompanyProfileChangeRequest =
+  new ReviewCompanyProfileChangeRequest(
+    comapnyRepository,
+    companyChangeRequestRepository,
+  );
+
+const reviewCompanyDocumentChangeRequest =
+  new ReviewCompanyDocumentChangeRequest(
+    companyChangeRequestRepository,
+  );
+const verifyCompanyEmailChangeOtp =
+  new VerifyCompanyEmailChangeOtp(
+    otpStore,
+    companyRepository,
+  );
+
 export const updateCompanyStatus = new UpdateCompanyStatus(comapnyRepository);
 export const companyRequestController = new CompanyRequestController(
   createCompanyRequest,
@@ -206,3 +276,27 @@ export const companyController = new CompanyController(
   getMyCompanyDetails,
   getMyCompanyDocuments
 );
+
+
+  export const createCompanyDocumentChangeRequest =
+  new CreateCompanyDocumentChangeRequest(
+    comapnyRepository,
+    companyRequestRepository,
+    companyChangeRequestRepository,
+    fileStorage,
+  );
+
+export const companyChangeRequestController =
+  new CompanyChangeRequestController(
+    createCompanyProfileChangeRequest,
+    createCompanyDocumentChangeRequest,
+    getCompanyChangeRequests,
+    getCompanyChangeRequestById,
+     reviewCompanyProfileChangeRequest,
+    reviewCompanyDocumentChangeRequest,
+    sendCompanyEmailChangeOtp,
+    verifyCompanyEmailChangeOtp
+  );
+
+
+

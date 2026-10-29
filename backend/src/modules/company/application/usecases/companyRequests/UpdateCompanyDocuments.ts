@@ -36,14 +36,15 @@ export class UpdateCompanyDocuments implements IUpdateCompanyDocuments {
       documentPath,
     );
 
-    const newDocument: CompanyDocument = {
-      documentType: document.documentType,
-      fileName: document.fileName,
-      fileKey: uploadedFile.key,
-      fileUrl: uploadedFile.url,
-      uploadedAt: new Date(),
-      verificationStatus: DocumentVerificationStatus.PENDING,
-    };
+   const newDocument: CompanyDocument = {
+  documentType: document.documentType,
+  fileName: document.fileName,
+  fileKey: uploadedFile.key,
+  fileUrl: uploadedFile.url,
+  uploadedAt: new Date(),
+  verificationStatus: DocumentVerificationStatus.PENDING,
+  rejectionReason: null,
+};
 
     const existingDocuments = companyRequest.documents ?? [];
 

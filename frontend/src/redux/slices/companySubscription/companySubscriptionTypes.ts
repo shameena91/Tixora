@@ -32,11 +32,17 @@ export interface GetCompanySubscriptionItemDto {
   createdAt: string;
   updatedAt: string;
 }
-
+export interface SubscriptionPaginationDto {
+  page: number;
+  limit: number;
+  totalCount: number;
+  totalPages: number;
+}
 export interface GetCompanySubscriptionDataDto {
-subscriptionAccessStatus: SubscriptionAccessStatus;
+  subscriptionAccessStatus?: SubscriptionAccessStatus;
   currentSubscription: GetCompanySubscriptionItemDto | null;
   subscriptionHistory: GetCompanySubscriptionItemDto[];
+  pagination: SubscriptionPaginationDto;
 }
 export interface GetCompanySubscriptionResponseDto {
   success: boolean;
@@ -93,7 +99,13 @@ export interface Invoice {
   createdAt: string;
 }
 
+
 export interface GetCompanyInvoicesResponseDto {
   invoices: Invoice[];
   total: number;
+  pagination: {
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
 }

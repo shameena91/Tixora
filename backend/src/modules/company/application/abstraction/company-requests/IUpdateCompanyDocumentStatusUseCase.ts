@@ -1,9 +1,13 @@
-import { CompanyDocumentType, DocumentVerificationStatus } from "../../../domain/value-objects/CompanyDocuments";
+import {
+  CompanyDocumentType,
+  DocumentVerificationStatus,
+} from "../../../domain/value-objects/CompanyDocuments";
 
-export interface IUpdateCompanyDocumentStatusUseCase{
-    execute(
-        companyRequestId: string,
-        documentType: CompanyDocumentType,
-         status: DocumentVerificationStatus,
-      ):Promise<void>
+export interface IUpdateCompanyDocumentStatusUseCase {
+  execute(
+    companyRequestId: string,
+    documentType: CompanyDocumentType,
+    status: DocumentVerificationStatus,
+    rejectionReason?: string,
+  ): Promise<void>;
 }

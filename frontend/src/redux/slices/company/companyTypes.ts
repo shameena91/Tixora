@@ -1,6 +1,34 @@
 
-
-
+export interface CompanyChangeRequestState {
+  data: CompanyChangeRequestResponse | null;
+  loading: boolean;
+  error: string | null;
+  success: boolean;
+}
+export interface CompanyChangeRequestResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    requestId: string;
+    status: string;
+  };
+}
+export interface SubmitCompanyChangeRequestPayload {
+  profileChanges: {
+    field:
+      | "companyName"
+      | "registrationNumber"
+      | "companyType"
+      | "employeeRange"
+      | "address"
+      | "city"
+      | "state"
+      | "country"
+      | "postalCode";
+    newValue: string;
+    reason: string;
+  }[];
+}
 
 export interface CompanyDocument {
   documentType: string;
@@ -201,4 +229,11 @@ export interface CompanyState {
   companyDocuments: MyCompanyDocuments | null;
 companyDocumentsLoading: boolean;
 companyDocumentsError: string | null;
+CompanyChangeRequest: CompanyChangeRequestResponse | null;
+CompanyChangeRequestLoading: boolean;
+CompanyChangeRequestError: string | null;
+
+documentChangeRequestLoading: boolean;
+documentChangeRequestError: string | null;
+documentChangeRequest: CompanyChangeRequestResponse | null;
 }

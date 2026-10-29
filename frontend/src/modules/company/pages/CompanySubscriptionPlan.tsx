@@ -209,8 +209,6 @@ const historyRenewalCandidate = useMemo(() => {
   });
 }, [currentSubscription, mySubscription?.subscriptionHistory]);
 
-  // Prefer current Redux data, then navigation state,
-  // then the subscription history and API fallback.
   const renewalPlanId =
     currentSubscription?.planId ??
     navigationState?.planId ??
@@ -264,15 +262,12 @@ const historyRenewalCandidate = useMemo(() => {
       ).unwrap();
     }
 
-    // Return data without calling setState here.
+   
     return candidate;
   },
   [dispatch, isRenewal, isUpgrade],
 );
 
-  // ------------------------------------
-  // Load Plans and Required Details
-  // ------------------------------------
 
  useEffect(() => {
   let cancelled = false;
@@ -338,9 +333,7 @@ const historyRenewalCandidate = useMemo(() => {
   requestSubscriptionDetails,
 ]);
 
-  // ------------------------------------
-  // Current Plan Price
-  // ------------------------------------
+
 
   const comparisonBillingCycle: BillingCycle =
     currentSubscription?.billingCycle === "YEARLY"
@@ -360,9 +353,7 @@ const historyRenewalCandidate = useMemo(() => {
   const hasCurrentPlanPrice =
     Number.isFinite(currentPlanPrice);
 
-  // ------------------------------------
-  // Filter Upgrade Plans
-  // ------------------------------------
+
 
   const displayedPlans = useMemo(() => {
     if (!isUpgrade) {
@@ -415,9 +406,7 @@ const historyRenewalCandidate = useMemo(() => {
     subscriptionDetailsReady,
   ]);
 
-  // ------------------------------------
-  // Open Razorpay Checkout
-  // ------------------------------------
+ 
 
   const openRazorpayCheckout = useCallback(
     async (
@@ -562,9 +551,7 @@ const historyRenewalCandidate = useMemo(() => {
     [dispatch, isRenewal, navigate],
   );
 
-  // ------------------------------------
-  // Renewal Payment
-  // ------------------------------------
+  
 
   const startRenewalPayment = useCallback(
     async () => {
@@ -640,9 +627,6 @@ const historyRenewalCandidate = useMemo(() => {
     ],
   );
 
-  // ------------------------------------
-  // Start Renewal Once Details Are Ready
-  // ------------------------------------
 
   useEffect(() => {
     if (
@@ -662,9 +646,7 @@ const historyRenewalCandidate = useMemo(() => {
     startRenewalPayment,
   ]);
 
-  // ------------------------------------
-  // Select Plan
-  // ------------------------------------
+
 
   const handleSelectPlan = async (
     plan: SubScriptionListItems,
@@ -816,9 +798,7 @@ const historyRenewalCandidate = useMemo(() => {
     }
   };
 
-  // ------------------------------------
-  // Retry Payment
-  // ------------------------------------
+
 
   const handleRetryPayment = () => {
     if (isRenewal) {
@@ -834,9 +814,7 @@ const historyRenewalCandidate = useMemo(() => {
     setIsBillingModalOpen(true);
   };
 
-  // ------------------------------------
-  // Retry Subscription Details
-  // ------------------------------------
+
 
   const handleRetrySubscriptionDetails = () => {
     renewalAutoStartedRef.current = false;
@@ -867,9 +845,7 @@ const historyRenewalCandidate = useMemo(() => {
       });
   };
 
-  // ------------------------------------
-  // Render State
-  // ------------------------------------
+ 
 
   const isPageLoading =
     (!isRenewal && activeSubscriptionPlansLoading) ||
@@ -886,9 +862,6 @@ const historyRenewalCandidate = useMemo(() => {
     subscriptionDetailsReady &&
     !hasCurrentPlanPrice;
 
-  // ------------------------------------
-  // Render
-  // ------------------------------------
 
   return (
     <div className="min-h-screen w-full bg-gray-50">

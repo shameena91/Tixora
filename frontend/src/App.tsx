@@ -33,6 +33,7 @@ import Home from "./pages/Home";
 import CategoryManagementPage from "./modules/company-admin/pages/category/CategoryManagementPage";
 import CategoryDetailsPage from "./modules/company-admin/pages/category/CategoryDetailsPage";
 import CompanySubscriptionPage from "./modules/company-admin/pages/subscription/CompanySubscriptionPage";
+import CompanyUpdateRequestDetails from "./modules/superadmin/pages/companyRequests/CompanyUpdateRequestDetails";
 
 
 const App = () => {
@@ -131,21 +132,29 @@ const App = () => {
 
   </Route>
         <Route
-          path="/super-admin"
-          element={
-            <ProtectedRoute>
-              <SuperAdminLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="dashbord" element={<SuperAdminDashbord />} />
+  path="/super-admin"
+  element={
+    <ProtectedRoute>
+      <SuperAdminLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route path="dashbord" element={<SuperAdminDashbord />} />
 
-          <Route path="company-requests" element={<CompanyRequests />} />
+  <Route
+    path="company-requests"
+    element={<CompanyRequests />}
+  />
 
-          <Route
-            path="company-requests/:companyRequestId"
-            element={<CompanyRequestDetails />}
-          />
+  <Route
+    path="company-requests/:companyRequestId"
+    element={<CompanyRequestDetails />}
+  />
+
+  <Route
+    path="company-update-requests/:requestId"
+    element={<CompanyUpdateRequestDetails />}
+  />
 
           <Route path="companies" element={<Companies/>} />
           <Route path="companies/:companyId" element={<CompanyDetails/>} />

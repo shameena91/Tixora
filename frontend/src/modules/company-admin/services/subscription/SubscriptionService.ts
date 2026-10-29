@@ -18,15 +18,19 @@ export const getMySubscriptionPlan = async () => {
 console.log("getMySubscriptionPlan",response.data)
   return response.data;
 };
-
-export const getCompanyInvoices = async () => {
+export const getCompanyInvoices = async (
+  page = 1,
+  limit = 10,
+) => {
   const response = await axiosInstance.get(
-    INVOICE_ROUTES.GET_ALL
+    INVOICE_ROUTES.GET_ALL,
+    {
+      params: { page, limit },
+    },
   );
 
   return response.data;
 };
-
 export const getInvoiceById = async (invoiceId: string) => {
   const response = await axiosInstance.get(
     INVOICE_ROUTES.GET_BY_ID(invoiceId)

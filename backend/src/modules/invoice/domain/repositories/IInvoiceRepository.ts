@@ -6,7 +6,13 @@ export interface IInvoiceRepository {
 
   find(id: string): Promise<Invoice | null>;
 
-  findByCompanyId(companyId: string): Promise<Invoice[]>;
+findByCompanyId(
+  companyId: string,
+  page: number,
+  limit: number,
+): Promise<Invoice[]>;
+
+countByCompanyId(companyId: string): Promise<number>;
   findByPaymentId(paymentId: string): Promise<Invoice | null>;
   updatePdfKey(
   invoiceId: string,

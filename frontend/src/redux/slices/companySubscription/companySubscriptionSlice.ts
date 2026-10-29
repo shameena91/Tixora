@@ -20,7 +20,7 @@ import type {
 
 import type { SubscriptionPlanDetails } from "../subscriptionPlan/subscriptionPlanTypes";
 
-interface CompanySubscriptionState {
+export interface CompanySubscriptionState {
   mySubscription: GetCompanySubscriptionDataDto  | null;
   myPlan: SubscriptionPlanDetails | null;
 
@@ -36,6 +36,13 @@ interface CompanySubscriptionState {
   invoices: Invoice[];
   invoiceLoading: boolean;
   invoiceError: string | null;
+  invoiceTotal: number;
+
+invoicePagination: {
+  page: number;
+  limit: number;
+  totalPages: number;
+} | null;
 }
 
 const initialState: CompanySubscriptionState = {
@@ -53,6 +60,8 @@ const initialState: CompanySubscriptionState = {
   invoices: [],
   invoiceLoading: false,
   invoiceError: null,
+  invoiceTotal: 0,
+invoicePagination: null,
 };
 
 const companySubscriptionSlice = createSlice({
@@ -171,20 +180,23 @@ const companySubscriptionSlice = createSlice({
       });
 
     // GET COMPANY INVOICES
-    builder
-      .addCase(getCompanyInvoicesThunk.pending, (state) => {
-        state.invoiceLoading = true;
-        state.invoiceError = null;
-      })
-      .addCase(getCompanyInvoicesThunk.fulfilled, (state, action) => {
-        state.invoiceLoading = false;
-        state.invoices = action.payload.invoices;
-      })
-      .addCase(getCompanyInvoicesThunk.rejected, (state, action) => {
-        state.invoiceLoading = false;
-        state.invoiceError =
-          action.payload || "Failed to fetch billing history";
-      });
+    // GET COMPANY INVOICES
+builder
+  .addCase(getCompanyInvoicesThunk.pending, (state) => {
+    state.invoiceLoading = true;
+    state.invoiceError = null;
+  })
+  .addCase(getCompanyInvoicesThunk.fulfilled, (state, action) => {
+    state.invoiceLoading = false;
+    state.invoices = action.payload.invoices;
+    state.invoiceTotal = action.payload.total;
+    state.invoicePagination = action.payload.pagination;
+  })
+  .addCase(getCompanyInvoicesThunk.rejected, (state, action) => {
+    state.invoiceLoading = false;
+    state.invoiceError =
+      action.payload || "Failed to fetch billing history";
+  });
   },
 });
 

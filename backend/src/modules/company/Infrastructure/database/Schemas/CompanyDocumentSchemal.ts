@@ -39,6 +39,12 @@ export const companyDocumentSchema = new Schema(
       required: true,
       default: DocumentVerificationStatus.PENDING,
     },
+
+     rejectionReason: {
+      type: String,
+      default: null,
+      trim: true,
+    },
   },
   { _id: false },
 );

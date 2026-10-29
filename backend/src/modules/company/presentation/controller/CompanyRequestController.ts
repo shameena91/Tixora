@@ -47,6 +47,7 @@ import {
   sendSuccess,
 } from "../../../../presentation/response/ResponseHelper";
 import { IGetCompanyDocumentUrl } from "../../application/abstraction/company-requests/IGetCompanyDocumentUrl";
+import { CompanyRequestStatus } from "../../domain/enums/CompanyRequestStatus";
 
 export class CompanyRequestController {
   constructor(
@@ -283,26 +284,43 @@ export class CompanyRequestController {
     );
   }
 
-  async reject(req: Request, res: Response) {
-    const { id } = req.params;
+  
+async reject(req: Request, res: Response) {
+  const { id } = req.params;
+  const { rejectionReason } = req.body;
 
-    if (typeof id !== "string") {
-      return sendError(
-        res,
-        MESSAGES.INVALID_COMPANY_REQUEST_ID,
-        HttpStatusCode.BAD_REQUEST,
-      );
-    }
-
-    const companyRequest = await this._rejectCompanyRequest.execute(id);
-
-    return sendSuccess(
+  if (typeof id !== "string") {
+    return sendError(
       res,
-      MESSAGES.COMPANY_REQUEST_REJECTED,
-      companyRequest,
-      HttpStatusCode.OK,
+      MESSAGES.INVALID_COMPANY_REQUEST_ID,
+      HttpStatusCode.BAD_REQUEST,
     );
   }
+
+  if (
+    typeof rejectionReason !== "string" ||
+    !rejectionReason.trim()
+  ) {
+    return sendError(
+      res,
+      "Rejection reason is required",
+      HttpStatusCode.BAD_REQUEST,
+    );
+  }
+
+  const companyRequest =
+    await this._rejectCompanyRequest.execute(
+      id,
+      rejectionReason.trim(),
+    );
+
+  return sendSuccess(
+    res,
+    MESSAGES.COMPANY_REQUEST_REJECTED,
+    companyRequest,
+    HttpStatusCode.OK,
+  );
+}
 
   async moreInfo(req: Request, res: Response) {
     const { id } = req.params;
@@ -402,16 +420,37 @@ export class CompanyRequestController {
     );
   }
 
-  async getAll(req: Request, res: Response) {
-    const companyRequests = await this._getAllCompanyRequests.execute();
+ 
+async getAll(req: Request, res: Response) {
+  const page = Math.max(1, Number(req.query.page) || 1);
+  const limit = Math.max(1, Number(req.query.limit) || 10);
 
-    return sendSuccess(
-      res,
-      MESSAGES.COMPANY_REQUEST_FETCHED,
-      companyRequests,
-      HttpStatusCode.OK,
-    );
-  }
+  const search =
+    typeof req.query.search === "string"
+      ? req.query.search.trim()
+      : undefined;
+
+  const status =
+    typeof req.query.status === "string"
+      ? req.query.status
+      : undefined;
+
+  const companyRequests =
+    await this._getAllCompanyRequests.execute({
+      page,
+      limit,
+      search,
+      status: status as CompanyRequestStatus | undefined,
+    });
+
+  return sendSuccess(
+    res,
+    MESSAGES.COMPANY_REQUEST_FETCHED,
+    companyRequests,
+    HttpStatusCode.OK,
+  );
+}
+
 
   async getMyRequest(req: Request, res: Response) {
     const accountId = req.user?.accountId;
@@ -530,35 +569,48 @@ export class CompanyRequestController {
     );
   }
 
-  async rejectCompanyDocument(req: Request, res: Response) {
-    const { companyRequestId, documentType } = req.params;
+ async rejectCompanyDocument(req: Request, res: Response) {
+  const { companyRequestId, documentType } = req.params;
+  const { rejectionReason } = req.body;
 
-    if (!companyRequestId || !documentType) {
-      throw new AppErrors(
-        MESSAGES.INVALID_COMPANY_REQUEST_ID,
-        ErrorCode.COMPANY_REQUEST_NOT_FOUND,
-      );
-    }
-
-    if (typeof companyRequestId !== "string") {
-      return sendError(
-        res,
-        MESSAGES.INVALID_COMPANY_REQUEST_ID,
-        HttpStatusCode.BAD_REQUEST,
-      );
-    }
-
-    await this._updateCompanyDocumentStatus.execute(
-      companyRequestId,
-      documentType as CompanyDocumentType,
-      DocumentVerificationStatus.REJECTED,
-    );
-
-    return sendSuccess(
-      res,
-      MESSAGES.DOCUMENT_REJECTED,
-      undefined,
-      HttpStatusCode.OK,
+  if (!companyRequestId || !documentType) {
+    throw new AppErrors(
+      MESSAGES.INVALID_COMPANY_REQUEST_ID,
+      ErrorCode.COMPANY_REQUEST_NOT_FOUND,
     );
   }
+
+  if (typeof companyRequestId !== "string") {
+    return sendError(
+      res,
+      MESSAGES.INVALID_COMPANY_REQUEST_ID,
+      HttpStatusCode.BAD_REQUEST,
+    );
+  }
+
+  if (
+    typeof rejectionReason !== "string" ||
+    !rejectionReason.trim()
+  ) {
+    return sendError(
+      res,
+      "Rejection reason is required",
+      HttpStatusCode.BAD_REQUEST,
+    );
+  }
+
+  await this._updateCompanyDocumentStatus.execute(
+    companyRequestId,
+    documentType as CompanyDocumentType,
+    DocumentVerificationStatus.REJECTED,
+    rejectionReason.trim(),
+  );
+
+  return sendSuccess(
+    res,
+    MESSAGES.DOCUMENT_REJECTED,
+    undefined,
+    HttpStatusCode.OK,
+  );
+}
 }

@@ -18,8 +18,12 @@ export interface ISubscriptionRepository
 
   findAllByCompanyId(
     companyId: string,
+     page?: number,
+  limit?: number,
   ): Promise<Subscription[]>;
-
+countByCompanyId(
+  companyId: string,
+): Promise<number>;
   findByRazorpayOrderId(
     razorpayOrderId: string,
   ): Promise<Subscription | null>;

@@ -13,25 +13,32 @@ export class GetCompanyInvoicesUseCase
 {
   constructor(
     private readonly _invoiceRepository: IInvoiceRepository,
-    private readonly _companyRepository:ICompanyRepository
+    private readonly _companyRepository: ICompanyRepository,
   ) {}
 
   async execute(
     accountId: string,
+    page = 1,
+    limit = 10,
   ): Promise<GetAllInvoicesResponseDto> {
+    const company =
+      await this._companyRepository.findByAccountId(accountId);
 
-    const company=await this._companyRepository.findByAccountId(accountId)
-if (!company) {
-  throw new AppErrors(
-    "Company not found for this account",
-    HttpStatusCode.NOT_FOUND,
-  );
-}
+    if (!company) {
+      throw new AppErrors(
+        "Company not found for this account",
+        HttpStatusCode.NOT_FOUND,
+      );
+    }
 
-
-
-    const invoices =
-      await this._invoiceRepository.findByCompanyId(company.id);
+    const [invoices, total] = await Promise.all([
+      this._invoiceRepository.findByCompanyId(
+        company.id,
+        page,
+        limit,
+      ),
+      this._invoiceRepository.countByCompanyId(company.id),
+    ]);
 
     const data: InvoiceResponseDto[] = invoices.map((invoice) => ({
       id: invoice.id,
@@ -50,7 +57,12 @@ if (!company) {
 
     return {
       invoices: data,
-      total: data.length,
+      total,
+      pagination: {
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 }

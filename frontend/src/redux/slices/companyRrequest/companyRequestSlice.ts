@@ -1,226 +1,303 @@
-import {
-  createSlice,
-} from "@reduxjs/toolkit";
+
+import { createSlice } from "@reduxjs/toolkit";
 
 import {
   approveCompanyRequestThunk,
+  fetchCompanyChangeRequestByIdThunk,
+  fetchCompanyChangeRequestsThunk,
   fetchCompanyRequestById,
   fetchCompanyRequests,
   moreInfoCompanyRequestThunk,
   rejectCompanyRequestThunk,
+  reviewCompanyDocumentChangeRequestThunk,
+  reviewCompanyProfileChangeRequestThunk,
 } from "./companyRequestThunk";
 
 import type {
   CompanyRequestState,
 } from "./companyRequestTypes";
 
-// ------------------------------------
 // Initial State
-// ------------------------------------
 
 const initialState: CompanyRequestState = {
   companyRequests: [],
-
   companyRequest: null,
+
+  total: 0,
+  page: 1,
+  limit: 10,
+  totalPages: 0,
 
   loading: false,
   error: null,
+// Update Requests
+
+companyChangeRequests: [],
+companyChangeRequest: null,
+
+companyChangeRequestsTotal: 0,
+companyChangeRequestsPage: 1,
+companyChangeRequestsLimit: 10,
+companyChangeRequestsTotalPages: 0,
+
+companyChangeRequestsLoading: false,
+companyChangeRequestsError: null,
+
+reviewCompanyChangeLoading: false,
+reviewCompanyChangeError: null,
+
 };
 
-// ------------------------------------
 // Slice
-// ------------------------------------
 
-const companyRequestSlice =
-  createSlice({
-    name: "companyRequest",
+const companyRequestSlice = createSlice({
+  name: "companyRequest",
 
-    initialState,
+  initialState,
 
-    reducers: {},
+  reducers: {},
 
-    extraReducers: (builder) => {
-      builder
+  extraReducers: (builder) => {
+    builder
 
-        // ------------------------------------
-        // Fetch Company Requests
-        // ------------------------------------
+      // Fetch Company Requests
 
-        .addCase(
-          fetchCompanyRequests.pending,
-          (state) => {
-            state.loading = true;
-            state.error = null;
-          },
-        )
+      .addCase(fetchCompanyRequests.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
 
-        .addCase(
-          fetchCompanyRequests.fulfilled,
-          (state, action) => {
-            state.loading = false;
-            state.error = null;
+      .addCase(
+        fetchCompanyRequests.fulfilled,
+        (state, action) => {
+          state.loading = false;
+          state.error = null;
 
-            state.companyRequests =
-              action.payload;
-          },
-        )
+          state.companyRequests = action.payload.data;
+          state.total = action.payload.total;
+          state.page = action.payload.page;
+          state.limit = action.payload.limit;
+          state.totalPages = action.payload.totalPages;
+        },
+      )
 
-        .addCase(
-          fetchCompanyRequests.rejected,
-          (state, action) => {
-            state.loading = false;
+      .addCase(
+        fetchCompanyRequests.rejected,
+        (state, action) => {
+          state.loading = false;
+          state.error =
+            action.payload || "Failed to fetch company requests";
+        },
+      )
 
-            state.error =
-              action.payload ||
-              "Failed to fetch company requests";
-          },
-        )
+      // Fetch Company Request By ID
 
-        // ------------------------------------
-        // Fetch Company Request By ID
-        // ------------------------------------
+      .addCase(fetchCompanyRequestById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
 
-        .addCase(
-          fetchCompanyRequestById.pending,
-          (state) => {
-            state.loading = true;
-            state.error = null;
-          },
-        )
+      .addCase(
+        fetchCompanyRequestById.fulfilled,
+        (state, action) => {
+          state.loading = false;
+          state.error = null;
+          state.companyRequest = action.payload;
+        },
+      )
 
-        .addCase(
-          fetchCompanyRequestById.fulfilled,
-          (state, action) => {
-            state.loading = false;
-            state.error = null;
+      .addCase(
+        fetchCompanyRequestById.rejected,
+        (state, action) => {
+          state.loading = false;
+          state.error =
+            action.payload || "Failed to fetch company request";
+        },
+      )
 
-            state.companyRequest =
-              action.payload;
-          },
-        )
+      // Approve Company Request
 
-        .addCase(
-          fetchCompanyRequestById.rejected,
-          (state, action) => {
-            state.loading = false;
+      .addCase(approveCompanyRequestThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
 
-            state.error =
-              action.payload ||
-              "Failed to fetch company request";
-          },
-        )
+      .addCase(approveCompanyRequestThunk.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
 
-        // ------------------------------------
-        // Approve Company Request
-        // ------------------------------------
+        if (state.companyRequest) {
+          state.companyRequest.status = "APPROVED";
+        }
+      })
 
-        .addCase(
-          approveCompanyRequestThunk.pending,
-          (state) => {
-            state.loading = true;
-            state.error = null;
-          },
-        )
+      .addCase(
+        approveCompanyRequestThunk.rejected,
+        (state, action) => {
+          state.loading = false;
+          state.error =
+            action.payload || "Failed to approve company request";
+        },
+      )
 
-        .addCase(
-          approveCompanyRequestThunk.fulfilled,
-          (state) => {
-            state.loading = false;
-            state.error = null;
+      // Reject Company Request
 
-            if (state.companyRequest) {
-              state.companyRequest.status =
-                "APPROVED";
-            }
-          },
-        )
+      .addCase(rejectCompanyRequestThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
 
-        .addCase(
-          approveCompanyRequestThunk.rejected,
-          (state, action) => {
-            state.loading = false;
+      .addCase(rejectCompanyRequestThunk.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
 
-            state.error =
-              action.payload ||
-              "Failed to approve company request";
-          },
-        )
+        if (state.companyRequest) {
+          state.companyRequest.status = "REJECTED";
+        }
+      })
 
-        // ------------------------------------
-        // Reject Company Request
-        // ------------------------------------
+      .addCase(
+        rejectCompanyRequestThunk.rejected,
+        (state, action) => {
+          state.loading = false;
+          state.error =
+            action.payload || "Failed to reject company request";
+        },
+      )
 
-        .addCase(
-          rejectCompanyRequestThunk.pending,
-          (state) => {
-            state.loading = true;
-            state.error = null;
-          },
-        )
+      // More Info Company Request
 
-        .addCase(
-          rejectCompanyRequestThunk.fulfilled,
-          (state) => {
-            state.loading = false;
-            state.error = null;
+      .addCase(moreInfoCompanyRequestThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
 
-            if (state.companyRequest) {
-              state.companyRequest.status =
-                "REJECTED";
-            }
-          },
-        )
+      .addCase(
+        moreInfoCompanyRequestThunk.fulfilled,
+        (state, action) => {
+          state.loading = false;
+          state.error = null;
 
-        .addCase(
-          rejectCompanyRequestThunk.rejected,
-          (state, action) => {
-            state.loading = false;
+          if (state.companyRequest) {
+            state.companyRequest.status = "MORE_INFO_REQUIRED";
+            state.companyRequest.reviewRemarks =
+              action.payload.remarks;
+          }
+        },
+      )
 
-            state.error =
-              action.payload ||
-              "Failed to reject company request";
-          },
-        )
+      .addCase(
+        moreInfoCompanyRequestThunk.rejected,
+        (state, action) => {
+          state.loading = false;
+          state.error =
+            action.payload ||
+            "Failed to request more information";
+        },
+      )
+      // Fetch Update Requests
 
-        // ------------------------------------
-        // More Info Company Request
-        // ------------------------------------
+.addCase(
+  fetchCompanyChangeRequestsThunk.pending,
+  (state) => {
+    state.companyChangeRequestsLoading = true;
+    state.companyChangeRequestsError = null;
+  },
+)
+.addCase(
+  fetchCompanyChangeRequestsThunk.fulfilled,
+  (state, action) => {
+    state.companyChangeRequestsLoading = false;
+    state.companyChangeRequests = action.payload.requests;
+    state.companyChangeRequestsTotal = action.payload.total;
+    state.companyChangeRequestsPage = action.payload.page;
+    state.companyChangeRequestsLimit = action.payload.limit;
+    state.companyChangeRequestsTotalPages =
+      action.payload.totalPages;
+  },
+)
+.addCase(
+  fetchCompanyChangeRequestsThunk.rejected,
+  (state, action) => {
+    state.companyChangeRequestsLoading = false;
+    state.companyChangeRequestsError =
+      action.payload ?? "Failed to fetch update requests";
+  },
+)
 
-        .addCase(
-          moreInfoCompanyRequestThunk.pending,
-          (state) => {
-            state.loading = true;
-            state.error = null;
-          },
-        )
+// Fetch Update Request Details
 
-        .addCase(
-          moreInfoCompanyRequestThunk.fulfilled,
-          (state, action) => {
-            state.loading = false;
-            state.error = null;
+.addCase(
+  fetchCompanyChangeRequestByIdThunk.pending,
+  (state) => {
+    state.companyChangeRequestsLoading = true;
+    state.companyChangeRequestsError = null;
+  },
+)
+.addCase(
+  fetchCompanyChangeRequestByIdThunk.fulfilled,
+  (state, action) => {
+    state.companyChangeRequestsLoading = false;
+    state.companyChangeRequest = action.payload;
+  },
+)
+.addCase(
+  fetchCompanyChangeRequestByIdThunk.rejected,
+  (state, action) => {
+    state.companyChangeRequestsLoading = false;
+    state.companyChangeRequestsError =
+      action.payload ?? "Failed to fetch update request";
+  },
+)
 
-            if (state.companyRequest) {
-              state.companyRequest.status =
-                "MORE_INFO_REQUIRED";
+// Review Profile Change
 
-              state.companyRequest.reviewRemarks =
-                action.payload.remarks;
-            }
-          },
-        )
+.addCase(
+  reviewCompanyProfileChangeRequestThunk.pending,
+  (state) => {
+    state.reviewCompanyChangeLoading = true;
+    state.reviewCompanyChangeError = null;
+  },
+)
+.addCase(
+  reviewCompanyProfileChangeRequestThunk.fulfilled,
+  (state) => {
+    state.reviewCompanyChangeLoading = false;
+  },
+)
+.addCase(
+  reviewCompanyProfileChangeRequestThunk.rejected,
+  (state, action) => {
+    state.reviewCompanyChangeLoading = false;
+    state.reviewCompanyChangeError =
+      action.payload ?? "Failed to review profile change";
+  },
+)
 
-        .addCase(
-          moreInfoCompanyRequestThunk.rejected,
-          (state, action) => {
-            state.loading = false;
+// Review Document Change
 
-            state.error =
-              action.payload ||
-              "Failed to request more information";
-          },
-        );
-    },
-  });
+.addCase(
+  reviewCompanyDocumentChangeRequestThunk.pending,
+  (state) => {
+    state.reviewCompanyChangeLoading = true;
+    state.reviewCompanyChangeError = null;
+  },
+)
+.addCase(
+  reviewCompanyDocumentChangeRequestThunk.fulfilled,
+  (state) => {
+    state.reviewCompanyChangeLoading = false;
+  },
+)
+.addCase(
+  reviewCompanyDocumentChangeRequestThunk.rejected,
+  (state, action) => {
+    state.reviewCompanyChangeLoading = false;
+    state.reviewCompanyChangeError =
+      action.payload ?? "Failed to review document change";
+  },
+);
+  },
+});
 
 export default companyRequestSlice.reducer;

@@ -55,22 +55,49 @@ console.log("boddddd",data)
     return sendSuccess(res, message, subscription, HttpStatusCode.CREATED);
   }
 
-  async getMySubscriptionStatus(req: Request, res: Response) {
-    const accountId = req.user?.accountId;
 
-    if (!accountId) {
-      return sendError(res, MESSAGES.UNAUTHORIZED, HttpStatusCode.UNAUTHORIZED);
-    }
+async getMySubscriptionStatus(req: Request, res: Response) {
+  const accountId = req.user?.accountId;
 
-    const subscription = await this._getMySubscription.execute(accountId);
-
-    return sendSuccess(
+  if (!accountId) {
+    return sendError(
       res,
-      "subscription fetched",
-      subscription,
-      HttpStatusCode.OK,
+      MESSAGES.UNAUTHORIZED,
+      HttpStatusCode.UNAUTHORIZED,
     );
   }
+
+  const page = Number(req.query.page ?? 1);
+  const limit = Number(req.query.limit ?? 10);
+
+  if (
+    !Number.isInteger(page) ||
+    page < 1 ||
+    !Number.isInteger(limit) ||
+    limit < 1 ||
+    limit > 100
+  ) {
+    return sendError(
+      res,
+      "Invalid pagination parameters",
+      HttpStatusCode.BAD_REQUEST,
+    );
+  }
+
+  const subscription = await this._getMySubscription.execute(
+    accountId,
+    page,
+    limit,
+  );
+
+  return sendSuccess(
+    res,
+    "subscription fetched",
+    subscription,
+    HttpStatusCode.OK,
+  );
+}
+
 
   async verifyPayment(req: Request, res: Response) {
     const accountId = req.user?.accountId;
@@ -97,26 +124,48 @@ console.log("boddddd",data)
     );
   }
 
-  async getCompanySubscription(req: Request, res: Response) {
-    const { id: companyId } = req.params;
+ 
+async getCompanySubscription(req: Request, res: Response) {
+  const { id: companyId } = req.params;
 
-    if (typeof companyId !== "string") {
-      return sendError(
-        res,
-        MESSAGES.INVALID_COMPANY_REQUEST_ID,
-        HttpStatusCode.BAD_REQUEST,
-      );
-    }
-
-    const result = await this._getCompanySubscription.execute(companyId);
-
-    return sendSuccess(
+  if (typeof companyId !== "string") {
+    return sendError(
       res,
-      "company subscription fetched",
-      result,
-      HttpStatusCode.OK,
+      MESSAGES.INVALID_COMPANY_REQUEST_ID,
+      HttpStatusCode.BAD_REQUEST,
     );
   }
+
+  const page = Number(req.query.page ?? 1);
+  const limit = Number(req.query.limit ?? 10);
+
+  if (
+    !Number.isInteger(page) ||
+    page < 1 ||
+    !Number.isInteger(limit) ||
+    limit < 1 ||
+    limit > 100
+  ) {
+    return sendError(
+      res,
+      "Invalid pagination parameters",
+      HttpStatusCode.BAD_REQUEST,
+    );
+  }
+
+  const result = await this._getCompanySubscription.execute(
+    companyId,
+    page,
+    limit,
+  );
+
+  return sendSuccess(
+    res,
+    "company subscription fetched",
+    result,
+    HttpStatusCode.OK,
+  );
+}
 
 async getMySubscriptionPlan(
   req: Request,

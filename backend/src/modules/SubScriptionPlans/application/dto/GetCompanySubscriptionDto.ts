@@ -27,11 +27,17 @@ export interface GetCompanySubscriptionItemDto {
   createdAt: Date;
   updatedAt: Date;
 }
-
+export interface SubscriptionPaginationDto {
+  page: number;
+  limit: number;
+  totalCount: number;
+  totalPages: number;
+}
 export interface GetCompanySubscriptionResponseDto {
   subscriptionAccessStatus?: SubscriptionAccessStatus;
 
-  currentSubscription: GetCompanySubscriptionItemDto | null;
+  currentSubscription: GetCompanySubscriptionItemDto |null;
 
   subscriptionHistory: GetCompanySubscriptionItemDto[];
+  pagination: SubscriptionPaginationDto;
 }
