@@ -34,7 +34,9 @@ import CategoryManagementPage from "./modules/company-admin/pages/category/Categ
 import CategoryDetailsPage from "./modules/company-admin/pages/category/CategoryDetailsPage";
 import CompanySubscriptionPage from "./modules/company-admin/pages/subscription/CompanySubscriptionPage";
 import CompanyUpdateRequestDetails from "./modules/superadmin/pages/companyRequests/CompanyUpdateRequestDetails";
-
+import RolesManagementPage from "./modules/company-admin/pages/rolesAndPermissions/RolesManagementPage";
+import CreateRolePage from "./modules/company-admin/pages/rolesAndPermissions/CreateRolePage";
+import RoleDetailsPage from "./modules/company-admin/pages/rolesAndPermissions/RoleDetailsPage";
 
 const App = () => {
   return (
@@ -99,73 +101,78 @@ const App = () => {
           }
         />
 
-
-<Route
-  path="/company-admin"
-  element={
-    <ProtectedRoute>
-      <CompanyAdminLayout />
-    </ProtectedRoute>
-  }
->
-  <Route path="dashboard" element={<CompanyAdminDashboard />} />
-  <Route path="company-information" element={<CompanyProfile/>} />
-    <Route path="departments" element={<DepartmentListPage/>} />
-<Route
-  path="departments/:departmentId"
-  element={<ViewDepartmentPage />}
-/>
-  <Route
-  path="categories"
-  element={<CategoryManagementPage />}
-/>
-
-<Route
-    path="categories/:categoryId"
-    element={<CategoryDetailsPage />}
-  />
-
-  <Route
-  path="subscription"
-  element={<CompanySubscriptionPage />}
-/>
-
-  </Route>
         <Route
-  path="/super-admin"
-  element={
-    <ProtectedRoute>
-      <SuperAdminLayout />
-    </ProtectedRoute>
-  }
->
-  <Route path="dashbord" element={<SuperAdminDashbord />} />
+          path="/company-admin"
+          element={
+            <ProtectedRoute>
+              <CompanyAdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="dashboard" element={<CompanyAdminDashboard />} />
+          <Route path="company-information" element={<CompanyProfile />} />
+          <Route path="departments" element={<DepartmentListPage />} />
+          <Route
+            path="departments/:departmentId"
+            element={<ViewDepartmentPage />}
+          />
+          <Route path="categories" element={<CategoryManagementPage />} />
 
-  <Route
-    path="company-requests"
-    element={<CompanyRequests />}
-  />
+          <Route
+            path="categories/:categoryId"
+            element={<CategoryDetailsPage />}
+          />
 
-  <Route
-    path="company-requests/:companyRequestId"
-    element={<CompanyRequestDetails />}
-  />
-
-  <Route
-    path="company-update-requests/:requestId"
-    element={<CompanyUpdateRequestDetails />}
-  />
-
-          <Route path="companies" element={<Companies/>} />
-          <Route path="companies/:companyId" element={<CompanyDetails/>} />
-
-          <Route path="subscription-plan" element={<SubscriptionPlan />} />
-          <Route path="subscription-plan/:id" element={<ViewPlanDetail />} />
+          <Route path="subscription" element={<CompanySubscriptionPage />} />
+        
+         <Route path="roles-management" element={<RolesManagementPage/>} />
+<Route
+  path="/company-admin/roles-management/create"
+  element={<CreateRolePage />}
+/>         
+<Route
+  path="/company-admin/roles-management/:roleId"
+  element={<RoleDetailsPage />}
+/><Route
+  path="/company-admin/roles/:roleId/edit"
+  element={<CreateRolePage />}
+/>
+ 
         </Route>
 
 
 
-        
+        <Route
+          path="/super-admin"
+          element={
+            <ProtectedRoute>
+              <SuperAdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="dashbord" element={<SuperAdminDashbord />} />
+
+          <Route path="company-requests" element={<CompanyRequests />} />
+
+          <Route
+            path="company-requests/:companyRequestId"
+            element={<CompanyRequestDetails />}
+          />
+
+          <Route
+            path="company-update-requests/:requestId"
+            element={<CompanyUpdateRequestDetails />}
+          />
+
+          <Route path="companies" element={<Companies />} />
+          <Route path="companies/:companyId" element={<CompanyDetails />} />
+
+          <Route path="subscription-plan" element={<SubscriptionPlan />} />
+          <Route path="subscription-plan/:id" element={<ViewPlanDetail />} />
+
+
+          
+        </Route>
       </Routes>
     </BrowserRouter>
   );

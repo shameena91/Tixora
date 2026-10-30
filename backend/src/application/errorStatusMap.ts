@@ -54,5 +54,9 @@ export const errorStatusMap: Record<string, number> = {
 
 [ErrorCode.COMPANY_UPDATE_REQUEST_NOT_FOUND] :HttpStatusCode.NOT_FOUND,
 [ErrorCode.FAILED_TO_UPDATE_EMAIL]:HttpStatusCode.BAD_REQUEST,
-[ErrorCode.INVALID_OTP]:HttpStatusCode.CONFLICT
+[ErrorCode.INVALID_OTP]:HttpStatusCode.CONFLICT,
+
+[ErrorCode.SYSTEM_ROLE_CANNOT_BE_UPDATED]:HttpStatusCode.CONFLICT,
+[ErrorCode.ROLE_ALREADY_EXISTS]:HttpStatusCode.CONFLICT,
+[ErrorCode.ROLE_NOT_FOUND]:HttpStatusCode.NOT_FOUND
 };

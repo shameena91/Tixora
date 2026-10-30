@@ -113,6 +113,12 @@ COMPANY_DOCUMENT_CHANGE_REQUEST_UPDATE_FAILED:
 
 FAILED_TO_UPDATE_EMAIL:"Failed to update company email",
 
-INVALID_OTP:"Invalid OTP"
+INVALID_OTP:"Invalid OTP",
+SYSTEM_ROLE_CANNOT_BE_UPDATED:
+  "System roles cannot be updated",
+
+ROLE_ALREADY_EXISTS:
+  "A role with this name already exists",
+  ROLE_NOT_FOUND: "Role not found",
 
 };

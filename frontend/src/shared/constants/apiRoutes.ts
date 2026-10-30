@@ -124,3 +124,13 @@ export const COMPANY_CHANGE_REQUEST_ROUTES = {
  SEND_OTP:`/companies/email-change/send-otp`,
  VERIFY_OTP: "/companies/email-change/verify-otp",
 };
+
+
+export const ROLE_ROUTES = {
+  BASE: "/roles",
+
+  BY_ID: (roleId: string) => `/roles/${roleId}`,
+
+  UPDATE_STATUS: (roleId: string) =>
+    `/roles/${roleId}/status`,
+};

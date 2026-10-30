@@ -1,3 +1,4 @@
+
 import { useState, type FormEvent } from "react";
 
 import type {
@@ -16,11 +17,8 @@ interface Props {
   isOpen: boolean;
   mode: "create" | "edit";
   category: Category | null;
-
   departmentId?: string;
-
   departments: DepartmentOption[];
-
   isSubmitting: boolean;
   onClose: () => void;
   onSubmit: (
@@ -38,6 +36,12 @@ interface FormProps {
   onSubmit: (
     data: CategoryFormData,
   ) => void | Promise<void>;
+}
+
+interface CategoryFormErrors {
+  name?: string;
+  description?: string;
+  departmentId?: string;
 }
 
 const CategoryModalForm = ({
@@ -62,27 +66,41 @@ const CategoryModalForm = ({
       () => departmentId ?? category?.departmentId ?? "",
     );
 
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<CategoryFormErrors>(
+    {},
+  );
 
-  // A department is fixed when the modal opens from Department Details.
   const isDepartmentFixed = Boolean(departmentId);
 
-  // On the main page, Department must be selected when creating.
   const showDepartmentDropdown =
     mode === "create" && !isDepartmentFixed;
 
   const effectiveDepartmentId =
-    departmentId ?? category?.departmentId ?? selectedDepartmentId;
+    departmentId ??
+    category?.departmentId ??
+    selectedDepartmentId;
 
   const selectedDepartment = departments.find(
     (department) =>
       department.id === effectiveDepartmentId,
   );
 
+  // Clear individual field error.
+  const clearFieldError = (
+    field: keyof CategoryFormErrors,
+  ) => {
+    setErrors((prev) => ({
+      ...prev,
+      [field]: undefined,
+    }));
+  };
+
   const handleSubmit = async (
     event: FormEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
+
+    setErrors({});
 
     const result = categoryFormSchema.safeParse({
       name,
@@ -91,41 +109,73 @@ const CategoryModalForm = ({
     });
 
     if (!result.success) {
-      setError(
-        result.error.issues[0]?.message ?? "Invalid input",
-      );
+      const fieldErrors: CategoryFormErrors = {};
+
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0];
+
+        if (
+          (field === "name" ||
+            field === "description" ||
+            field === "departmentId") &&
+          !fieldErrors[field]
+        ) {
+          fieldErrors[field] = issue.message;
+        }
+      });
+
+      setErrors(fieldErrors);
       return;
     }
-
-    setError(null);
 
     await onSubmit(result.data);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form
+  onSubmit={handleSubmit}
+  noValidate
+  className="space-y-5"
+>
+
       {/* Category Name */}
+
       <div>
         <label
           htmlFor="category-name"
           className="mb-1.5 block text-sm font-medium text-gray-700"
         >
           Category Name
+          <span className="text-red-500"> *</span>
         </label>
 
         <input
           id="category-name"
           type="text"
           value={name}
-          onChange={(event) => setName(event.target.value)}
+          onChange={(event) => {
+            setName(event.target.value);
+            clearFieldError("name");
+          }}
           placeholder="e.g. Hardware"
-          required
+        
           maxLength={100}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-blue-500"
+          className={`w-full rounded-lg border px-3 py-2.5 text-sm outline-none focus:ring-2 ${
+            errors.name
+              ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+              : "border-gray-300 focus:border-blue-500 focus:ring-blue-100"
+          }`}
         />
+
+        {errors.name && (
+          <p className="mt-1 text-xs text-red-600">
+            {errors.name}
+          </p>
+        )}
       </div>
 
       {/* Description */}
+
       <div>
         <label
           htmlFor="category-description"
@@ -137,17 +187,29 @@ const CategoryModalForm = ({
         <textarea
           id="category-description"
           value={description}
-          onChange={(event) =>
-            setDescription(event.target.value)
-          }
+          onChange={(event) => {
+            setDescription(event.target.value);
+            clearFieldError("description");
+          }}
           rows={3}
           maxLength={500}
           placeholder="Describe this category"
-          className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-blue-500"
+          className={`w-full rounded-lg border px-3 py-2.5 text-sm outline-none focus:ring-2 ${
+            errors.description
+              ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+              : "border-gray-300 focus:border-blue-500 focus:ring-blue-100"
+          }`}
         />
+
+        {errors.description && (
+          <p className="mt-1 text-xs text-red-600">
+            {errors.description}
+          </p>
+        )}
       </div>
 
-      {/* Department dropdown: only for global Create */}
+      {/* Department Dropdown */}
+
       {showDepartmentDropdown ? (
         <div>
           <label
@@ -155,16 +217,22 @@ const CategoryModalForm = ({
             className="mb-1.5 block text-sm font-medium text-gray-700"
           >
             Department
+            <span className="text-red-500"> *</span>
           </label>
 
           <select
             id="category-department"
             value={selectedDepartmentId}
-            onChange={(event) =>
-              setSelectedDepartmentId(event.target.value)
-            }
-            required
-            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500"
+            onChange={(event) => {
+              setSelectedDepartmentId(event.target.value);
+              clearFieldError("departmentId");
+            }}
+          
+            className={`w-full rounded-lg border bg-white px-3 py-2.5 text-sm outline-none focus:ring-2 ${
+              errors.departmentId
+                ? "border-red-500 focus:border-red-500 focus:ring-red-100"
+                : "border-gray-300 focus:border-blue-500 focus:ring-blue-100"
+            }`}
           >
             <option value="">Select Department</option>
 
@@ -178,6 +246,12 @@ const CategoryModalForm = ({
             ))}
           </select>
 
+          {errors.departmentId && (
+            <p className="mt-1 text-xs text-red-600">
+              {errors.departmentId}
+            </p>
+          )}
+
           {departments.length === 0 && (
             <p className="mt-1 text-xs text-gray-500">
               No departments are available. Load the departments first.
@@ -186,28 +260,35 @@ const CategoryModalForm = ({
         </div>
       ) : (
         /* Department is already known in Department Details or Edit */
+
         <div>
           <label className="mb-1.5 block text-sm font-medium text-gray-700">
             Department
           </label>
 
-          <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-700">
+          <div
+            className={`rounded-lg border px-3 py-2.5 text-sm ${
+              errors.departmentId
+                ? "border-red-500 bg-red-50"
+                : "border-gray-200 bg-gray-50"
+            }`}
+          >
             {selectedDepartment?.name ??
               (effectiveDepartmentId
                 ? "Selected department"
                 : "Department not selected")}
           </div>
+
+          {errors.departmentId && (
+            <p className="mt-1 text-xs text-red-600">
+              {errors.departmentId}
+            </p>
+          )}
         </div>
       )}
 
-      {/* Validation Error */}
-      {error && (
-        <p role="alert" className="text-sm text-red-600">
-          {error}
-        </p>
-      )}
-
       {/* Actions */}
+
       <div className="flex justify-end gap-3">
         <button
           type="button"

@@ -18,6 +18,7 @@ import paymentRoutes from "./modules/payments/presentation/routes/PaymentRoutes"
 import departmentRoutes from "./modules/departments/presentation/routes/departmentRoutes";
 import categoryRoutes from "./modules/category/presentation/routes/categoryRoutes";
 import invoiceRoutes from "./modules/invoice/presentation/routes/invoiceRoutes";
+import roleRoute from "./modules/roles/presentation/routes/roleRoute";
 
 const app = express();
 
@@ -54,11 +55,15 @@ app.use(
    "/api/companies",
 companyRoute
 );
+
 app.use("/api/companies", paymentRoutes);
 app.use("/api/departments", departmentRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/invoices", invoiceRoutes);
-
+app.use(
+   "/api/roles",
+roleRoute
+);
 app.get("/health", (_req, res) => {
   res.status(200).json({
     success: true,

@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   LogOut,
   Settings,
+  Shield,
   Tags,
 } from "lucide-react";
 import React from "react";
@@ -132,17 +133,17 @@ const CompanyAdminSidebar = ({
           </NavSection>
 
           {/* Account & Access */}
-          {/* <NavSection
+           <NavSection
             title="Account & Access"
             isCollapsed={isCollapsed}
           >
             <NavItem
-              to="/roles-permissions"
+              to="/company-admin/roles-management"
               icon={Shield}
               label="Roles & Permissions"
               isCollapsed={isCollapsed}
             />
-          </NavSection> */}
+          </NavSection> 
 
           {/* Support */}
           {/* <NavSection
