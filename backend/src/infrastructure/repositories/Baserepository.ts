@@ -38,11 +38,13 @@ export class BaseRepository<
 
   async findOne(
     filter: Partial<T>,
+     sort?: Record<string, 1 | -1>,
   ): Promise<T | null> {
     return await this.model
       .findOne(
         filter as QueryFilter<T>,
       )
+       .sort(sort ?? {})
       .lean<T>()
       .exec();
   }

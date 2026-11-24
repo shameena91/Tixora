@@ -1,5 +1,5 @@
-import { ShieldCheck, CheckCircle2, Users } from "lucide-react";
-import type { RoleListItem } from "../../types/roles/RoleUI";
+import { CheckCircle2, ShieldCheck, Users } from "lucide-react";
+import type { RoleListItem } from "../../types/RoleUI";
 
 interface RoleStatsCardsProps {
   roles: RoleListItem[];

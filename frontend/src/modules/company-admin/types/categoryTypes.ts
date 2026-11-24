@@ -5,11 +5,21 @@ export interface Category {
   departmentId: string;
   name: string;
   description: string | null;
+  manager:{
+    id:string,
+    name:string
+  }
   status: CategoryStatus;
   createdAt: string;
   updatedAt: string;
 }
-
+export interface UnassignedEmployee {
+  id: string;
+  accountId: string;
+  name: string;
+  email: string;
+  departmentId: string;
+}
 export interface CategoryFormData {
   name: string;
   description: string;

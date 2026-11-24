@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 
-import {
-  createCategoryThunk,
-  getCategoriesByDepartmentThunk,
-  getCategoryDetailsThunk,
-} from "./categoryThunk";
 import type { Category } from "../../../modules/company-admin/types/categoryTypes";
+import {
+    createCategoryThunk,
+    getCategoriesByDepartmentThunk,
+    getCategoryDetailsThunk,
+} from "./categoryThunk";
 
 interface CategoryState {
   categories: Category[];

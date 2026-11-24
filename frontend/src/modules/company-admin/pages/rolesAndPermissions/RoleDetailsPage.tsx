@@ -1,22 +1,22 @@
+import {
+    AlertCircle,
+    ArrowLeft,
+    LoaderCircle,
+    Pencil,
+    Power,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  ArrowLeft,
-  Pencil,
-  LoaderCircle,
-  AlertCircle,
-  Power,
-} from "lucide-react";
 
+import BaseModal from "../../../../components/common/BaseModal";
 import { useAppDispatch, useAppSelector } from "../../../../redux/hooks/hooks";
 import {
-  getRoleByIdThunk,
-  updateRoleStatusThunk,
+    getRoleByIdThunk,
+    updateRoleStatusThunk,
 } from "../../../../redux/slices/roles/roleThunk";
 import RoleOverview from "../../componenets/rolesAndPermissions/RoleOverview";
 import RolePermissions from "../../componenets/rolesAndPermissions/RolePermissions";
-import type { RoleStatus } from "../../types/roles/RoleUI";
-import BaseModal from "../../../../components/common/BaseModal";
+import type { RoleStatus } from "../../types/RoleUI";
 
 type RoleTab = "overview" | "permissions" | "employees";
 

@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
+import { AlertCircle, ArrowLeft, LoaderCircle, Save } from "lucide-react";
 import type { FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Save, LoaderCircle, AlertCircle } from "lucide-react";
 
 import { useAppDispatch, useAppSelector } from "../../../../redux/hooks/hooks";
 
 import {
-  createRoleThunk,
-  getRoleByIdThunk,
-  updateRoleThunk,
+    createRoleThunk,
+    getRoleByIdThunk,
+    updateRoleThunk,
 } from "../../../../redux/slices/roles/roleThunk";
 
 import PermissionSelector from "../../componenets/rolesAndPermissions/PermissionSelector";
@@ -16,7 +16,7 @@ import PermissionSelector from "../../componenets/rolesAndPermissions/Permission
 import { createRoleSchema } from "../../schemas/roleValidatation";
 
 import type { PermissionCode } from "../../../../shared/constants/permissionCatalog";
-import type { RoleResponseDTO } from "../../types/roles/RoleUI";
+import type { RoleResponseDTO } from "../../types/RoleUI";
 
 interface CreateRoleErrors {
   name?: string;

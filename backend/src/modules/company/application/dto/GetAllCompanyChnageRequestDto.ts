@@ -15,7 +15,6 @@ export type CompanyUpdateType = "PROFILE" | "DOCUMENT";
 
 
 
-// Request DTO
 
 export interface GetCompanyChangeRequestsDTO {
   page: number;
@@ -25,7 +24,7 @@ export interface GetCompanyChangeRequestsDTO {
   changeType?: CompanyChangeRequestType;
 }
 
-// Response DTO - Individual request
+
 
 export interface CompanyChangeRequestListItemDTO {
   id: string;
@@ -40,7 +39,7 @@ export interface CompanyChangeRequestListItemDTO {
   createdAt: Date;
 }
 
-// Response DTO - Paginated list
+
 
 export interface GetCompanyChangeRequestsResponseDTO {
   requests: CompanyChangeRequestListItemDTO[];

@@ -1,7 +1,7 @@
 import { ROLE_ROUTES } from "../../../../shared/constants/apiRoutes";
 
 import axiosInstance from "../../../auth/api/axiosInstance";
-import type { CreateRoleDTO, UpdateRoleDTO, UpdateRoleStatusDTO } from "../../types/roles/RoleUI";
+import type { CreateRoleDTO, UpdateRoleDTO, UpdateRoleStatusDTO } from "../../types/RoleUI";
 
 
 // Create Role

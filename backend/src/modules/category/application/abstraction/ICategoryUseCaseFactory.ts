@@ -1,4 +1,6 @@
 
+import { IRemoveEmployee } from "../../../employees/application/abstarction/IRemoveEmployee";
+import { IAssignEmployee } from "./IAssignEmployee";
 import { ICreateCategory } from "./ICreateCategory";
 import { IGetAllCategories } from "./IGetAllCategories";
 import { IGetCategoryDetails } from "./IGetCategoryDetails";
@@ -12,5 +14,11 @@ export interface ICategoryUseCaseFactory {
     updateCategory: IUpdateCategory;
     updateCategoryStatus: IUpdateCategoryStatus;
     getCategoryDetails:IGetCategoryDetails
+
+         assignEmployeesToCategory:
+  IAssignEmployee,
+
+removeEmployeeFromCategory:
+  IRemoveEmployee,
   } | null>;
 }

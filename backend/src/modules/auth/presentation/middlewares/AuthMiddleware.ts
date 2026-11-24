@@ -1,41 +1,4 @@
-// import { NextFunction ,Request,Response} from "express";
-// import { ITokenService } from "../../application/ports/ITokenServices";
 
-// export class AuthMiddleware{
-//     constructor(
-//         private readonly _tokenService:ITokenService
-//     ){}
-
-//     authenticate(req:Request,res:Response,next:NextFunction){
-//         try {
-//              const authHeader = req.headers.authorization;
-
-//              if(!authHeader){
-//                  return res.status(401).json({
-//           message: "Access token is required",
-//         });
-//              }
-
-//           const token = authHeader.split(" ")[1];
-//              if (!token) {
-//         return res.status(401).json({
-//           message: "Invalid authorization header",
-//         });
-//     }
-//          const payload = this._tokenService.verifyAccessToken(token);
-//            req.user = payload;
-//             next() 
-//       }  
-      
-
-//          catch (error) {
-//              return res.status(401).json({
-//         message: "Invalid or expired access token",
-//       });
-//         }
-    
-// }
-// }
 
 import type { NextFunction, Request, Response } from "express";
 import type { ITokenService } from "../../application/ports/ITokenServices";
@@ -79,7 +42,7 @@ export class AuthMiddleware {
       return;
     }
 
-    // Validate accountId once, after verifying the token.
+
     if (
       typeof payload !== "object" ||
       payload === null ||
@@ -93,7 +56,7 @@ export class AuthMiddleware {
       return;
     }
 
-    // Set the user only after validation succeeds.
+
     req.user = payload;
 
     next();

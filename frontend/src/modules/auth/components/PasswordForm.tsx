@@ -143,42 +143,7 @@ const PasswordForm = ({
         </button>
       </div>
 
-      {/* Password Strength */}
-
-      {/* <div className="mt-4">
-        <div className="mb-2 flex items-center justify-between">
-          <span className="text-xs font-semibold uppercase text-slate-600">
-            Password Strength
-          </span>
-
-          <span
-            className={`text-xs font-bold ${
-              isPasswordValid
-                ? "text-green-600"
-                : "text-slate-400"
-            }`}
-          >
-            {isPasswordValid
-              ? "STRONG"
-              : "WEAK"}
-          </span>
-        </div>
-
-        <div className="h-1.5 w-full rounded-full bg-slate-200">
-          <div
-            className={`h-1.5 rounded-full transition-all ${
-              isPasswordValid
-                ? "w-full bg-green-500"
-                : password.length >= 4
-                ? "w-1/2 bg-yellow-400"
-                : "w-1/4 bg-red-400"
-            }`}
-          />
-        </div>
-      </div> */}
-
-      {/* Confirm Password */}
-
+ 
       <label
         htmlFor="confirmPassword"
         className="mt-7 block text-sm font-semibold text-slate-700"
@@ -275,36 +240,6 @@ const PasswordForm = ({
   );
 };
 
-// const PasswordRule = ({
-//   valid,
-//   text,
-// }: {
-//   valid: boolean;
-//   text: string;
-// }) => {
-//   return (
-//     <div className="flex items-center gap-3">
-//       <span
-//         className={`flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold ${
-//           valid
-//             ? "bg-green-500 text-white"
-//             : "bg-slate-300 text-white"
-//         }`}
-//       >
-//         ✓
-//       </span>
 
-//       <span
-//         className={`text-sm ${
-//           valid
-//             ? "text-slate-700"
-//             : "text-slate-500"
-//         }`}
-//       >
-//         {text}
-//       </span>
-//     </div>
-//   );
-// };
 
 export default PasswordForm;

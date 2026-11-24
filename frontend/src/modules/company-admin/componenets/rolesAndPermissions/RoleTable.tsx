@@ -1,9 +1,9 @@
 import { Eye, Pencil } from "lucide-react";
 
-import RoleStatusBadge from "./RoleStatusBadge";
 import type { DataTableColumn } from "../../../../components/common/Datatable";
 import DataTable from "../../../../components/common/Datatable";
-import type { RoleListItem } from "../../types/roles/RoleUI";
+import type { RoleListItem } from "../../types/RoleUI";
+import RoleStatusBadge from "./RoleStatusBadge";
 
 interface RoleTableProps {
   roles: RoleListItem[];

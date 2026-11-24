@@ -31,9 +31,7 @@ import { CreateInvoiceDto } from "../../../../invoice/application/Dtos/CreateInv
 
 import { generateInvoiceNumber } from "../../../../../shared/utills/generateInvoiceId";
 
-// --------------------------------------------------
-// Helpers
-// --------------------------------------------------
+
 
 function calculateEndDate(
   startDate: Date,
@@ -54,7 +52,6 @@ function calculateEndDate(
 
   const endDate = new Date(startDate);
 
-  // Prevent dates such as January 31 overflowing into March.
   endDate.setDate(1);
   endDate.setFullYear(targetYear, targetMonth, 1);
 

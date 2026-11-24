@@ -9,9 +9,10 @@ import type {
 
 import type { AdminRegistrationData } from "../validators/adminRegistrationSchema";
 
-import { AUTH_ROUTES } from "../../../shared/constants/apiRoutes";
+import { AUTH_ROUTES, EMPLOYEE_ROUTES } from "../../../shared/constants/apiRoutes";
 
 import { AUTH_MESSAGES } from "../../../shared/constants/messages";
+import { employeeAxiosInstance } from "../api/axiosInstance";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -141,17 +142,19 @@ export const login = async (email: string, password: string) => {
   if (!response.ok) {
     throw new Error(data.message || AUTH_MESSAGES.LOGIN_FAILED);
   }
-
+console.log("dataaaaaaaaa",data)
   return data;
 };
 
 // Logout
 
 export const logout = async () => {
-  const response = await fetch(`${API_URL}${AUTH_ROUTES.LOGOUT}`, {
+  const response = await fetch(`${API_URL}${AUTH_ROUTES.ADMIN_LOGOUT}`, {
     method: "POST",
     credentials: "include",
   });
+
+
 
   const data = await response.json();
 
@@ -162,23 +165,54 @@ export const logout = async () => {
   return data;
 };
 
+export const logoutEmployee = async () => {
+  return await employeeAxiosInstance.post(AUTH_ROUTES.ADMIN_LOGOUT);
+};
+
+
 // Refresh Access Token
 
-export const refreshAccessToken = async () => {
-  const response = await fetch(`${API_URL}${AUTH_ROUTES.REFRESH}`, {
-    method: "POST",
-    credentials: "include",
-  });
+// Admin Refresh
+export const refreshAdminAccessToken = async () => {
+  const response = await fetch(
+    `${API_URL}${AUTH_ROUTES.ADMIN_REFRESH}`,
+    {
+      method: "POST",
+      credentials: "include",
+    },
+  );
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.message || AUTH_MESSAGES.REFRESH_TOKEN_FAILED);
+    throw new Error(
+      data.message || AUTH_MESSAGES.REFRESH_TOKEN_FAILED,
+    );
   }
 
   return data;
 };
 
+// Employee Refresh
+export const refreshEmployeeAccessToken = async () => {
+  const response = await fetch(
+    `${API_URL}${AUTH_ROUTES.EMPLOYEE_REFRESH}`,
+    {
+      method: "POST",
+      credentials: "include",
+    },
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || AUTH_MESSAGES.REFRESH_TOKEN_FAILED,
+    );
+  }
+
+  return data;
+};
 // Reset Password
 
 export const resetPassword = async (
@@ -196,6 +230,36 @@ export const resetPassword = async (
 
   if (!response.ok) {
     throw new Error(result.message || AUTH_MESSAGES.RESET_PASSWORD_FAILED);
+  }
+
+  return result;
+};
+
+
+
+
+export const acceptEmployeeInvitation = async (data: {
+  token: string;
+  password: string;
+  confirmPassword: string;
+}) => {
+  const response = await fetch(
+    `${API_URL}${EMPLOYEE_ROUTES.ACCEPT_INVITATION}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    },
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      result.message || "Failed to accept invitation",
+    );
   }
 
   return result;

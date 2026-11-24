@@ -3,14 +3,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
-  useAppDispatch,
-  useAppSelector,
+    useAppDispatch,
+    useAppSelector,
 } from "../../../../redux/hooks/hooks";
 
-import { getCategoriesByDepartmentThunk } from "../../../../redux/slices/category/categoryThunk";
 import type { DataTableColumn } from "../../../../components/common/Datatable";
-import type { Category } from "../../types/categoryTypes";
 import DataTable from "../../../../components/common/Datatable";
+import { getCategoriesByDepartmentThunk } from "../../../../redux/slices/category/categoryThunk";
+import type { Category } from "../../types/categoryTypes";
 
 
 

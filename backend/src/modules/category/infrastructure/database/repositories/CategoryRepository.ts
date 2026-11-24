@@ -89,39 +89,6 @@ export class CategoryRepository implements ICategoryRepository {
     );
   }
 
-//   async findAllByDepartmentId(
-//     departmentId: string,
-//     page: number,
-//     limit: number,
-//   ): Promise<{
-//     data: Category[];
-//     total: number;
-//   }> {
-//     const filter = {
-//       departmentId: new Types.ObjectId(departmentId),
-//     };
-
-//     const skip = (page - 1) * limit;
-
-//     const [documents, total] = await Promise.all([
-//       this._categoryModel
-//         .find(filter)
-//         .sort({ createdAt: -1 })
-//         .skip(skip)
-//         .limit(limit)
-//         .lean<CategoryDocument[]>()
-//         .exec(),
-
-//       this._categoryModel.countDocuments(filter).exec(),
-//     ]);
-
-//     return {
-//       data: documents.map((document) =>
-//         CategoryMapper.toDomain(document),
-//       ),
-//       total,
-//     };
-//   }
 
   async update(
     filter: Partial<Category>,
@@ -177,4 +144,25 @@ export class CategoryRepository implements ICategoryRepository {
       total,
     };
   }
+
+ 
+
+async findByIds(ids: string[]): Promise<Category[]> {
+  console.log("IDDDD", ids);
+
+  const documents = await this._categoryModel
+    .find({
+      _id: {
+        $in: ids,
+      },
+    })
+    .lean<CategoryDocument[]>()
+    .exec();
+
+  console.log("fetchedddddddddddd", documents);
+
+  return documents.map((document) =>
+    CategoryMapper.toDomain(document),
+  );
+}
 }

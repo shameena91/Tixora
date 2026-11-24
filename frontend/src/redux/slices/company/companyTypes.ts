@@ -24,7 +24,9 @@ export interface SubmitCompanyChangeRequestPayload {
       | "city"
       | "state"
       | "country"
-      | "postalCode";
+      | "postalCode"
+      |"phoneNumber"
+      |"website"
     newValue: string;
     reason: string;
   }[];

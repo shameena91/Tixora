@@ -14,7 +14,7 @@ import {
 
 import {
   SubscriptionPlan,
-  SubscriptionPlanName,
+
   SubscriptionPlanStatus,
 } from "../../../domain/entities/SubscriptionPlan";
 
@@ -192,6 +192,12 @@ export class SubscriptionPlanRepository
     id: string,
     data: CreateSubscriptionPlanDTO,
   ): Promise<SubscriptionPlan> {
+
+    console.log("Updating Plan ID:", id);
+
+const existingPlan = await SubscriptionPlanModel.findById(id).lean();
+
+console.log("Existing Plan:", existingPlan);
     const subscriptionPlanDocument =
       await SubscriptionPlanModel.findByIdAndUpdate(
         id,
@@ -261,7 +267,7 @@ export class SubscriptionPlanRepository
   }
 
   async findByNameAndStatus(
-    name: SubscriptionPlanName,
+    name: string,
     status: SubscriptionPlanStatus,
   ): Promise<SubscriptionPlan | null> {
     const document =

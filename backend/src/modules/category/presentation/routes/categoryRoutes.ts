@@ -5,6 +5,7 @@ import { AccountRole } from "../../../auth/domain/entities/Account";
 import { authorizeRoles } from "../../../auth/presentation/middlewares/AutherizeRole";
 import { categoryController } from "../../container/Container";
 import { CATEGORY_ROUTE_CONSTANTS } from "../../../../shared/constants/route";
+import { employeeController } from "../../../employees/container/Container";
 
 
 const router = Router();
@@ -42,5 +43,24 @@ router.patch(
  CATEGORY_ROUTE_CONSTANTS.UPDATE_STATUS,
   authorizeRoles(AccountRole.COMPANY_ADMIN),
   categoryController.updateCategoryStatus.bind(categoryController),
+);
+
+router.patch(
+  CATEGORY_ROUTE_CONSTANTS.ASSIGN_EMPLOYEES,
+  authorizeRoles(AccountRole.COMPANY_ADMIN),
+  categoryController.assignEmployees.bind(categoryController),
+);
+
+router.delete(
+  CATEGORY_ROUTE_CONSTANTS.REMOVE_EMPLOYEE,
+  authorizeRoles(AccountRole.COMPANY_ADMIN),
+  categoryController.removeEmployee.bind(categoryController),
+);
+
+
+router.get(
+  CATEGORY_ROUTE_CONSTANTS.GET_UNASSIGNED_EMPLOYEES,
+  authorizeRoles(AccountRole.COMPANY_ADMIN),
+  employeeController.getUnassignedEmployees.bind(employeeController),
 );
 export default router;

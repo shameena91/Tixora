@@ -21,4 +21,9 @@ export interface IDepartmentRepository extends
 }>;
 
 countAll(): Promise<number>;
+findByIds(ids: string[]): Promise<Department[]>;
+assignManager(
+  departmentId: string,
+  managerId: string | null
+): Promise<boolean>;
 }

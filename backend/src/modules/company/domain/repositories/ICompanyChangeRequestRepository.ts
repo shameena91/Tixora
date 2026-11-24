@@ -37,4 +37,7 @@ findByRequestId(
    findAllChangeRequests(
     filters: GetCompanyChangeRequestsDTO,
   ): Promise<CompanyChangeRequestListResult>;
+  findByAccountId(
+    accountId:string,
+  ):Promise<(CompanyProfileChange | CompanyDocumentChange )[]>
 }

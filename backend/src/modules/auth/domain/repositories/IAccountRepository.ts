@@ -41,9 +41,31 @@ export interface IAccountRepository
 
   findSuperAdmin(): Promise<Account | null>;
 
-  updateStatus(
-    id: string,
-    status: AccountStatus,
-  ): Promise<void>;
+ updateStatus(
+  id: string,
+  status: AccountStatus,
+): Promise<boolean>;
   findByName(search: string): Promise<Account[]>;
+    findByIds(
+    ids: string[],
+  ): Promise<Account[]>;
+
+  searchAccounts(search: string): Promise<Account[]>
+
+    findByCompanyId(
+    companyId: string
+  ): Promise<Account[]>;
+updateDetails(
+  id: string,
+  data: {
+    passwordHash: string;
+    status: AccountStatus;
+    companyId: string;
+  },
+): Promise<void>;
+
+update(
+  filter: Partial<Account>,
+  data: Partial<Account>,
+): Promise<Account | null>;
 }

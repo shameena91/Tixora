@@ -2,8 +2,8 @@
 import { useState, type FormEvent } from "react";
 
 import type {
-  Category,
-  CategoryFormData,
+    Category,
+    CategoryFormData,
 } from "../../types/categoryTypes";
 
 import { categoryFormSchema } from "../../schemas/categoryValidation";

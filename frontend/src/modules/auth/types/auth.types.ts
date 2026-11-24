@@ -11,7 +11,7 @@ export type VerifyOtpRequest = {
   purpose?: string;
 };
 
-export type UserRole = "SUPER_ADMIN" | "COMPANY_ADMIN";
+export type UserRole = "SUPER_ADMIN" | "COMPANY_ADMIN"|"EMPLOYEE";
 export interface VerifyOtpResponse {
   success: boolean;
   message: string;
@@ -40,9 +40,17 @@ export interface AuthContextType {
   userName: string | null;
   isInitializing: boolean;
   role: UserRole | null;
+//   employeeRole: string | null;
+companyId: string | null;
+// permissions: string[];
+
+
   setRole: (role: UserRole | null) => void;
   setAccessToken: (token: string | null) => void;
   setUserName: (name: string | null) => void;
+//   setEmployeeRole: (role: string | null) => void;
+setCompanyId: (id: string | null) => void;
+// setPermissions: (permissions: string[]) => void;
 }
 
 

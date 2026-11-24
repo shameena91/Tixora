@@ -15,12 +15,11 @@ export type CreateSubscriptionPlanFormData = {
   description: string;
   monthlyPrice: number;
   yearlyPrice: number;
-
+  limitType: "LIMITED" | "UNLIMITED";
   memberLimit: number | null;
   companyAdminLimit: number | null;
   departmentLimit: number | null;
   ticketLimit: number | null;
-
   automaticTicketAssignment: boolean;
   slaManagement: boolean;
 };
@@ -38,12 +37,11 @@ const initialFormData: CreateSubscriptionPlanFormData = {
   description: "",
   monthlyPrice: 0,
   yearlyPrice: 0,
-
+  limitType: "LIMITED",
   memberLimit: 0,
   companyAdminLimit: 0,
   departmentLimit: 0,
   ticketLimit: 0,
-
   automaticTicketAssignment: false,
   slaManagement: false,
 };
@@ -52,20 +50,26 @@ const getInitialFormData = (
   plan?: SubscriptionPlanDetails | null
 ): CreateSubscriptionPlanFormData => {
   if (!plan) {
-    return initialFormData;
+    return { ...initialFormData };
   }
+
+  const isUnlimited =
+    plan.memberLimit === -1 &&
+    plan.companyAdminLimit === -1 &&
+    plan.departmentLimit === -1 &&
+    plan.ticketLimit === -1;
 
   return {
     name: plan.name,
     description: plan.description,
     monthlyPrice: plan.monthlyPrice,
     yearlyPrice: plan.yearlyPrice,
-    memberLimit: plan.memberLimit,
-    companyAdminLimit: plan.companyAdminLimit,
-    departmentLimit: plan.departmentLimit,
-    ticketLimit: plan.ticketLimit,
-    automaticTicketAssignment:
-      plan.automaticTicketAssignment,
+    limitType: isUnlimited ? "UNLIMITED" : "LIMITED",
+    memberLimit: isUnlimited ? null : plan.memberLimit,
+    companyAdminLimit: isUnlimited ? null : plan.companyAdminLimit,
+    departmentLimit: isUnlimited ? null : plan.departmentLimit,
+    ticketLimit: isUnlimited ? null : plan.ticketLimit,
+    automaticTicketAssignment: plan.automaticTicketAssignment,
     slaManagement: plan.slaManagement,
   };
 };
@@ -74,7 +78,6 @@ const CreateSubscriptionPlanModal = ({
   isOpen,
   onClose,
   plan,
-  planNames,
   onSubmit,
 }: CreateSubscriptionPlanModalProps) => {
   const [formData, setFormData] =
@@ -88,12 +91,13 @@ const CreateSubscriptionPlanModal = ({
     >
   >({});
 
+  const isUnlimited = formData.limitType === "UNLIMITED";
+
   const handleClose = () => {
-    setFormData(initialFormData);
+    setFormData({ ...initialFormData });
     setErrors({});
     onClose();
   };
-  
 
   const handleInputChange = (
     event: ChangeEvent<
@@ -104,56 +108,54 @@ const CreateSubscriptionPlanModal = ({
   ) => {
     const { name, value, type } = event.target;
 
-    // Plan name change
-    if (name === "name") {
-      const isEnterprise = value === "ENTERPRISE";
-
-      setFormData((prev) => ({
-        ...prev,
-        name: value,
-
-        memberLimit: isEnterprise
-          ? null
-          : prev.memberLimit ?? 0,
-
-        companyAdminLimit: isEnterprise
-          ? null
-          : prev.companyAdminLimit ?? 0,
-
-        departmentLimit: isEnterprise
-          ? null
-          : prev.departmentLimit ?? 0,
-
-        ticketLimit: isEnterprise
-          ? null
-          : prev.ticketLimit ?? 0,
-      }));
-
-      setErrors((prev) => ({
-        ...prev,
-        name: "",
-        memberLimit: "",
-        companyAdminLimit: "",
-        departmentLimit: "",
-        ticketLimit: "",
-      }));
-
-      return;
-    }
-
     setFormData((prev) => ({
       ...prev,
       [name]:
         type === "checkbox"
           ? (event.target as HTMLInputElement).checked
           : type === "number"
-            ? Number(value)
+            ? value === ""
+              ? null
+              : Number(value)
             : value,
     }));
 
     setErrors((prev) => ({
       ...prev,
       [name]: "",
+    }));
+  };
+
+  const handleLimitTypeChange = (
+    event: ChangeEvent<HTMLSelectElement>
+  ) => {
+    const value = event.target.value as
+      | "LIMITED"
+      | "UNLIMITED";
+
+    setFormData((prev) => ({
+      ...prev,
+      limitType: value,
+      memberLimit:
+        value === "UNLIMITED" ? null : prev.memberLimit ?? 0,
+      companyAdminLimit:
+        value === "UNLIMITED"
+          ? null
+          : prev.companyAdminLimit ?? 0,
+      departmentLimit:
+        value === "UNLIMITED"
+          ? null
+          : prev.departmentLimit ?? 0,
+      ticketLimit:
+        value === "UNLIMITED" ? null : prev.ticketLimit ?? 0,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      memberLimit: "",
+      companyAdminLimit: "",
+      departmentLimit: "",
+      ticketLimit: "",
     }));
   };
 
@@ -200,9 +202,6 @@ const CreateSubscriptionPlanModal = ({
     return null;
   }
 
-  const isEnterprise =
-    formData.name === "ENTERPRISE";
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
@@ -211,12 +210,11 @@ const CreateSubscriptionPlanModal = ({
         <div className="flex items-center justify-between border-b border-gray-100 pb-4">
           <div>
             <h3 className="text-lg font-semibold text-gray-900">
-              Create Subscription Plan
+              {plan ? "Update Subscription Plan" : "Create Subscription Plan"}
             </h3>
 
             <p className="mt-1 text-sm text-gray-500">
-              Add a new pricing plan for Tixora
-              companies.
+              Add a new pricing plan for Tixora companies.
             </p>
           </div>
 
@@ -243,7 +241,8 @@ const CreateSubscriptionPlanModal = ({
                 Plan Name
               </label>
 
-              <select
+              <input
+                type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
@@ -252,17 +251,7 @@ const CreateSubscriptionPlanModal = ({
                     ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
                     : "border-gray-300 focus:border-indigo-500 focus:ring-indigo-500/20"
                 }`}
-              >
-                <option value="">
-                  Select Plan
-                </option>
-
-                {planNames.map((name) => (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                ))}
-              </select>
+              />
 
               {errors.name && (
                 <p className="mt-1 text-xs text-red-500">
@@ -298,6 +287,23 @@ const CreateSubscriptionPlanModal = ({
             </div>
           </div>
 
+          {/* Limit Type */}
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">
+              Limit Type
+            </label>
+
+            <select
+              name="limitType"
+              value={formData.limitType}
+              onChange={handleLimitTypeChange}
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+            >
+              <option value="LIMITED">Limited</option>
+              <option value="UNLIMITED">Unlimited</option>
+            </select>
+          </div>
+
           {/* Prices */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
 
@@ -312,7 +318,7 @@ const CreateSubscriptionPlanModal = ({
                 name="monthlyPrice"
                 value={formData.monthlyPrice}
                 onChange={handleInputChange}
-                 onFocus={(event) => event.currentTarget.select()}
+                onFocus={(event) => event.currentTarget.select()}
                 min="0"
                 placeholder="1999"
                 className={`w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 ${
@@ -340,7 +346,7 @@ const CreateSubscriptionPlanModal = ({
                 name="yearlyPrice"
                 value={formData.yearlyPrice}
                 onChange={handleInputChange}
-                 onFocus={(event) => event.currentTarget.select()}
+                onFocus={(event) => event.currentTarget.select()}
                 min="0"
                 placeholder="19990"
                 className={`w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 ${
@@ -364,7 +370,7 @@ const CreateSubscriptionPlanModal = ({
               Plan Limits
             </p>
 
-            {isEnterprise ? (
+            {isUnlimited ? (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
 
                 {/* Members */}
@@ -372,7 +378,6 @@ const CreateSubscriptionPlanModal = ({
                   <p className="text-xs font-medium text-gray-500">
                     Members
                   </p>
-
                   <p className="mt-1 text-sm font-semibold text-gray-900">
                     Unlimited
                   </p>
@@ -383,7 +388,6 @@ const CreateSubscriptionPlanModal = ({
                   <p className="text-xs font-medium text-gray-500">
                     Company Admins
                   </p>
-
                   <p className="mt-1 text-sm font-semibold text-gray-900">
                     Unlimited
                   </p>
@@ -394,7 +398,6 @@ const CreateSubscriptionPlanModal = ({
                   <p className="text-xs font-medium text-gray-500">
                     Departments
                   </p>
-
                   <p className="mt-1 text-sm font-semibold text-gray-900">
                     Unlimited
                   </p>
@@ -405,7 +408,6 @@ const CreateSubscriptionPlanModal = ({
                   <p className="text-xs font-medium text-gray-500">
                     Tickets / Month
                   </p>
-
                   <p className="mt-1 text-sm font-semibold text-gray-900">
                     Unlimited
                   </p>
@@ -425,8 +427,8 @@ const CreateSubscriptionPlanModal = ({
                     name="memberLimit"
                     value={formData.memberLimit ?? ""}
                     onChange={handleInputChange}
-                     onFocus={(event) => event.currentTarget.select()}
-                    min="0"
+                    onFocus={(event) => event.currentTarget.select()}
+                    min="1"
                     placeholder="10"
                     className={`w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 ${
                       errors.memberLimit
@@ -451,12 +453,10 @@ const CreateSubscriptionPlanModal = ({
                   <input
                     type="number"
                     name="companyAdminLimit"
-                    value={
-                      formData.companyAdminLimit ?? ""
-                    }
+                    value={formData.companyAdminLimit ?? ""}
                     onChange={handleInputChange}
-                     onFocus={(event) => event.currentTarget.select()}
-                    min="0"
+                    onFocus={(event) => event.currentTarget.select()}
+                    min="1"
                     placeholder="1"
                     className={`w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 ${
                       errors.companyAdminLimit
@@ -481,12 +481,10 @@ const CreateSubscriptionPlanModal = ({
                   <input
                     type="number"
                     name="departmentLimit"
-                    value={
-                      formData.departmentLimit ?? ""
-                    }
+                    value={formData.departmentLimit ?? ""}
                     onChange={handleInputChange}
-                     onFocus={(event) => event.currentTarget.select()}
-                    min="0"
+                    onFocus={(event) => event.currentTarget.select()}
+                    min="1"
                     placeholder="2"
                     className={`w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 ${
                       errors.departmentLimit
@@ -513,8 +511,8 @@ const CreateSubscriptionPlanModal = ({
                     name="ticketLimit"
                     value={formData.ticketLimit ?? ""}
                     onChange={handleInputChange}
-                     onFocus={(event) => event.currentTarget.select()}
-                    min="0"
+                    onFocus={(event) => event.currentTarget.select()}
+                    min="1"
                     placeholder="100"
                     className={`w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 ${
                       errors.ticketLimit
@@ -544,16 +542,12 @@ const CreateSubscriptionPlanModal = ({
               <input
                 type="checkbox"
                 name="automaticTicketAssignment"
-                checked={
-                  formData.automaticTicketAssignment
-                }
+                checked={formData.automaticTicketAssignment}
                 onChange={handleInputChange}
                 className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
               />
 
-              <span>
-                Automatic Ticket Assignment
-              </span>
+              <span>Automatic Ticket Assignment</span>
             </label>
 
             {/* SLA Management */}
@@ -582,9 +576,7 @@ const CreateSubscriptionPlanModal = ({
 
             <button
               type="submit"
-             
               className="rounded-lg bg-[#7C3AED] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#6D28D9]"
-            
             >
               {plan ? "Update Plan" : "Save Plan"}
             </button>
@@ -596,4 +588,3 @@ const CreateSubscriptionPlanModal = ({
 };
 
 export default CreateSubscriptionPlanModal;
-

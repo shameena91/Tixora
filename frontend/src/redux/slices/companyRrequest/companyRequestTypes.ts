@@ -119,7 +119,7 @@ export interface CompanyRequestState {
 
   loading: boolean;
   error: string | null;
-  // Update Requests
+
 
 companyChangeRequests: CompanyChangeRequestListItem[];
 companyChangeRequest: CompanyChangeRequestDetails | null;
@@ -134,6 +134,10 @@ companyChangeRequestsError: string | null;
 
 reviewCompanyChangeLoading: boolean;
 reviewCompanyChangeError: string | null;
+
+myCompanyChangeRequests: CompanyChangeRequestDetails[];
+myCompanyChangeRequestsLoading: boolean;
+myCompanyChangeRequestsError: string | null;
 }
 
 

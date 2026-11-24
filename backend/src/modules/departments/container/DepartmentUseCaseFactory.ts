@@ -12,12 +12,16 @@ import { UpdateDepartmentStatus } from "../application/usecases/UpdateDepartment
 import { UpdateDepartment } from "../application/usecases/UpdateDepartment";
 import { DepartmentLimitProvider } from "../application/usecases/DepartmentLimitProvider";
 import { subscriptionPlanRepository, subscriptionRepository } from "../../SubScriptionPlans/container/Container";
+import { EmployeeRepositoryFactory } from "../../employees/infrastructure/database/repositotres/EmployeeRepositoryFactory";
+import { accountRepository } from "../../auth/container/dependencies";
 
 export class DepartmentUseCaseFactory
   implements IDepartmentUseCaseFactory
 {
   private readonly _departmentRepositoryFactory =
     new DepartmentRepositoryFactory();
+    private readonly _employeeRepositoryFactory =
+  new EmployeeRepositoryFactory();
 
   async createForAccount(accountId: string) {
     const company =
@@ -31,7 +35,8 @@ export class DepartmentUseCaseFactory
 
     const tenantConnection =
       await tenantDatabaseManager.connect(databaseName);
-
+const employeeRepository =
+  this._employeeRepositoryFactory.create(tenantConnection);
     const departmentRepository =
       this._departmentRepositoryFactory.create(
         tenantConnection,
@@ -48,9 +53,14 @@ const departmentLimitProvider = new DepartmentLimitProvider(
       ),
       getAllDepartment: new GetAllDepartment(
         departmentRepository,
+        employeeRepository,
+        accountRepository
       ),
 
-      getDepartment:new GetDepartmentDetails(departmentRepository),
+      getDepartment:new GetDepartmentDetails(departmentRepository,
+         employeeRepository,
+        accountRepository
+      ),
 
       updateDepartmentStatus:new UpdateDepartmentStatus(departmentRepository),
       updateDepartment: new UpdateDepartment(departmentRepository),

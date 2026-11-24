@@ -58,5 +58,12 @@ export const errorStatusMap: Record<string, number> = {
 
 [ErrorCode.SYSTEM_ROLE_CANNOT_BE_UPDATED]:HttpStatusCode.CONFLICT,
 [ErrorCode.ROLE_ALREADY_EXISTS]:HttpStatusCode.CONFLICT,
-[ErrorCode.ROLE_NOT_FOUND]:HttpStatusCode.NOT_FOUND
+[ErrorCode.ROLE_NOT_FOUND]:HttpStatusCode.NOT_FOUND,
+[ErrorCode.INVITATION_TOKEN_REQUIRED]: HttpStatusCode.BAD_REQUEST,
+[ErrorCode.INVALID_INVITATION_TOKEN]: HttpStatusCode.UNAUTHORIZED,
+[ErrorCode.INVITATION_EXPIRED_OR_ALREADY_USED]: HttpStatusCode.CONFLICT,
+[ErrorCode.EMPLOYEEID_NEEDED]:HttpStatusCode.BAD_REQUEST,
+[ErrorCode.NOT_FOUND]:HttpStatusCode.NOT_FOUND,
+ [ErrorCode.INTERNAL_SERVER_ERROR]: HttpStatusCode.INTERNAL_SERVER_ERROR,
+[ErrorCode.BAD_REQUEST]: HttpStatusCode.BAD_REQUEST,
 };

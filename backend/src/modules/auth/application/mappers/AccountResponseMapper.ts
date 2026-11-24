@@ -7,7 +7,8 @@ export class AccountResponseMapper {
       email: account.email,
       firstName: account.firstName,
       lastName: account.lastName,
-      role:account.role
+      role:account.role,
+      companyId:account.companyId?.toString()??null
     };
   }
 }

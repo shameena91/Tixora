@@ -47,11 +47,11 @@ const SubscriptionPlanDetailsModal = ({
     return null;
   }
 
-  const formatLimit = (value: number | null) => {
-    return value === null
-      ? "Unlimited"
-      : value.toLocaleString("en-IN");
-  };
+const formatLimit = (value: number | null) => {
+  return value === -1 || value === null
+    ? "Unlimited"
+    : value.toLocaleString("en-IN");
+};
 
   const formatPrice = (value: number) => {
     return value === 0

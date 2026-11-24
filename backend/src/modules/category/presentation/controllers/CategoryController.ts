@@ -13,6 +13,7 @@ import { HttpStatusCode } from "../../../../shared/constants/httpStattusCode";
 import { ICategoryUseCaseFactory } from "../../application/abstraction/ICategoryUseCaseFactory";
 import { getUseCasesForAccount } from "../../../../presentation/response/getUseCasesForAccount";
 
+
 export class CategoryController {
   constructor(
     private readonly _categoryUseCaseFactory: ICategoryUseCaseFactory,
@@ -342,4 +343,125 @@ console.log("rawDepartmentId",rawDepartmentId)
       HttpStatusCode.OK,
     );
   }
+
+async assignEmployees(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  const accountId = req.user!.accountId;
+  const { categoryId } = req.params;
+  const { employeeIds } = req.body ?? {};
+
+ 
+
+  if (
+    typeof categoryId !== "string" ||
+    !Types.ObjectId.isValid(categoryId)
+  ) {
+    sendError(
+      res,
+      MESSAGES.CATEGORY_NOT_FOUND,
+      HttpStatusCode.BAD_REQUEST,
+    );
+    return;
+  }
+
+  if (
+    !Array.isArray(employeeIds) ||
+    employeeIds.length === 0 ||
+    !employeeIds.every(
+      (id: unknown) =>
+        typeof id === "string" && Types.ObjectId.isValid(id),
+    )
+  ) {
+    sendError(
+      res,
+      "Please provide valid employee IDs",
+      HttpStatusCode.BAD_REQUEST,
+    );
+    return;
+  }
+
+  const useCases =
+    await this._categoryUseCaseFactory.createForAccount(accountId);
+
+  if (!useCases) {
+    sendError(
+      res,
+      MESSAGES.COMPANY_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+    return;
+  }
+
+  await useCases.assignEmployeesToCategory.execute(
+    categoryId,
+    employeeIds,
+  );
+
+  sendSuccess(
+    res,
+    "Employees assigned to category successfully",
+    null,
+    HttpStatusCode.OK,
+  );
+}
+async removeEmployee(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  const accountId = req.user!.accountId;
+  const { categoryId, employeeId } = req.params;
+
+ console.log("employeeId",categoryId)
+  console.log("employeeId",employeeId)
+
+  if (
+    typeof categoryId !== "string" ||
+    !Types.ObjectId.isValid(categoryId)
+  ) {
+    sendError(
+      res,
+      MESSAGES.CATEGORY_NOT_FOUND,
+      HttpStatusCode.BAD_REQUEST,
+    );
+    return;
+  }
+
+  if (
+    typeof employeeId !== "string" ||
+    !Types.ObjectId.isValid(employeeId)
+  ) {
+    sendError(
+      res,
+      "Invalid employee ID",
+      HttpStatusCode.BAD_REQUEST,
+    );
+    return;
+  }
+
+  const useCases =
+    await this._categoryUseCaseFactory.createForAccount(accountId);
+
+  if (!useCases) {
+    sendError(
+      res,
+      MESSAGES.COMPANY_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+    return;
+  }
+
+  await useCases.removeEmployeeFromCategory.execute(
+    categoryId,
+    employeeId,
+  );
+
+  sendSuccess(
+    res,
+    "Employee removed from category successfully",
+    null,
+    HttpStatusCode.OK,
+  );
+}
 }

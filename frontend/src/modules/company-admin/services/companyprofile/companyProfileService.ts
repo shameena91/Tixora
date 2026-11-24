@@ -1,6 +1,6 @@
 
 import type { SubmitCompanyChangeRequestPayload } from "../../../../redux/slices/company/companyTypes";
-import { COMPANY_ROUTE } from "../../../../shared/constants/apiRoutes";
+import { COMPANY_CHANGE_REQUEST_ROUTES, COMPANY_ROUTE } from "../../../../shared/constants/apiRoutes";
 import axiosInstance from "../../../auth/api/axiosInstance";
 
 export const getMyCompany = async () => {
@@ -45,5 +45,15 @@ export const submitCompanyDocumentChangeRequest = async (
   );
 
   return response.data;
+};
+
+
+export const getMyCompanyChangeRequests = async () => {
+ const response= axiosInstance.get(
+    COMPANY_CHANGE_REQUEST_ROUTES.MY_REQUESTS,
+  );
+
+  console.log("Fromsecice changeeeeee",response)
+  return response
 };
 

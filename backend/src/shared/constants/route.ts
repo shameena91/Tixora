@@ -7,8 +7,12 @@ export const AUTH_ROUTES = {
   FORGOT_PASSWORD: "/forgot-password",
   RESET_PASSWORD: "/reset-password",
   ADMIN_REGISTER: "/admin-register",
-  REFRESH: "/refresh",
-  LOGOUT: "/logout",
+
+  // LOGOUT: "/logout",
+  ADMIN_REFRESH: "/admin/refresh",
+EMPLOYEE_REFRESH: "/employee/refresh",
+ADMIN_LOGOUT: "/admin/logout",
+EMPLOYEE_LOGOUT: "/employee/logout",
 };
 
 export const COMPANY_REQUEST_ROUTES = {
@@ -52,7 +56,7 @@ export const COMAPANY_ROUTES = {
   CREATE_DOCUMENT_CHANGE_REQUEST: "/document-change-requests",
   GET_COMPANY_CHANGE_REQUESTS: "/update-requests",
   GET_COMPANY_CHANGE_REQUEST_BY_ID: "/update-requests/:requestId",
-
+GET_MY_COMPANY_CHANGE_REQUESTS:"/my-company-change-requests",
   REVIEW_COMPANY_PROFILE_CHANGE_REQUEST:
     "/update-requests/:requestId/profile-review",
 
@@ -93,6 +97,10 @@ export const CATEGORY_ROUTE_CONSTANTS = {
   GET_CATEGORY: "/:categoryId",
   UPDATE_STATUS: "/:categoryId/status",
   UPDATE: "/:categoryId",
+  ASSIGN_EMPLOYEES: "/:categoryId/employees",
+
+REMOVE_EMPLOYEE: "/:categoryId/employees/:employeeId",
+GET_UNASSIGNED_EMPLOYEES:"/:categoryId/employees/unassigned-employees",
 };
 
 export const INVOICE_ROUTE_CONSTANTS = {
@@ -109,3 +117,16 @@ export const ROLE_ROUTES = {
   UPDATE: "/:roleId",
   UPDATE_STATUS: "/:roleId/status",
 } as const;
+
+
+export const EMPLOYEE_ROUTE_CONSTANTS = {
+  CREATE: "/",
+  GET_ALL: "/",
+  VARIFY:"/verify",
+  ACCEPT_INVITATION:"/accept-invitation",
+  RESEND_INVITATION: "/resend-invitation",
+  GET_BY_ID: "/:employeeId",
+UPDATE: "/:employeeId",
+UPDATE_STATUS: "/:employeeId/status",
+
+};

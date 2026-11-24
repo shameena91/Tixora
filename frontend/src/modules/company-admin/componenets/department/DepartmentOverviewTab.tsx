@@ -4,6 +4,11 @@ interface DepartmentOverviewTabProps {
     name: string;
     code: string;
     managerId: string | null;
+     manager?: {
+    id: string;
+    name: string;
+  } | null;
+
     status: string;
     description: string | null;
     createdAt?: string | Date | null;
@@ -56,7 +61,7 @@ const DepartmentOverviewTab = ({
         <div>
           <p className="text-sm text-gray-500">Manager</p>
           <p className="mt-1 font-medium text-gray-900">
-            {department.managerId || "Not assigned"}
+           {department?.manager?.name ?? "Not assigned"}
           </p>
         </div>
 

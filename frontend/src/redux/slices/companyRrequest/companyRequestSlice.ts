@@ -7,6 +7,7 @@ import {
   fetchCompanyChangeRequestsThunk,
   fetchCompanyRequestById,
   fetchCompanyRequests,
+  fetchMyCompanyChangeRequestsThunk,
   moreInfoCompanyRequestThunk,
   rejectCompanyRequestThunk,
   reviewCompanyDocumentChangeRequestThunk,
@@ -17,7 +18,7 @@ import type {
   CompanyRequestState,
 } from "./companyRequestTypes";
 
-// Initial State
+
 
 const initialState: CompanyRequestState = {
   companyRequests: [],
@@ -30,7 +31,7 @@ const initialState: CompanyRequestState = {
 
   loading: false,
   error: null,
-// Update Requests
+
 
 companyChangeRequests: [],
 companyChangeRequest: null,
@@ -46,6 +47,9 @@ companyChangeRequestsError: null,
 reviewCompanyChangeLoading: false,
 reviewCompanyChangeError: null,
 
+myCompanyChangeRequests: [],
+myCompanyChangeRequestsLoading: false,
+myCompanyChangeRequestsError: null,
 };
 
 // Slice
@@ -60,7 +64,7 @@ const companyRequestSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
-      // Fetch Company Requests
+     
 
       .addCase(fetchCompanyRequests.pending, (state) => {
         state.loading = true;
@@ -296,7 +300,30 @@ const companyRequestSlice = createSlice({
     state.reviewCompanyChangeError =
       action.payload ?? "Failed to review document change";
   },
-);
+)// Fetch My Company Change Requests
+
+.addCase(
+  fetchMyCompanyChangeRequestsThunk.pending,
+  (state) => {
+    state.myCompanyChangeRequestsLoading = true;
+    state.myCompanyChangeRequestsError = null;
+  },
+)
+.addCase(
+  fetchMyCompanyChangeRequestsThunk.fulfilled,
+  (state, action) => {
+    state.myCompanyChangeRequestsLoading = false;
+    state.myCompanyChangeRequests = action.payload;
+  },
+)
+.addCase(
+  fetchMyCompanyChangeRequestsThunk.rejected,
+  (state, action) => {
+    state.myCompanyChangeRequestsLoading = false;
+    state.myCompanyChangeRequestsError =
+      action.payload ?? "Failed to fetch your update requests";
+  },
+)
   },
 });
 

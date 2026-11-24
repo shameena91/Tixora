@@ -34,7 +34,7 @@ const initialState: SubscriptionPlanState = {
   subscriptionPlanTotalPages: 0,
 
   viewSubscriptionPlan: null,
-
+  limitType: "LIMITED",
   planNamesLoading: false,
   getAllLoading: false,
   createLoading: false,

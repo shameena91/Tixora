@@ -21,7 +21,7 @@ export class DepartmentLimitProvider
   async getDepartmentLimit(companyId: string): Promise<number|null> {
     const subscription =
       await this._subscriptionRepository.findByCompanyId(companyId);
-
+console.log("subscription",subscription)
     if (!subscription) {
        throw new AppErrors(
               MESSAGES.SUBSCRIPTION_NOT_FOUND,
@@ -31,21 +31,23 @@ export class DepartmentLimitProvider
 
     const subscriptionPlan =
       await this._subscriptionPlanRepository.findById(subscription.planId);
-
+console.log("subscriptionPlannnnn",subscriptionPlan)
     if (!subscriptionPlan) {
       throw new AppErrors(
              MESSAGES.SUBSCRIPTION_PLAN_NOT_FOUND,
              ErrorCode.SUBSCRIPTION_PLAN_NOT_FOUND,
            );
     }
-if (subscriptionPlan.departmentLimit === null) {
 
-    throw new AppErrors(
-            "Department limit is not configured",
-             ErrorCode.SUBSCRIPTION_PLAN_NOT_FOUND,
-           );
+    console.log("ubscriptionPlan.departmentLimit",subscriptionPlan)
+// if (subscriptionPlan.departmentLimit === null) {
+
+//     throw new AppErrors(
+//             "Department limit is not configured",
+//              ErrorCode.SUBSCRIPTION_PLAN_NOT_FOUND,
+//            );
  
-}
+// }
 
     return subscriptionPlan.departmentLimit;
   }

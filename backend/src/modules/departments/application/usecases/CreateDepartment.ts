@@ -37,12 +37,12 @@ const departmentLimit =
   await this._departmentLimitProvider.getDepartmentLimit(
     this._companyId,
   );
-
+console.log("departmentLimit",departmentLimit)
 const currentCount =
   await this._departmentRepository.countAll();
 
   if (
-  departmentLimit !== null &&
+  departmentLimit !== null && departmentLimit!==-1&&
   currentCount >= departmentLimit
 ) {
   throw new AppErrors(

@@ -32,10 +32,19 @@ const accountSchema = new Schema(
       trim: true,
     },
 
+companyId: {
+  type: Schema.Types.ObjectId,
+  ref: "Company",
+  default: null,
+  index: true,
+},
+
+
     designation: {
       type: String,
-    
+   
       trim: true,
+      default:null
     },
     role: {
   type: String,

@@ -12,5 +12,8 @@ export interface LoginResponseDto {
     firstName: string;
     lastName: string;
     role:string
+    companyId:string|null
   };
+  employeeRole:string|null
+  permissions:string[]
 }

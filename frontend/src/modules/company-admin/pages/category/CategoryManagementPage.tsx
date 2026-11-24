@@ -1,22 +1,22 @@
 
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useNavigate, useParams } from "react-router-dom";
 
 import {
-  useAppDispatch,
-  useAppSelector,
+    useAppDispatch,
+    useAppSelector,
 } from "../../../../redux/hooks/hooks";
 
 import type {
-  Category,
-  CategoryFormData,
+    Category,
+    CategoryFormData,
 } from "../../types/categoryTypes";
 
 import {
-  createCategoryThunk,
-  getCategoriesByDepartmentThunk,
+    createCategoryThunk,
+    getCategoriesByDepartmentThunk,
 } from "../../../../redux/slices/category/categoryThunk";
 
 import { getAllDepartmentsThunk } from "../../../../redux/slices/department/departmentThunk";
@@ -24,9 +24,9 @@ import { getAllDepartmentsThunk } from "../../../../redux/slices/department/depa
 // Change this import path to your actual DataTable location.
 
 
-import CreateCategoryModal from "../../componenets/category/CreateCategoryModal";
 import type { DataTableColumn } from "../../../../components/common/Datatable";
 import DataTable from "../../../../components/common/Datatable";
+import CreateCategoryModal from "../../componenets/category/CreateCategoryModal";
 
 const PAGE_LIMIT = 3;
 

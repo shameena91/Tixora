@@ -19,7 +19,7 @@ import departmentRoutes from "./modules/departments/presentation/routes/departme
 import categoryRoutes from "./modules/category/presentation/routes/categoryRoutes";
 import invoiceRoutes from "./modules/invoice/presentation/routes/invoiceRoutes";
 import roleRoute from "./modules/roles/presentation/routes/roleRoute";
-
+import employeeRoutes from "./modules/employees/presentation/routes/employeeRoutes"
 const app = express();
 
 app.use(
@@ -63,6 +63,10 @@ app.use("/api/invoices", invoiceRoutes);
 app.use(
    "/api/roles",
 roleRoute
+);
+app.use(
+   "/api/employees",
+employeeRoutes
 );
 app.get("/health", (_req, res) => {
   res.status(200).json({

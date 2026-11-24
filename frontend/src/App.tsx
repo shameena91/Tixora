@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./modules/auth/components/protectedRoute";
 import AdminRegister from "./modules/auth/pages/AdminRegister";
 import CreatePassword from "./modules/auth/pages/CreatePassword";
@@ -37,6 +37,16 @@ import CompanyUpdateRequestDetails from "./modules/superadmin/pages/companyReque
 import RolesManagementPage from "./modules/company-admin/pages/rolesAndPermissions/RolesManagementPage";
 import CreateRolePage from "./modules/company-admin/pages/rolesAndPermissions/CreateRolePage";
 import RoleDetailsPage from "./modules/company-admin/pages/rolesAndPermissions/RoleDetailsPage";
+import EmployeesManagementPage from "./modules/company-admin/pages/employees/EmployeesManagementPage";
+import CreateEmployeePage from "./modules/company-admin/pages/employees/CreateEmployeePage";
+import AcceptInvitation from "./modules/auth/pages/AcceptInvitation";
+import EmployeeLogin from "./modules/employee/pages/EmployeeLogin";
+import EmployeeDashboard from "./modules/employee/pages/EmployeeDashboard";
+import EmployeeLayout from "./modules/employee/layouts/EmployeeLayout";
+import { EmployeeAuthProvider } from "./modules/employee/context/EmployeeAuthProvider";
+import EmployeeProtectedRoute from "./modules/employee/componenets/EmployeeProtectedRoute";
+import EmployeeDetailsPage from "./modules/company-admin/pages/employees/EmployeeDetailsPage";
+
 
 const App = () => {
   return (
@@ -101,6 +111,8 @@ const App = () => {
           }
         />
 
+        <Route path="/accept-invitation" element={<AcceptInvitation />} />
+
         <Route
           path="/company-admin"
           element={
@@ -124,23 +136,34 @@ const App = () => {
           />
 
           <Route path="subscription" element={<CompanySubscriptionPage />} />
-        
-         <Route path="roles-management" element={<RolesManagementPage/>} />
-<Route
-  path="/company-admin/roles-management/create"
-  element={<CreateRolePage />}
-/>         
-<Route
-  path="/company-admin/roles-management/:roleId"
-  element={<RoleDetailsPage />}
-/><Route
-  path="/company-admin/roles/:roleId/edit"
-  element={<CreateRolePage />}
+
+          <Route path="roles-management" element={<RolesManagementPage />} />
+          <Route
+            path="/company-admin/roles-management/create"
+            element={<CreateRolePage />}
+          />
+          <Route
+            path="/company-admin/roles-management/:roleId"
+            element={<RoleDetailsPage />}
+          />
+          <Route
+            path="/company-admin/roles/:roleId/edit"
+            element={<CreateRolePage />}
+          />
+          <Route
+            path="employee-management"
+            element={<EmployeesManagementPage />}
+          />
+
+          <Route
+            path="/company-admin/employee-management/create"
+            element={<CreateEmployeePage />}
+          />
+          <Route
+  path="/company-admin/employee-management/:employeeId"
+  element={<EmployeeDetailsPage/>  }
 />
- 
         </Route>
-
-
 
         <Route
           path="/super-admin"
@@ -169,11 +192,41 @@ const App = () => {
 
           <Route path="subscription-plan" element={<SubscriptionPlan />} />
           <Route path="subscription-plan/:id" element={<ViewPlanDetail />} />
-
-
-          
         </Route>
+
+{/* Employee session */}
+
+{/* Employee Authentication */}
+<Route
+  element={
+    <EmployeeAuthProvider>
+      <Outlet />
+    </EmployeeAuthProvider>
+  }
+>
+  <Route
+    path="/employee-login"
+    element={<EmployeeLogin />}
+  />
+
+  <Route
+    path="/employee/dashboard"
+    element={
+      <EmployeeProtectedRoute>
+        <EmployeeLayout>
+          <EmployeeDashboard />
+        </EmployeeLayout>
+      </EmployeeProtectedRoute>
+    }
+  />
+</Route>
+
+
+
       </Routes>
+
+
+  
     </BrowserRouter>
   );
 };

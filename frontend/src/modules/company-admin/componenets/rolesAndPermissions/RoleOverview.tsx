@@ -1,6 +1,6 @@
 import { CalendarDays, Clock3 } from "lucide-react";
 
-import type { RoleResponseDTO } from "../../types/roles/RoleUI";
+import type { RoleResponseDTO } from "../../types/RoleUI";
 
 interface RoleOverviewProps {
   role: RoleResponseDTO;

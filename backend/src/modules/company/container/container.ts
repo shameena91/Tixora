@@ -65,6 +65,7 @@ import { companyRepository } from "../../payments/container/Container";
 import { SendCompanyEmailChangeOtp } from "../application/usecases/companyUpdaterequests/SendCompanyEmailChangeOtp";
 import { otpService, otpStore } from "../../auth/container/container";
 import { VerifyCompanyEmailChangeOtp } from "../application/usecases/companyUpdaterequests/VerifyCompanyEmailChangeOtp";
+import { GetMyCompanyChangeRequests } from "../application/usecases/companyUpdaterequests/GetMyCompanyChangeRequests";
 
 const baseCompanyRequestRepository = new BaseRepository(CompanyRequestModel);
 
@@ -247,7 +248,12 @@ const verifyCompanyEmailChangeOtp =
     otpStore,
     companyRepository,
   );
-
+const getMycompanyChangeRequest=new GetMyCompanyChangeRequests(
+  companyChangeRequestRepository,
+  comapnyRepository,
+  accountRepository,
+  fileStorage
+)
 export const updateCompanyStatus = new UpdateCompanyStatus(comapnyRepository);
 export const companyRequestController = new CompanyRequestController(
   createCompanyRequest,
@@ -295,7 +301,9 @@ export const companyChangeRequestController =
      reviewCompanyProfileChangeRequest,
     reviewCompanyDocumentChangeRequest,
     sendCompanyEmailChangeOtp,
-    verifyCompanyEmailChangeOtp
+    verifyCompanyEmailChangeOtp,
+    getMycompanyChangeRequest
+
   );
 
 

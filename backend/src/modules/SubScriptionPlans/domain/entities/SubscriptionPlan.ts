@@ -1,8 +1,8 @@
-export enum SubscriptionPlanName {
-  FREE = "FREE",
-  PROFESSIONAL = "PROFESSIONAL",
-  ENTERPRISE = "ENTERPRISE",
-}
+// export enum SubscriptionPlanName {
+//   FREE = "FREE",
+//   PROFESSIONAL = "PROFESSIONAL",
+//   ENTERPRISE = "ENTERPRISE",
+// }
 
 export enum SubscriptionPlanStatus {
   ACTIVE = "ACTIVE",
@@ -12,7 +12,7 @@ export enum SubscriptionPlanStatus {
 export class SubscriptionPlan {
   constructor(
     public readonly id: string,
-    public name: SubscriptionPlanName,
+    public name: string,
     public description: string,
 
     public monthlyPrice: number,

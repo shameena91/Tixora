@@ -35,6 +35,7 @@ import {
   getMySubscriptionStatusThunk,
 } from "../../../../redux/slices/companySubscription/companySubscriptionThunk";
 import { sendCompanyEmailChangeOtp, verifyCompanyEmailChangeOtp } from "../../../superadmin/services/superadminServices";
+import {  fetchMyCompanyChangeRequestsThunk } from "../../../../redux/slices/companyRrequest/companyRequestThunk";
 
 const CompanyProfile = () => {
   const dispatch = useAppDispatch();
@@ -61,13 +62,24 @@ const CompanyProfile = () => {
     myPlan,
     loading,
   } = useAppSelector((state) => state.companySubscription);
+const {
+  myCompanyChangeRequests,
+
+   myCompanyChangeRequestsLoading,
+   myCompanyChangeRequestsError,
+} = useAppSelector((state) => state.companyRequest);
+
 
   useEffect(() => {
     dispatch(fetchMyCompanyThunk());
     dispatch(getMySubscriptionStatusThunk());
     dispatch(getMySubscriptionPlanThunk());
   }, [dispatch]);
-
+useEffect(() => {
+  if (activeTab === "Company Requests") {
+    dispatch(fetchMyCompanyChangeRequestsThunk());
+  }
+}, [activeTab, dispatch]);
   useEffect(() => {
     const fetchDropdownOptions = async () => {
       try {
@@ -92,6 +104,10 @@ const CompanyProfile = () => {
     void fetchDropdownOptions();
   }, []);
 
+
+
+
+console.log("myCompanyChangeRequests",myCompanyChangeRequests)
   const handleCompanyChangeRequest = async (
     payload: CompanyChangeRequestPayload,
   ) => {
@@ -129,7 +145,6 @@ const CompanyProfile = () => {
       return;
     }
 
-    // Other fields continue using the existing behavior.
     console.log("Edit:", field, value);
   };
 
@@ -231,7 +246,13 @@ const CompanyProfile = () => {
         />
       )}
 
-      {activeTab === "Company Requests" && <CompanyRequests />}
+      {activeTab === "Company Requests" && (
+  <CompanyRequests
+    requests={myCompanyChangeRequests}
+    loading={myCompanyChangeRequestsLoading}
+    error={myCompanyChangeRequestsError}
+  />
+)}
 
       {/* Existing Company Change Request Modal */}
       {isChangeRequestModalOpen && (

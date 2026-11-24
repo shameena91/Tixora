@@ -21,5 +21,5 @@ export interface ICategoryRepository
     data: Category[];
     total: number;
   }>
- 
+ findByIds(ids: string[]): Promise<Category[]>;
 }

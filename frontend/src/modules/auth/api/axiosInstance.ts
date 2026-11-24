@@ -1,3 +1,4 @@
+
 import axios from "axios";
 import {
   clearAccessToken,
@@ -6,65 +7,102 @@ import {
 } from "./tokenStorage";
 import type { RetryAxiosRequestConfig } from "../types/auth.types";
 
-const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-  withCredentials: true,
-});
+const baseURL = import.meta.env.VITE_API_BASE_URL;
 
-axiosInstance.interceptors.request.use(
-  (config) => {
-    const token = getStoredAccessToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
-);
+type PortalType = "admin" | "employee";
 
-axiosInstance.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  async (error) => {
-    const originalRequest = error.config as RetryAxiosRequestConfig;
+const createAxiosInstance = (
+  portal: PortalType,
+  refreshUrl: string,
+  loginPath: string,
+) => {
+  const instance = axios.create({
+    baseURL,
+    withCredentials: true,
+  });
 
-     console.log(
-    "API ERROR STATUS:",
-    error.response?.status,
-  );
+  // Attach the correct portal's access token
+  instance.interceptors.request.use(
+    (config) => {
+      const token = getStoredAccessToken(portal);
 
-  console.log(
-    "API ERROR MESSAGE:",
-    error.response?.data?.message,
-  );
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry &&
-      originalRequest.url !== "/auth/refresh"
-    ) {
-      originalRequest._retry = true;
-      try {
-        console.log("Acccesstocken expired");
-        const response = await axiosInstance.post("/auth/refresh");
-
-        const newAccessToken = response.data.data.accessToken;
-        storeAccessToken(newAccessToken);
-        originalRequest.headers = {
-          ...originalRequest.headers,
-          Authorization: `Bearer ${newAccessToken}`,
-        };
-        console.log("New access token:", newAccessToken);
-        return axiosInstance(originalRequest);
-      } catch (refreshError) {
-        clearAccessToken();
-        window.location.href = "/login";
-        return Promise.reject(refreshError);
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
       }
-    }
-    return Promise.reject(error);
-  },
+
+      return config;
+    },
+    (error) => Promise.reject(error),
+  );
+
+  // Refresh expired access token
+  instance.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const originalRequest =
+        error.config as RetryAxiosRequestConfig | undefined;
+
+      if (!originalRequest) {
+        return Promise.reject(error);
+      }
+
+      const hasAuthorization =
+        Boolean(originalRequest.headers?.Authorization);
+
+      if (
+        error.response?.status === 401 &&
+        !originalRequest._retry &&
+        hasAuthorization
+      ) {
+        originalRequest._retry = true;
+
+        try {
+          // Use plain axios to avoid triggering this interceptor again
+          const refreshResponse = await axios.post(
+            refreshUrl,
+            {},
+            {
+              baseURL,
+              withCredentials: true,
+            },
+          );
+
+          const newAccessToken =
+            refreshResponse.data.data.accessToken;
+
+          storeAccessToken(newAccessToken, portal);
+
+          originalRequest.headers = {
+            ...originalRequest.headers,
+            Authorization: `Bearer ${newAccessToken}`,
+          };
+
+          return instance(originalRequest);
+        } catch (refreshError) {
+          clearAccessToken(portal);
+          window.location.href = loginPath;
+
+          return Promise.reject(refreshError);
+        }
+      }
+
+      return Promise.reject(error);
+    },
+  );
+
+  return instance;
+};
+
+export const axiosInstance = createAxiosInstance(
+  "admin",
+  "/auth/admin/refresh",
+  "/login",
 );
+
+export const employeeAxiosInstance = createAxiosInstance(
+  "employee",
+  "/auth/employee/refresh",
+  "/employee-login",
+);
+
 export default axiosInstance;

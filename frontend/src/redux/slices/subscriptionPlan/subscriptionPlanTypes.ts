@@ -65,7 +65,7 @@ export interface CreateSubscriptionPlanPayload {
 
   monthlyPrice: number;
   yearlyPrice: number;
-
+  limitType: "LIMITED" | "UNLIMITED";
   memberLimit: number | null;
   companyAdminLimit: number | null;
   departmentLimit: number | null;
@@ -126,6 +126,8 @@ export interface SubscriptionPlanState {
   subscriptionPlanPage: number;
   subscriptionPlanLimit: number;
   subscriptionPlanTotalPages: number;
+limitType: "LIMITED" | "UNLIMITED";
+
 
   viewSubscriptionPlan:
     | SubscriptionPlanDetails

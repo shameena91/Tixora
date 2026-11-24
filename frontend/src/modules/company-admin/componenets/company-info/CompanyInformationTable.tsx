@@ -161,18 +161,8 @@ const CompanyInformationTable = ({
                 </InformationValue>
               </td>
 
-              <td className="px-6 py-4 text-right">
-                <EditButton
-                  onClick={() =>
-                    onEdit(
-                      {
-                        key: "phone",
-                        label: "Phone",
-                      },
-                      company.phone ?? "",
-                    )
-                  }
-                />
+           <td className="px-6 py-4 text-right">
+                <ApprovalRequired />
               </td>
             </tr>
 
@@ -231,9 +221,9 @@ const CompanyInformationTable = ({
                 </InformationValue>
               </td>
 
-              <td className="px-6 py-4 text-right">
+              {/* <td className="px-6 py-4 text-right">
                 <ApprovalRequired />
-              </td>
+              </td> */}
             </tr>
 
             {/* Website - Direct Edit */}
@@ -266,18 +256,8 @@ const CompanyInformationTable = ({
                 )}
               </td>
 
-              <td className="px-6 py-4 text-right">
-                <EditButton
-                  onClick={() =>
-                    onEdit(
-                      {
-                        key: "website",
-                        label: "Website",
-                      },
-                      company.website ?? "",
-                    )
-                  }
-                />
+            <td className="px-6 py-4 text-right">
+                <ApprovalRequired />
               </td>
             </tr>
 

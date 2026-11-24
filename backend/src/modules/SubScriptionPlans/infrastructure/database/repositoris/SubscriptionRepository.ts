@@ -112,21 +112,20 @@ export class SubscriptionRepository
 
  
 
-  async findByCompanyId(
-    companyId: string,
-  ): Promise<Subscription | null> {
-    const document =
-      await this._baseRepository.findOne({
-        companyId,
-      });
+async findByCompanyId(
+  companyId: string,
+): Promise<Subscription | null> {
+  const document = await this._baseRepository.findOne(
+    { companyId },
+    { createdAt: -1 },
+  );
 
-    if (!document) {
-      return null;
-    }
-
-    return SubscriptionMapper.toDomain(document);
+  if (!document) {
+    return null;
   }
 
+  return SubscriptionMapper.toDomain(document);
+}
 async findAllByCompanyId(
   companyId: string,
   page?: number,

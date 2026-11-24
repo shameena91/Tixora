@@ -42,13 +42,27 @@ router.post(
   authController.adminRegistrationRequest.bind(authController)
 );
 
+// router.post(
+//   AUTH_ROUTES.REFRESH,
+//   authController.refreshAccessTokenRequest.bind(authController)
+// );
 router.post(
-  AUTH_ROUTES.REFRESH,
-  authController.refreshAccessTokenRequest.bind(authController)
+  AUTH_ROUTES.ADMIN_LOGOUT,
+  authController.logoutAdminRequest.bind(authController)
+);
+
+router.post(
+  AUTH_ROUTES.EMPLOYEE_LOGOUT,
+  authController.logoutEmployeeRequest.bind(authController)
 );
 router.post(
-  AUTH_ROUTES.LOGOUT,
-  authController.logoutRequest.bind(authController)
+  AUTH_ROUTES.ADMIN_REFRESH,
+  authController.refreshAdminAccessTokenRequest.bind(authController)
+);
+
+router.post(
+  AUTH_ROUTES.EMPLOYEE_REFRESH,
+  authController.refreshEmployeeAccessTokenRequest.bind(authController)
 );
 export default router;
 

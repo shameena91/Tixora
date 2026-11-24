@@ -6,6 +6,7 @@ export enum AccountStatus {
 export enum AccountRole {
   SUPER_ADMIN = "SUPER_ADMIN",
   COMPANY_ADMIN = "COMPANY_ADMIN",
+   EMPLOYEE = "EMPLOYEE",
 }
 export enum RegistrationStep {
   ADMIN_DETAILS = "ADMIN_DETAILS",
@@ -22,8 +23,9 @@ export class Account {
     public readonly firstName: string,
     public readonly lastName: string,
     public  phone: string,
-    public designation: string,
-
+     public companyId:string|null,
+    public designation: string | null,
+ 
     public passwordHash: string | null,
        public role: AccountRole,
     public status: AccountStatus,
@@ -47,4 +49,8 @@ export class Account {
     this.registrationStep = step;
     this.updatedAt = new Date();
   }
+  public activate(): void {
+  this.status = AccountStatus.ACTIVE;
+  this.updatedAt = new Date();
+}
 }

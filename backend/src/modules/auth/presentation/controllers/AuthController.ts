@@ -38,14 +38,17 @@ async loginRequest(
 ) {
   try {
     const result = await this._login.execute(req.body);
-
-    res.cookie("refreshToken", result.refreshToken, {
+ const cookieName =
+      result.account.role === "EMPLOYEE"
+        ? "employeeRefreshToken"
+        : "adminRefreshToken";
+    res.cookie(cookieName, result.refreshToken, {
       httpOnly: true,
       secure: env.nodeEnv === "production",
       sameSite: "lax",
       maxAge: env.maxAge,
     });
-
+console.log("resultresultttttttt",result)
     const userName = `${result.account.firstName} ${result.account.lastName}`;
 
     return sendSuccess(
@@ -55,6 +58,9 @@ async loginRequest(
         name: userName,
         role: result.account.role,
         accessToken: result.accessToken,
+        companyId:result.account.companyId,
+        employeeRole:result.employeeRole,
+        permissions:result.permissions
       },
       HttpStatusCode.OK
     );
@@ -192,36 +198,7 @@ async loginRequest(
   }
 
 
-  async refreshAccessTokenRequest(
-    req: Request,
-    res: Response
-  ) {
-    const { refreshToken } = req.cookies;
 
-    if (!refreshToken) {
-      return sendError(
-        res,
-        "Refresh token is required",
-        HttpStatusCode.UNAUTHORIZED
-      );
-    }
-
-    const result =
-      await this._refreshAccessToken.execute(
-        refreshToken
-      );
-// console.log("refresh tokeeeeeeeeee,",result)
-    return sendSuccess(
-      res,
-      "Access token refreshed successfully",
-      {
-        accessToken: result.accessToken,
-    name: `${result.account.firstName} ${result.account.lastName}`,
-    role: result.account.role,
-      },
-      HttpStatusCode.OK
-    );
-  }
 
 
   async adminRegistrationRequest(
@@ -243,18 +220,106 @@ async loginRequest(
       HttpStatusCode.CREATED
     );
   }
-// Logout
 
-async logoutRequest(
+
+// async logoutRequest(
+//   req: Request,
+//   res: Response
+// ) {
+//   await this._logout.execute();
+
+//   res.clearCookie("refreshToken", {
+//     httpOnly: true,
+//     secure: env.nodeEnv === "production",
+//     sameSite: "lax",
+//   });
+
+//   return sendSuccess(
+//     res,
+//     "Logged out successfully",
+//     undefined,
+//     HttpStatusCode.OK
+//   );
+// }
+
+
+
+
+
+
+
+
+async refreshAdminAccessTokenRequest(
   req: Request,
   res: Response
 ) {
+  return this.refreshAccessToken(req, res, "adminRefreshToken");
+}
+
+async refreshEmployeeAccessTokenRequest(
+  req: Request,
+  res: Response
+) {
+  return this.refreshAccessToken(req, res, "employeeRefreshToken");
+}
+
+private async refreshAccessToken(
+  req: Request,
+  res: Response,
+  cookieName: string
+) {
+  const refreshToken = req.cookies?.[cookieName];
+
+  if (!refreshToken) {
+    return sendError(
+      res,
+      "Refresh token is required",
+      HttpStatusCode.UNAUTHORIZED
+    );
+  }
+
+  const result = await this._refreshAccessToken.execute(refreshToken);
+
+  return sendSuccess(
+    res,
+    "Access token refreshed successfully",
+    {
+      accessToken: result.accessToken,
+      name: `${result.account.firstName} ${result.account.lastName}`,
+      role: result.account.role,
+      companyId: result.companyId,
+      employeeRole: result.employeeRole,
+      permissions: result.permissions,
+    },
+    HttpStatusCode.OK
+  );
+}
+
+async logoutAdminRequest(
+  req: Request,
+  res: Response
+) {
+  return this.logoutRequest(res, "adminRefreshToken");
+}
+
+async logoutEmployeeRequest(
+  req: Request,
+  res: Response
+) {
+  return this.logoutRequest(res, "employeeRefreshToken");
+}
+
+private async logoutRequest(
+  res: Response,
+  cookieName: string
+) {
   await this._logout.execute();
 
-  res.clearCookie("refreshToken", {
+  res.clearCookie(cookieName, {
     httpOnly: true,
     secure: env.nodeEnv === "production",
     sameSite: "lax",
+    path: "/",
   });
 
   return sendSuccess(
@@ -264,7 +329,6 @@ async logoutRequest(
     HttpStatusCode.OK
   );
 }
-
 }
 
 

@@ -58,7 +58,7 @@ const DepartmentListPage = () => {
     total,
     totalPages,
   } = useAppSelector((state) => state.department);
-
+console.log("departments",departments)
   // Set default pagination values in the URL
   useEffect(() => {
     if (isValidPage && isValidLimit) {
@@ -171,13 +171,16 @@ const DepartmentListPage = () => {
       accessor: "description",
       render: (value: unknown) => String(value || "—"),
     },
-    {
-      id: "manager",
-      header: "Manager",
-      accessor: "managerId",
-      render: (value: unknown) =>
-        value ? String(value) : "Not assigned",
-    },
+  {
+  id: "manager",
+  header: "Manager",
+  accessor: "manager",
+  render: (value: unknown) => {
+    const manager = value as { id: string; name: string } | null;
+
+    return manager?.name ?? "Not assigned";
+  },
+},
     {
       id: "status",
       header: "Status",

@@ -1,5 +1,5 @@
 import { Eye, EyeOff } from "lucide-react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/authService";
@@ -11,7 +11,11 @@ import { getMyCompanyRequest } from "../../company/Services/CompanyRequestServic
 import { getMySubscriptionStatus } from "../../superadmin/services/subscriptionPlanServices";
 
 const LoginPage = () => {
+
+  
   const navigate = useNavigate();
+
+  
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -24,7 +28,51 @@ const LoginPage = () => {
     {},
   );
 
+
+
+  
   const auth = useContext(AuthContext);
+
+
+  useEffect(() => {
+  if (auth?.isInitializing || !auth?.accessToken) return;
+
+  if (auth.role === "SUPER_ADMIN") {
+    navigate("/super-admin/dashbord", { replace: true });
+  }
+
+  if (auth.role === "COMPANY_ADMIN") {
+    const redirectCompanyAdmin = async () => {
+      try {
+        const companyRequest = await getMyCompanyRequest();
+
+        if (companyRequest.data.status !== "APPROVED") {
+          navigate("/company-admin/check-status", { replace: true });
+          return;
+        }
+
+        const subscription = await getMySubscriptionStatus();
+        const accessStatus = subscription?.data?.subscriptionAccessStatus;
+
+        if (accessStatus === "ACTIVE" || accessStatus === "EXPIRED") {
+          navigate("/company-admin/dashboard", { replace: true });
+          return;
+        }
+
+        navigate("/company-admin/select-subscription", { replace: true });
+      } catch (error) {
+        console.error("Session redirect failed:", error);
+      }
+    };
+
+    redirectCompanyAdmin();
+  }
+}, [
+  auth?.accessToken,
+  auth?.isInitializing,
+  auth?.role,
+  navigate,
+]);
 
   if (!auth) {
     throw new Error("AuthContext must be used inside AuthProvider");

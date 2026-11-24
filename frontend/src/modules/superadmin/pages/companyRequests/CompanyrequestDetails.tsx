@@ -549,6 +549,7 @@ const handleRejectCompanyRequest = async () => {
                                     companyRequestId: companyRequest.id,
                                     documentType: document.documentType,
                                   });
+                                  console.log("rejected")
                                   setRejectionReason("");
                                   setIsRejectModalOpen(true);
                                 }}
@@ -588,7 +589,41 @@ const handleRejectCompanyRequest = async () => {
       </div>
 
       {/* Document Rejection Modal */}
-     
+     <BaseModal
+  isOpen={isRejectModalOpen}
+  title="Reject Document"
+  description="Please provide a reason for rejecting this company document."
+  onClose={closeRejectModal}
+  onSubmit={handleReject}
+  submitLabel="Reject Document"
+  cancelLabel="Cancel"
+  isSubmitting={isRejectingDocument}
+  submitDisabled={!rejectionReason.trim()}
+>
+  <label
+    htmlFor="documentRejectionReason"
+    className="mb-2 block text-sm font-medium text-gray-700"
+  >
+    Rejection Reason *
+  </label>
+
+  <textarea
+    id="documentRejectionReason"
+    value={rejectionReason}
+    onChange={(event) =>
+      setRejectionReason(event.target.value)
+    }
+    placeholder="Explain why this document is being rejected..."
+    rows={4}
+    maxLength={1000}
+    required
+    className="w-full resize-y rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none transition focus:border-[#7C3AED] focus:ring-2 focus:ring-purple-100"
+  />
+
+  <p className="mt-1 text-right text-xs text-gray-400">
+    {rejectionReason.length}/1000 characters
+  </p>
+</BaseModal>
 {/* Company Request Rejection Modal */}
 <BaseModal
   isOpen={isCompanyRejectModalOpen}

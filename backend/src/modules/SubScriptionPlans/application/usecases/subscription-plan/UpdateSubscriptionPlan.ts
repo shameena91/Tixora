@@ -20,7 +20,7 @@ export class UpdateSubscriptionPlan implements IUpdateSubscriptionPlan {
   ): Promise<SubscriptionPlan> {
     const subScriptionPlan =
       await this._subscriptionPlanRepository.findById(id);
-
+ 
     if (!subScriptionPlan) {
       throw new AppErrors(
         MESSAGES.PLAN_NOT_FOUND,
@@ -29,11 +29,11 @@ export class UpdateSubscriptionPlan implements IUpdateSubscriptionPlan {
     }
 
     const updatedSubscriptionPlan =
-      await this._subscriptionPlanRepository.update(
-         {id} ,
+      await this._subscriptionPlanRepository.updatePlan(
+         id ,
         data,
       );
-
+console.log('upsubScriptionPlan',updatedSubscriptionPlan)
     if (!updatedSubscriptionPlan) {
       throw new AppErrors(
         MESSAGES.PLAN_NOT_FOUND,

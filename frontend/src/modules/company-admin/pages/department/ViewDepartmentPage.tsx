@@ -50,7 +50,7 @@ const ViewDepartmentPage = () => {
     isDetailsLoading,
     detailsError,
   } = useAppSelector((state) => state.department);
-
+console.log("selectedDepartment",selectedDepartment)
   useEffect(() => {
     if (departmentId) {
       dispatch(getDepartmentByIdThunk(departmentId));
@@ -260,11 +260,9 @@ const ViewDepartmentPage = () => {
                     {department.status}
                   </span>
                 </div>
-
-                <p className="mt-3 text-sm text-gray-500">
-                  Manager:{" "}
-                  {department.managerId ? "Assigned" : "Not assigned"}
-                </p>
+<p className="mt-3 text-sm text-gray-500">
+  Manager: {department?.manager?.name ?? "Not assigned"}
+</p>
               </div>
             </div>
 
@@ -381,7 +379,7 @@ const ViewDepartmentPage = () => {
 )}
 
             {activeTab === "employees" && (
-              <DepartmentEmployeesTab />
+              <DepartmentEmployeesTab  departmentId={department.id} />
             )}
           </div>
         </>

@@ -38,13 +38,12 @@ export class GetMySubscriptionStatus
 
     const currentDate = new Date();
 
-    // Fetch all records for subscription status transitions.
+ 
     let subscriptions =
       await this._subscriptionRepository.findAllByCompanyId(
         company.id,
       );
 
-    // Expire active and scheduled subscriptions when their periods end.
     for (const subscription of subscriptions) {
       const hasExpired =
         (subscription.status === SubscriptionStatus.ACTIVE ||
@@ -60,7 +59,6 @@ export class GetMySubscriptionStatus
       }
     }
 
-    // Refresh records after expiry transitions.
     subscriptions =
       await this._subscriptionRepository.findAllByCompanyId(
         company.id,
@@ -74,7 +72,6 @@ export class GetMySubscriptionStatus
           subscription.endDate.getTime() > currentDate.getTime()),
     );
 
-    // Activate the next eligible scheduled subscription when needed.
     if (!hasValidActiveSubscription) {
       const scheduledSubscription = subscriptions
         .filter(
@@ -97,7 +94,6 @@ export class GetMySubscriptionStatus
       }
     }
 
-    // Refresh all records for current subscription and access status.
     subscriptions =
       await this._subscriptionRepository.findAllByCompanyId(
         company.id,
@@ -117,7 +113,6 @@ export class GetMySubscriptionStatus
             b.createdAt.getTime() - a.createdAt.getTime(),
         )[0] ?? null;
 
-    // Fetch only the requested history page from the repository.
     const [historyPage, totalCount] = await Promise.all([
       this._subscriptionRepository.findAllByCompanyId(
         company.id,

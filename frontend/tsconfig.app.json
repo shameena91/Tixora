@@ -25,5 +25,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "../backend/src/modules/payments/application/dto/CancelPaymentDto.ts"]
+  "include": ["src", "../backend/src/modules/payments/application/dto/CancelPaymentDto.ts", "src/modules/company-admin/componenets/employees/.tsx"]
 }

@@ -2,15 +2,15 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 import type {
-  CategoriesPaginationResponse,
-  Category,
-  CategoryFormData,
+    CategoriesPaginationResponse,
+    Category,
+    CategoryFormData,
 } from "../../../modules/company-admin/types/categoryTypes";
 
 import {
-  createCategory,
-  getCategoriesByDepartment,
-  getCategoryDetails,
+    createCategory,
+    getCategoriesByDepartment,
+    getCategoryDetails,
 } from "../../../modules/company-admin/services/category/CategoryServices";
 
 // Fetch all categories or filter by department

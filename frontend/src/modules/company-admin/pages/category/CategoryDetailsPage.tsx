@@ -1,8 +1,8 @@
 
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "../../../../redux/hooks/hooks";
 
@@ -14,14 +14,13 @@ import type {
 
 import { getCategoryDetailsThunk } from "../../../../redux/slices/category/categoryThunk";
 
+import CreateCategoryModal from "../../componenets/category/CreateCategoryModal";
+import CategoryEmployeesTab from "../../componenets/category/CategoryEmployeesTab";
+
 import {
   updateCategory,
   updateCategoryStatus,
 } from "../../services/category/CategoryServices";
-import CreateCategoryModal from "../../componenets/category/CreateCategoryModal";
-
-// Adjust this import path if your modal is stored in another folder.
-;
 
 const CategoryDetailsPage = () => {
   const { categoryId } = useParams<{ categoryId: string }>();
@@ -54,13 +53,13 @@ const CategoryDetailsPage = () => {
     }
   }, [dispatch, categoryId]);
 
-  // Open the existing Create Category modal in edit mode
+  // Open edit modal
   const openEditModal = (category: Category) => {
     setSelectedCategory(category);
     setIsModalOpen(true);
   };
 
-  // Close the modal
+  // Close edit modal
   const closeEditModal = () => {
     setIsModalOpen(false);
     setSelectedCategory(null);
@@ -312,58 +311,22 @@ const CategoryDetailsPage = () => {
       </section>
 
       {/* Employees section */}
-      <section className="rounded-xl border border-gray-200 bg-white p-6">
-        <h2 className="text-lg font-semibold text-gray-900">
-          Employees
-        </h2>
-
-        <div className="mt-4 rounded-lg border border-dashed border-gray-300 px-6 py-12 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-blue-600">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              className="h-6 w-6"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
-              />
-              <circle cx="10" cy="7" r="4" />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M20 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"
-              />
-            </svg>
-          </div>
-
-          <p className="mt-4 font-medium text-gray-700">
-            Currently no employees are available
-          </p>
-
-          <p className="mt-2 text-sm text-gray-500">
-            Employee information will appear here when the
-            Employees module is implemented.
-          </p>
-        </div>
-      </section>
-
-      {/* Reuse the existing Create Category modal in edit mode */}
-      <CreateCategoryModal
-  isOpen={isModalOpen}
-  mode="edit"
-  category={selectedCategory}
-  departmentId={selectedCategory?.departmentId}
-  departments={departments}
-  isSubmitting={isSubmitting}
-  onClose={closeEditModal}
-  onSubmit={handleEditCategory}
+     <CategoryEmployeesTab
+  categoryId={categoryDetails.id}
+  departmentId={categoryDetails.departmentId}
 />
+
+      {/* Edit category modal */}
+      <CreateCategoryModal
+        isOpen={isModalOpen}
+        mode="edit"
+        category={selectedCategory}
+        departmentId={selectedCategory?.departmentId}
+        departments={departments}
+        isSubmitting={isSubmitting}
+        onClose={closeEditModal}
+        onSubmit={handleEditCategory}
+      />
     </div>
   );
 };

@@ -21,6 +21,8 @@ export enum CompanyProfileField {
   STATE = "state",
   COUNTRY = "country",
   POSTAL_CODE = "postalCode",
+  PHONE_NUMBER="phoneNumber",
+  WEBSITE="website"
 }
 
 export interface ProfileFieldChange {

@@ -1,8 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-import type { CreateRoleDTO, RoleResponseDTO, RoleStatus, UpdateRoleDTO } from "../../../modules/company-admin/types/roles/RoleUI";
 import { createRole, getAllRoles, getRoleById, updateRole, updateRoleStatus } from "../../../modules/company-admin/services/roles/RolesServices";
+import type { CreateRoleDTO, RoleResponseDTO, RoleStatus, UpdateRoleDTO } from "../../../modules/company-admin/types/RoleUI";
 
 
 // Create Role

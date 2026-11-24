@@ -23,6 +23,7 @@ import {
 import {
   IBaseRepository,
 } from "../../../../../shared/repository/IBaseRepository";
+import { Types } from "mongoose";
 
 export class AccountRepository
   implements IAccountRepository
@@ -106,25 +107,40 @@ export class AccountRepository
 
 
 
+ async updateDetails(
+  id: string,
+  data: {
+    passwordHash: string;
+    status: AccountStatus;
+    companyId: string;
+  },
+): Promise<void> {
+  const result = await AccountModel.findByIdAndUpdate(
+    id,
+    { $set: data },
+  ).exec();
 
-  async update(
-    filter: Partial<Account>,
-    data: Partial<Account>,
-  ): Promise<Account | null> {
-    const accountDocument =
-      await this._baseRepository.update(
-        filter as Partial<AccountDocument>,
-        data as Partial<AccountDocument>,
-      );
-
-    if (!accountDocument) {
-      return null;
-    }
-
-    return AccountMapper.toDomain(
-      accountDocument,
-    );
+  if (!result) {
+    throw new Error("Account not found");
   }
+}
+
+ async update(
+  filter: Partial<Account>,
+  data: Partial<Account>,
+): Promise<Account | null> {
+  const accountDocument =
+    await this._baseRepository.update(
+      { _id: filter.id } as Partial<AccountDocument>,
+      data as Partial<AccountDocument>,
+    );
+
+  if (!accountDocument) {
+    return null;
+  }
+
+  return AccountMapper.toDomain(accountDocument);
+}
 
   // -------------------------
   // Account-specific methods
@@ -242,18 +258,24 @@ export class AccountRepository
     );
   }
 
-  async updateStatus(
-    id: string,
-    status: AccountStatus,
-  ): Promise<void> {
-    await AccountModel.findByIdAndUpdate(
-      id,
-      {
+async updateStatus(
+  id: string,
+  status: AccountStatus,
+): Promise<boolean> {
+  const updatedAccount = await AccountModel.findOneAndUpdate(
+    { _id: id },
+    {
+      $set: {
         status,
         updatedAt: new Date(),
       },
-    ).exec();
-  }
+    },
+    { new: true },
+  ).exec();
+
+  return !!updatedAccount;
+}
+  
   async findByName(
   search: string,
 ): Promise<Account[]> {
@@ -302,4 +324,66 @@ export class AccountRepository
     AccountMapper.toDomain(document),
   );
 }
+
+
+async findByIds(ids: string[]): Promise<Account[]> {
+  if (ids.length === 0) {
+    return [];
+  }
+
+  const accountDocuments = await AccountModel.find({
+    _id: { $in: ids },
+  })
+    .lean<AccountDocument[]>()
+    .exec();
+
+  return accountDocuments.map((document) =>
+    AccountMapper.toDomain(document),
+  );
+}
+
+async searchAccounts(search: string): Promise<Account[]> {
+  const trimmedSearch = search.trim();
+
+  if (!trimmedSearch) {
+    return [];
+  }
+
+  const accountDocuments = await AccountModel.find({
+    $or: [
+      { firstName: { $regex: trimmedSearch, $options: "i" } },
+      { lastName: { $regex: trimmedSearch, $options: "i" } },
+      { email: { $regex: trimmedSearch, $options: "i" } },
+      { phone: { $regex: trimmedSearch, $options: "i" } },
+    ],
+  })
+    .lean<AccountDocument[]>()
+    .exec();
+
+  return accountDocuments.map((document) =>
+    AccountMapper.toDomain(document),
+  );
+}
+
+
+async findByCompanyId(
+  companyId: string,
+): Promise<Account[]> {
+  if (!Types.ObjectId.isValid(companyId)) {
+    return [];
+  }
+
+  const accountDocuments =
+    await AccountModel.find({
+      companyId,
+      status: AccountStatus.ACTIVE,
+    })
+      .lean<AccountDocument[]>()
+      .exec();
+
+  return accountDocuments.map((document) =>
+    AccountMapper.toDomain(document),
+  );
+}
+
 }

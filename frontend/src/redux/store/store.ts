@@ -7,6 +7,7 @@ import companySubscriptionReducer from "../slices/companySubscription/companySub
 import categoryReducer from "../slices/category/categorySlice"
 import departmentReducer from "../slices/department/departmentSlice";
 import roleReducer from "../slices/roles/roleslice";
+import employeeReducer from "../slices/employee/employeeSlice";
 export const store=configureStore({
     reducer:{
           superAdminDashboard: superAdminDashboardReducer,
@@ -17,6 +18,7 @@ export const store=configureStore({
     department: departmentReducer,
     category:categoryReducer,
      roles: roleReducer, 
+     employee: employeeReducer,
   
         }
 })

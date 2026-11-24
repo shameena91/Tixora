@@ -11,6 +11,7 @@ import {
   Settings,
   Shield,
   Tags,
+  Users,
 } from "lucide-react";
 import React from "react";
 
@@ -82,12 +83,13 @@ const CompanyAdminSidebar = ({
               isCollapsed={isCollapsed}
             />
 
-            {/* <NavGroup
-              label="Employee Management"
-              icon={Users}
+            <NavItem
+            to="/company-admin/employee-management"
+             icon={Users}
+              label="Employee Management"           
               isCollapsed={isCollapsed}
-            >
-              <NavSubItem
+            />
+             {/*  <NavSubItem
                 to="/employees"
                 label="Employees"
               />

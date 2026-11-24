@@ -54,8 +54,10 @@ export const AUTH_ROUTES = {
   FORGOT_PASSWORD: "/auth/forgot-password",
   ADMIN_REGISTER: "/auth/admin-register",
   LOGIN: "/auth/login",
-  LOGOUT: "/auth/logout",
-  REFRESH: "/auth/refresh",
+  ADMIN_LOGOUT: "/auth/admin/logout",
+  EMPLOYEE_LOGOUT :"auth/employee/logout",
+   ADMIN_REFRESH: "/auth/admin/refresh",
+  EMPLOYEE_REFRESH: "/auth/employee/refresh",
   RESET_PASSWORD: "/auth/reset-password",
 } as const;
 
@@ -123,6 +125,7 @@ export const COMPANY_CHANGE_REQUEST_ROUTES = {
     `/companies/update-requests/${requestId}/document-review`,
  SEND_OTP:`/companies/email-change/send-otp`,
  VERIFY_OTP: "/companies/email-change/verify-otp",
+MY_REQUESTS: "/companies/my-company-change-requests",
 };
 
 
@@ -133,4 +136,14 @@ export const ROLE_ROUTES = {
 
   UPDATE_STATUS: (roleId: string) =>
     `/roles/${roleId}/status`,
+};
+
+export const EMPLOYEE_ROUTES = {
+  BASE: "/employees",
+  BY_ID: (employeeId: string) =>
+    `/employees/${employeeId}`,
+  UPDATE_STATUS: (employeeId: string) =>
+    `/employees/${employeeId}/status`,
+    RESEND_INVITATION: "/employees/resend-invitation",
+ACCEPT_INVITATION:"/employees/accept-invitation"
 };

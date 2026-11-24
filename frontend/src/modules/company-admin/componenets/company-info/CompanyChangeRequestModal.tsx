@@ -23,6 +23,8 @@ const companyFields = [
   { label: "State", value: "state" },
   { label: "Country", value: "country" },
   { label: "Postal Code", value: "postalCode" },
+   { label: "Phone Number", value: "phoneNumber" },
+    { label: "Website", value: "website" }
 ] as const;
 
 type CompanyChangeField =
@@ -93,6 +95,10 @@ const getCurrentValue = (
 
     case "postalCode":
       return company.location?.postalCode ?? "";
+      case "phoneNumber":
+return company.phone ?? "";
+  case "website":
+return company.website ?? ""
 
     default:
       return "";

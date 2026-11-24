@@ -5,6 +5,7 @@ import {
   AccountStatus,
   RegistrationStep,
 } from "../../domain/entities/Account";
+import { UpdateEmployeeDTO } from "../../../employees/application/dtos/EmployeesDtos";
 
 export interface AccountDocument {
   _id: Types.ObjectId;
@@ -12,7 +13,9 @@ export interface AccountDocument {
   firstName?: string;
   lastName?: string;
   phone?: string;
-  designation?: string;
+   designation?: string|null;
+  companyId:string|null
+ 
   role: AccountRole;
   passwordHash: string | null;
   status: AccountStatus;
@@ -35,6 +38,7 @@ export class AccountMapper {
       doc.firstName ?? "",
       doc.lastName ?? "",
       doc.phone ?? "",
+      doc.companyId,
       doc.designation ?? "",
       doc.passwordHash,
       doc.role,
@@ -54,6 +58,7 @@ export class AccountMapper {
       lastName: account.lastName,
       phone: account.phone,
       designation: account.designation,
+      companyId:account.companyId,
       passwordHash: account.passwordHash,
       role: account.role,
       status: account.status,
@@ -61,4 +66,22 @@ export class AccountMapper {
       registrationStep: account.registrationStep,
     };
   }
+
+
+  static toAccountUpdateData(
+  dto: UpdateEmployeeDTO,
+): Partial<AccountCreateData> {
+  return {
+    ...(dto.firstName !== undefined && {
+      firstName: dto.firstName,
+    }),
+    ...(dto.lastName !== undefined && {
+      lastName: dto.lastName,
+    }),
+    ...(dto.phone !== undefined && {
+      phone: dto.phone,
+    }),
+   
+  };
+}
 }

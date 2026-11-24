@@ -1,4 +1,4 @@
-import type { RoleResponseDTO } from "../../../modules/company-admin/types/roles/RoleUI";
+import type { RoleResponseDTO } from "../../../modules/company-admin/types/RoleUI";
 
 export interface RoleState {
   roles: RoleResponseDTO[];

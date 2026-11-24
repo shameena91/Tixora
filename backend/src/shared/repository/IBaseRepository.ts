@@ -14,7 +14,7 @@ export interface IBaseRepository<T, CreateData = T> {
 
   findById(id: string): Promise<T | null>;
 
-  findOne(filter: Partial<T>): Promise<T | null>;
+  findOne(filter: Partial<T>, sort?: Record<string, 1 | -1>,): Promise<T | null>;
 
   findAll(
     filter?: Partial<T>,

@@ -2,14 +2,14 @@ import { Types } from "mongoose";
 
 import {
   SubscriptionPlan,
-  SubscriptionPlanName,
+
   SubscriptionPlanStatus,
 } from "../../domain/entities/SubscriptionPlan";
 
 export interface SubscriptionPlanDocument {
   _id: Types.ObjectId;
 
-  name: SubscriptionPlanName;
+  name: string;
   description: string;
 
   monthlyPrice: number;

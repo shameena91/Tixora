@@ -120,5 +120,6 @@ SYSTEM_ROLE_CANNOT_BE_UPDATED:
 ROLE_ALREADY_EXISTS:
   "A role with this name already exists",
   ROLE_NOT_FOUND: "Role not found",
+ EMPLOYEE_NOT_FOUND: "Employee not found"
 
 };

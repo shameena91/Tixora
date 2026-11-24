@@ -149,4 +149,28 @@ async updateStatus(
     ? RoleMapper.toDomain(document)
     : null;
 }
+
+async findByIds(ids: string[]): Promise<Role[]> {
+  if (ids.length === 0) {
+    return [];
+  }
+
+  const validIds = ids.filter((id) => Types.ObjectId.isValid(id));
+
+  if (validIds.length === 0) {
+    return [];
+  }
+
+  const documents = await this._roleModel
+    .find({
+      _id: {
+        $in: validIds.map((id) => new Types.ObjectId(id)),
+      },
+    })
+    .exec();
+
+  return documents.map((document) =>
+    RoleMapper.toDomain(document),
+  );
+}
 }

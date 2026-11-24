@@ -4,6 +4,11 @@ export interface DepartmentResponseDto {
   code: string;
   description: string | null;
   managerId: string | null;
+    manager: {
+    id: string;
+    name: string;
+  } | null;
+
   status: "ACTIVE" | "INACTIVE";
   createdAt: string;
   updatedAt: string;

@@ -28,6 +28,7 @@ import type {
   PaginatedCompanyRequestResponse,
 } from "./companyRequestTypes";
 import { approveCompanyRequest, getAllCompanyRequests, getCompanyRequestById, moreInfoCompanyRequest, rejectCompanyRequest } from "../../../modules/superadmin/services/superadminServices";
+import { getMyCompanyChangeRequests } from "../../../modules/company-admin/services/companyprofile/companyProfileService";
 
 // ------------------------------------
 // Fetch All Company Requests
@@ -413,6 +414,50 @@ export const reviewCompanyDocumentChangeRequestThunk =
 
         return rejectWithValue(
           "Failed to review document change",
+        );
+      }
+    },
+
+  );
+
+  // Fetch logged-in Company Admin's own change requests.
+
+export const fetchMyCompanyChangeRequestsThunk =
+  createAsyncThunk<
+    CompanyChangeRequestDetails[],
+    void,
+    { rejectValue: string }
+  >(
+    "companyRequest/fetchMyCompanyChangeRequests",
+    async (_, { rejectWithValue }) => {
+      try {
+        const response = await getMyCompanyChangeRequests();
+
+        const result = getResponseData(response);
+
+        const rows = Array.isArray(result)
+          ? result
+          : [];
+
+        return rows.map((row: Record<string, unknown>) => ({
+          ...row,
+          id: String(row.id ?? row._id ?? ""),
+          updateType:
+            row.updateType === "PROFILE" ||
+            Array.isArray(row.changes)
+              ? "PROFILE"
+              : "DOCUMENT",
+        })) as CompanyChangeRequestDetails[];
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          return rejectWithValue(
+            error.response?.data?.message ??
+              "Failed to fetch your company update requests",
+          );
+        }
+
+        return rejectWithValue(
+          "Failed to fetch your company update requests",
         );
       }
     },

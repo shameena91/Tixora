@@ -1,16 +1,16 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import type { RoleListItem, RoleStatus } from "../../types/roles/RoleUI";
+import type { RoleListItem, RoleStatus } from "../../types/RoleUI";
 
 import RolePageHeader from "../../componenets/rolesAndPermissions/RolePageHeader";
 // import RoleFilters from "../../componenets/rolesAndPermissions/RoleFilters";
-import RoleTable from "../../componenets/rolesAndPermissions/RoleTable";
 import RoleStatsCards from "../../componenets/rolesAndPermissions/RoleStatsCards";
+import RoleTable from "../../componenets/rolesAndPermissions/RoleTable";
 
 import {
-  getAllRolesThunk,
-  updateRoleStatusThunk,
+    getAllRolesThunk,
+    updateRoleStatusThunk,
 } from "../../../../redux/slices/roles/roleThunk";
 
 import { useAppDispatch, useAppSelector } from "../../../../redux/hooks/hooks";

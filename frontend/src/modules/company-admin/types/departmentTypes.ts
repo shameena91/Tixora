@@ -6,6 +6,11 @@ name: string;
 code: string;
 description: string | null;
 managerId: string | null;
+ manager?: {
+    id: string;
+    name: string;
+  } | null;
+
 status: DepartmentStatus;
 createdAt: string;
 updatedAt: string;

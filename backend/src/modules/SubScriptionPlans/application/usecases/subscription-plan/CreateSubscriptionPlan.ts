@@ -18,18 +18,20 @@ export class CreateSubscriptionPlan implements ICreateSubscriptionPlan {
   ) {}
 
   async execute(data: CreateSubscriptionPlanDTO): Promise<SubscriptionPlan> {
-    console.log("existingPlan", data.name);
-    const existingPlan = await this._subscriptionPlanRepository.findByNameAndStatus(
-      data.name,
-       SubscriptionPlanStatus.ACTIVE,
-    );
-    console.log("existingPlan", existingPlan);
+    const existingPlan =
+      await this._subscriptionPlanRepository.findByNameAndStatus(
+        data.name,
+        SubscriptionPlanStatus.ACTIVE,
+      );
+
     if (existingPlan) {
       throw new AppErrors(
         MESSAGES.SUBSCRIPTION_PLAN_ALREADY_EXISTS,
         ErrorCode.SUBSCRIPTION_PLAN_ALREADY_EXISTS,
       );
     }
+
+    const isUnlimited = data.limitType === "UNLIMITED";
 
     const subscriptionPlan = new SubscriptionPlan(
       randomUUID(),
@@ -40,10 +42,10 @@ export class CreateSubscriptionPlan implements ICreateSubscriptionPlan {
       data.monthlyPrice,
       data.yearlyPrice,
 
-      data.memberLimit,
-      data.companyAdminLimit,
-      data.departmentLimit,
-      data.ticketLimit,
+      isUnlimited ? -1 : data.memberLimit!,
+      isUnlimited ? -1 : data.companyAdminLimit!,
+      isUnlimited ? -1 : data.departmentLimit!,
+      isUnlimited ? -1 : data.ticketLimit!,
 
       data.automaticTicketAssignment,
       data.slaManagement,

@@ -1,45 +1,71 @@
-import { useEffect, useState } from "react"
-import { AuthContext } from "./AuthContext"
-import { refreshAccessToken } from "../services/authService"
-// import { storeAccessToken } from "../api/tokenStorage"
+
+import { useEffect, useState } from "react";
+import { AuthContext } from "./AuthContext";
+import { refreshAdminAccessToken } from "../services/authService";
 import type { UserRole } from "../types/auth.types";
 import { storeAccessToken } from "../api/tokenStorage";
 
-export const AuthProvider=({children}:{children:React.ReactNode})=>{
+export const AuthProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
+  const [isInitializing, setIsInitializing] = useState(true);
+  const [role, setRole] = useState<UserRole | null>(null);
 
+  // // Employee details
+  // const [employeeRole, setEmployeeRole] = useState<string | null>(null);
+  const [companyId, setCompanyId] = useState<string | null>(null);
+  // const [permissions, setPermissions] = useState<string[]>([]);
 
-    const [accessToken,setAccessToken]=useState<string|null>(null)
-    const [userName, setUserName] = useState<string | null>(null)
-    const [isInitializing, setIsInitializing] = useState(true);
-const [role, setRole] = useState<UserRole | null>(null);
-    useEffect(()=>{
-        const restoreSession=async()=>{
-            try {
-                const response=await refreshAccessToken()
-                console.log("SESSION RESTORED:", {
-  role: response.data.role,
-  name: response.data.name,
-});
-                setAccessToken(response.data.accessToken)
-                storeAccessToken(response.data.accessToken);
-                 setUserName(response.data.name);
-        setRole(response.data.role);
-                
-            } catch (error) {
-                
-                console.log("No active session",error)
-            }finally {
-      setIsInitializing(false);
-    }
-        }
-        restoreSession()
-    },[])
-    return (
-        <AuthContext.Provider
-        value={{accessToken,
-            setAccessToken,isInitializing
-            ,userName,
-        setUserName, role,
-        setRole,}}>{children}</AuthContext.Provider>
-    )
-}
+  useEffect(() => {
+    const restoreSession = async () => {
+      try {
+        const response = await refreshAdminAccessToken();
+        const data = response.data;
+console.log("REFRESH RESPONSE:", response.data);
+        setAccessToken(data.accessToken);
+        storeAccessToken(data.accessToken);
+        setUserName(data.name);
+        setRole(data.role);
+
+        // // Restore employee details
+        // setEmployeeRole(data.employeeRole ?? null);
+        setCompanyId(data.companyId ?? null);
+        // setPermissions(data.permissions ?? []);
+
+      } catch (error) {
+        console.log("No active session", error);
+      } finally {
+        setIsInitializing(false);
+      }
+    };
+
+    restoreSession();
+  }, []);
+
+  return (
+    <AuthContext.Provider
+      value={{
+        accessToken,
+        setAccessToken,
+        userName,
+        setUserName,
+        isInitializing,
+        role,
+        setRole,
+
+        // employeeRole,
+        // setEmployeeRole,
+        companyId,
+        setCompanyId,
+        // permissions,
+        // setPermissions,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};

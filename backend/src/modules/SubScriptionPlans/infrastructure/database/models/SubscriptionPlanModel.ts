@@ -1,7 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
 import {
-  SubscriptionPlanName,
   SubscriptionPlanStatus,
 } from "../../../domain/entities/SubscriptionPlan";
 
@@ -12,8 +11,8 @@ const subscriptionPlanSchema =
     {
       name: {
         type: String,
-        enum: Object.values(SubscriptionPlanName),
         required: true,
+        trim: true,
       },
 
       description: {
@@ -34,32 +33,40 @@ const subscriptionPlanSchema =
         min: 0,
       },
 
-    
-
-    
-
       memberLimit: {
         type: Number,
-        default: null,
-        min: 1,
+        required: true,
+        validate: {
+          validator: (value: number) => value === -1 || value >= 1,
+          message: "Member limit must be -1 or greater than 0",
+        },
       },
 
       companyAdminLimit: {
         type: Number,
-        default: null,
-        min: 1,
+        required: true,
+        validate: {
+          validator: (value: number) => value === -1 || value >= 1,
+          message: "Company admin limit must be -1 or greater than 0",
+        },
       },
 
       departmentLimit: {
         type: Number,
-        default: null,
-        min: 1,
+        required: true,
+        validate: {
+          validator: (value: number) => value === -1 || value >= 1,
+          message: "Department limit must be -1 or greater than 0",
+        },
       },
 
       ticketLimit: {
         type: Number,
-        default: null,
-        min: 1,
+        required: true,
+        validate: {
+          validator: (value: number) => value === -1 || value >= 1,
+          message: "Ticket limit must be -1 or greater than 0",
+        },
       },
 
       automaticTicketAssignment: {

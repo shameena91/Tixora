@@ -87,7 +87,13 @@ router.get(
     companyChangeRequestController,
   ),
 );
-
+router.get(
+  COMAPANY_ROUTES.GET_MY_COMPANY_CHANGE_REQUESTS,
+  authorizeRoles(AccountRole.COMPANY_ADMIN),
+  companyChangeRequestController.getMycompanyChangeRequests.bind(
+    companyChangeRequestController,
+  ),
+);
 router.get(
   COMAPANY_ROUTES.GET_COMPANY_CHANGE_REQUEST_BY_ID,
   authorizeRoles(AccountRole.SUPER_ADMIN),

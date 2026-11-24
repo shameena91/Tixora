@@ -36,4 +36,6 @@ export interface IRoleRepository {
   id: string,
   roleStatus: RoleStatus,
 ): Promise<Role | null>;
+
+findByIds(ids: string[]): Promise<Role[]>;
 }

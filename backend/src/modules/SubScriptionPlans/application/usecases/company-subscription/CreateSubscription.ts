@@ -10,7 +10,6 @@ import {
   SubscriptionStatus,
 } from "../../../domain/entities/Subscription";
 
-import { SubscriptionPlanName } from "../../../domain/entities/SubscriptionPlan";
 
 import { MESSAGES } from "../../../../../shared/constants/messages";
 import { AppErrors } from "../../../../../shared/errors/AppErrors";
@@ -37,7 +36,7 @@ export class CreateSubscription implements ICreateSubscription {
     isRenewal: boolean,
     isUpgrade: boolean,
   ): Promise<CreateSubscriptionResponseDto> {
-    // 1. A request cannot be both renewal and upgrade.
+  
     if (isRenewal && isUpgrade) {
       throw new AppErrors(
         "A subscription request cannot be both renewal and upgrade.",
@@ -45,7 +44,7 @@ export class CreateSubscription implements ICreateSubscription {
       );
     }
 
-    // 2. Find company.
+  
     const company =
       await this._companyRepository.findByAccountId(accountId);
 
@@ -56,7 +55,6 @@ export class CreateSubscription implements ICreateSubscription {
       );
     }
 
-    // 3. Find and validate the selected plan.
     const plan =
       await this._subscriptionPlanRepository.findById(planId);
 
@@ -73,8 +71,10 @@ export class CreateSubscription implements ICreateSubscription {
         ErrorCode.SUBSCRIPTION_PLAN_NOT_ACTIVE,
       );
     }
-
-    // 4. Find the latest subscription.
+     const isFreePlan =
+  plan.monthlyPrice === 0 &&
+  plan.yearlyPrice === 0;
+ 
     const subscriptions =
       await this._subscriptionRepository.findAllByCompanyId(company.id);
 
@@ -84,17 +84,18 @@ export class CreateSubscription implements ICreateSubscription {
           b.createdAt.getTime() - a.createdAt.getTime(),
       )[0] ?? null;
 
-    // 5. Validate the requested operation.
+
     if (isRenewal) {
-      // A FREE plan cannot be renewed through payment.
-      if (plan.name === SubscriptionPlanName.FREE) {
+    
+ 
+      if (isFreePlan) {
         throw new AppErrors(
           MESSAGES.SUBSCRIPTION_PLAN_NOT_ACTIVE,
           ErrorCode.SUBSCRIPTION_PLAN_NOT_ACTIVE,
         );
       }
 
-      // Renewal must use the same plan and billing cycle.
+
       if (
         !latestSubscription ||
         latestSubscription.planId !== plan.id ||
@@ -116,7 +117,7 @@ export class CreateSubscription implements ICreateSubscription {
         );
       }
     } else if (isUpgrade) {
-      // Upgrade requires an existing active subscription.
+   
       if (
         !latestSubscription ||
         latestSubscription.status !== SubscriptionStatus.ACTIVE
@@ -127,7 +128,7 @@ export class CreateSubscription implements ICreateSubscription {
         );
       }
 
-      if (plan.name === SubscriptionPlanName.FREE) {
+      if (isFreePlan) {
         throw new AppErrors(
           "The FREE plan cannot be selected as an upgrade.",
           ErrorCode.All_READY_SUBSCRIBED,
@@ -141,7 +142,7 @@ export class CreateSubscription implements ICreateSubscription {
         );
       }
 
-      // Fetch the company's current plan from the database.
+     
       const currentPlan =
         await this._subscriptionPlanRepository.findById(
           latestSubscription.planId,
@@ -154,8 +155,7 @@ export class CreateSubscription implements ICreateSubscription {
         );
       }
 
-      // Compare prices for the requested billing cycle.
-      // Price comparison alone is the selected upgrade rule.
+
       const currentPrice =
         billingCycle === "MONTHLY"
           ? currentPlan.monthlyPrice
@@ -177,8 +177,7 @@ export class CreateSubscription implements ICreateSubscription {
         );
       }
     } else {
-      // A normal new subscription is not allowed while an
-      // active or pending subscription already exists.
+   
       if (
         latestSubscription &&
         (
@@ -193,9 +192,7 @@ export class CreateSubscription implements ICreateSubscription {
       }
     }
 
-    // 6. Create a FREE subscription immediately.
-    // FREE is only allowed for a normal new subscription.
-    if (plan.name === SubscriptionPlanName.FREE) {
+    if (isFreePlan) {
       if (isRenewal || isUpgrade) {
         throw new AppErrors(
           MESSAGES.SUBSCRIPTION_PLAN_NOT_ACTIVE,
@@ -230,7 +227,6 @@ export class CreateSubscription implements ICreateSubscription {
       };
     }
 
-    // 7. Calculate the selected billing-cycle price.
     const amountInRupees =
       billingCycle === "MONTHLY"
         ? plan.monthlyPrice
@@ -248,8 +244,7 @@ export class CreateSubscription implements ICreateSubscription {
 
     const amountInPaise = Math.round(amountInRupees * 100);
 
-    // 8. Create Razorpay order.
-    // Existing subscription ID is included for renewal and upgrade.
+  
     const razorpayOrder =
       await this._razorpayOrderService.createOrder(
         amountInPaise,
@@ -268,7 +263,6 @@ export class CreateSubscription implements ICreateSubscription {
         },
       );
 
-    // 9. Record the pending payment.
     await this._paymentRepository.create({
       companyId: company.id,
       subscriptionId: null,
@@ -282,7 +276,7 @@ export class CreateSubscription implements ICreateSubscription {
       paymentDate: new Date(),
     });
 
-    // 10. Return order details to the frontend.
+
     return {
       subscriptionId: null,
       orderId: razorpayOrder.orderId,

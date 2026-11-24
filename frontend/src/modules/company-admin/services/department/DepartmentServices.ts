@@ -2,8 +2,8 @@
 import { DEPARTMENT_ROUTES } from "../../../../shared/constants/apiRoutes";
 import axiosInstance from "../../../auth/api/axiosInstance";
 import type {
-  CreateDepartmentRequest,
-  UpdateDepartmentRequest,
+    CreateDepartmentRequest,
+    UpdateDepartmentRequest,
 } from "../../types/departmentTypes";
 
 export const createDepartment = async (

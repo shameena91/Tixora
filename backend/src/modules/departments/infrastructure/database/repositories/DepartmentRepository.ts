@@ -1,5 +1,5 @@
 
-import type { Connection, Model } from "mongoose";
+import { Types, type Connection, type Model } from "mongoose";
 
 import { Department } from "../../../domain/entities/department";
 import type { IDepartmentRepository } from "../../../domain/repositories/IDepartmentRepository";
@@ -72,7 +72,23 @@ export class DepartmentRepository
 
     return document ? DepartmentMapper.toDomain(document) : null;
   }
+async assignManager(
+  departmentId: string,
+  managerId: string,
+): Promise<boolean> {
+  const document = await this._departmentModel
+    .findByIdAndUpdate(
+      departmentId,
+      { managerId },
+      {
+        new: true,
+        runValidators: true,
+      },
+    )
+    .exec();
 
+  return document !== null;
+}
   async findByCode(code: string): Promise<Department | null> {
     const document = await this._baseRepository.findOne({
       code: code.trim().toUpperCase(),
@@ -83,26 +99,7 @@ export class DepartmentRepository
 async countAll(): Promise<number> {
   return this._departmentModel.countDocuments({}).exec();
 }
-  // async findAllBySearch(search?: string): Promise<Department[]> {
-  //   const filter = search?.trim()
-  //     ? {
-  //         name: {
-  //           $regex: search.trim(),
-  //           $options: "i",
-  //         },
-  //       }
-  //     : {};
-
-  //   const documents = await this._departmentModel
-  //     .find(filter)
-  //     .sort({ createdAt: -1 })
-  //     .lean<DepartmentDocument[]>()
-  //     .exec();
-
-  //   return documents.map((document) =>
-  //     DepartmentMapper.toDomain(document),
-  //   );
-  // }
+ 
 
   async findAll(
     filter: Partial<Department> = {},
@@ -185,6 +182,30 @@ async updateStatus(
   return document
     ? DepartmentMapper.toDomain(document)
     : null;
+}
+
+async findByIds(ids: string[]): Promise<Department[]> {
+  if (ids.length === 0) {
+    return [];
+  }
+
+  const validIds = ids.filter((id) => Types.ObjectId.isValid(id));
+
+  if (validIds.length === 0) {
+    return [];
+  }
+
+  const documents = await this._departmentModel
+    .find({
+      _id: {
+        $in: validIds.map((id) => new Types.ObjectId(id)),
+      },
+    })
+    .exec();
+
+  return documents.map((document) =>
+    DepartmentMapper.toDomain(document),
+  );
 }
 }
 

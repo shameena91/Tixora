@@ -308,4 +308,34 @@ console.log(document)
 
   return null;
 }
+
+async findByAccountId(
+  accountId:string
+):Promise<(CompanyProfileChange | CompanyDocumentChange )[]>
+{
+
+
+const documents = await this._baseRepository.findAll({
+  accountId,
+},{createdAt:-1});
+
+
+
+ const requests = documents.map((document) => {
+    if (document.changeType === "PROFILE") {
+      return CompanyProfileChangeMapper.toDomain({
+        ...document,
+        _id: String(document._id),
+      });
+    }
+
+    return CompanyDocumentChangeMapper.toDomain({
+      ...document,
+      _id: String(document._id),
+    });
+  });
+
+  console.log("REpoo",requests)
+return requests
+}
 }
